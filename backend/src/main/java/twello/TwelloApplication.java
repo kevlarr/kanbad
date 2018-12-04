@@ -12,12 +12,11 @@ public class TwelloApplication extends Application<TwelloConfiguration> {
 
     @Override
     public String getName() {
-        return "twello-world";
+        return "twello";
     }
 
     @Override
     public void initialize(Bootstrap<TwelloConfiguration> bootstrap) {
-        // TODO
     }
 
     @Override
