@@ -1,0 +1,21 @@
+.Hello {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateY(-100%) translateX(-50%);
+
+
+    .header {
+        color: #ddd;
+        font-family: cursive, sans-serif;
+    }
+
+    .welcome-text {
+        color: #625f50;
+        font-family: monospace;
+    }
+
+    .header, .welcome-text {
+        margin: 0;
+    }
+}
