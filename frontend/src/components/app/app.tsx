@@ -1,17 +1,48 @@
 import * as React from 'react';
 import './app.scss';
 
-interface Props {}
+interface Props {
+}
 
-export const App = (props: Props) => (
-    <div className='App'>
-        <header className='app-header'>
-            <h1 className='app-name'>twello</h1>
-        </header>
-        <main className='app-main'>
-            <h2>hey, make stuff!</h2>
-        </main>
-    </div>
-);
+interface State {
+    location: String;
+}
+
+export class App extends React.Component<Props, State> {
+    constructor(props: Props) {
+        super(props);
+
+        this.state = { location: this.parseRoute() };
+        window.addEventListener(
+            'hashchange',
+            () => this.setState({ location: this.parseRoute() }),
+            false,
+        );
+    }
+
+    parseRoute(): String {
+        return window.location.hash.replace(/^#\/?/, '');
+    }
+
+    route() {
+        switch (this.state.location) {
+            case '': return <h2>Hey, make stuff!</h2>;
+            default: return <h2>Hey, {this.state.location}!</h2>;
+        }
+    }
+
+    render() {
+        return (
+            <div className='App'>
+                <header className='app-header'>
+                    <h1 className='app-name'>twello</h1>
+                </header>
+                <main className='app-main'>
+                    {this.route()}
+                </main>
+            </div>
+        );
+    }
+}
 
 export default App;
