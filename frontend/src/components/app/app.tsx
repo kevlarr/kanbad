@@ -1,4 +1,6 @@
 import * as React from 'react';
+import Splash from '../splash';
+import Workspace from '../workspace';
 import './app.scss';
 
 interface Props {
@@ -26,8 +28,8 @@ export class App extends React.Component<Props, State> {
 
     route() {
         switch (this.state.location) {
-            case '': return <h2>Hey, make stuff!</h2>;
-            default: return <h2>Hey, {this.state.location}!</h2>;
+            case '': return <Splash />;
+            default: return <Workspace workspaceId={this.state.location} />;
         }
     }
 
