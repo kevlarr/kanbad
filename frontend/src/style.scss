@@ -3,6 +3,25 @@
  */
 
 body {
+    font-family: Tahoma, Verdana, sans-serif;
     margin: 0;
     padding: 0;
+}
+
+.button {
+    background: #fff;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 10px 15px;
+    transition: background 0.25s, border-color 0.25s;
+
+    &:hover {
+        border-color: #999;
+        background: #bbb;
+        transition: background 0.25s, border-color 0.25s;
+    }
 }
