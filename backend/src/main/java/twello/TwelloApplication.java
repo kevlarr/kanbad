@@ -2,12 +2,17 @@ package twello;
 
 import io.dropwizard.Application;
 import io.dropwizard.db.DataSourceFactory;
+import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.migrations.MigrationsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import twello.resources.HelloBoardResource;
+import twello.models.Workspace;
+import twello.resources.ApiResourceV1;
 
 public class TwelloApplication extends Application<TwelloConfiguration> {
+    private HibernateBundle<TwelloConfiguration> hibernate;
+    private MigrationsBundle<TwelloConfiguration> migrations;
+
     public static void main(String[] args) throws Exception {
         new TwelloApplication().run(args);
     }
@@ -19,7 +24,16 @@ public class TwelloApplication extends Application<TwelloConfiguration> {
 
     @Override
     public void initialize(Bootstrap<TwelloConfiguration> bootstrap) {
-        bootstrap.addBundle(new MigrationsBundle<TwelloConfiguration>() {
+        hibernate = new HibernateBundle<TwelloConfiguration>(
+            Workspace.class
+        ) {
+            @Override
+            public DataSourceFactory getDataSourceFactory(TwelloConfiguration configuration) {
+                return configuration.getDataSourceFactory();
+            }
+        };
+
+        migrations = new MigrationsBundle<TwelloConfiguration>() {
             @Override
             public DataSourceFactory getDataSourceFactory(TwelloConfiguration configuration) {
                 return configuration.getDataSourceFactory();
@@ -29,11 +43,14 @@ public class TwelloApplication extends Application<TwelloConfiguration> {
             public String getMigrationsFileName() {
                 return "migrations.yml";
             }
-        });
+        };
+
+        bootstrap.addBundle(hibernate);
+        bootstrap.addBundle(migrations);
     }
 
     @Override
     public void run(TwelloConfiguration conf, Environment env) {
-        env.jersey().register(new HelloBoardResource());
+        env.jersey().register(new ApiResourceV1(hibernate.getSessionFactory()));
     }
 }
