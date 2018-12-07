@@ -4,7 +4,7 @@
   "description": "base project for typescript/react",
   "main": "index.js",
   "scripts": {
-    "start": "./node_modules/.bin/webpack-dev-server",
+    "start": "./node_modules/.bin/webpack-dev-server --mode development",
     "build:dev": "./node_modules/.bin/webpack --mode development",
     "build:prod": "./node_modules/.bin/webpack --mode production",
     "test": "echo \"Error: no test specified\" && exit 1"
