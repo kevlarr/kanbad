@@ -4,10 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.Length;
 
 public class Board {
-    /*
-     * Fields
-     */
-
     private long id;
 
     @JsonProperty

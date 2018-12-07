@@ -14,4 +14,8 @@ public class WorkspaceDAO extends AbstractDAO<Workspace> {
         // FIXME
         return new Workspace(1, identifier);
     }
+
+    public void save (Workspace ws) {
+        currentSession().saveOrUpdate(ws);
+    }
 }
