@@ -13,6 +13,12 @@ module.exports = (env, argv) => {
             path: path.resolve(__dirname, 'dist'),
         },
 
+        devServer: {
+            proxy: {
+                '/api/v1': 'http://localhost:8080',
+            },
+        },
+
         // Enable source maps for debugging webpack output
         devtool: 'source-map',
 

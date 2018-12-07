@@ -4,8 +4,9 @@
   "description": "base project for typescript/react",
   "main": "index.js",
   "scripts": {
-    "start": "./node_modules/.bin/webpack --mode development --watch",
-    "build": "./node_modules/.bin/webpack --mode production",
+    "start": "./node_modules/.bin/webpack-dev-server --mode development",
+    "build:dev": "./node_modules/.bin/webpack --mode development",
+    "build:prod": "./node_modules/.bin/webpack --mode production",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "kevlarr",
@@ -22,6 +23,7 @@
     "typescript": "3.1.6",
     "webpack": "4.26.1",
     "webpack-cli": "3.1.2",
+    "webpack-dev-server": "3.1.10",
     "webpack-md5-hash": "0.0.6"
   },
   "dependencies": {

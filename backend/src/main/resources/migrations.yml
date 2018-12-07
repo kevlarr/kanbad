@@ -1,0 +1,34 @@
+databaseChangeLog:
+  - preConditions:
+    - runningAs:
+        username: twello
+
+  - changeSet:
+      id: 1
+      author: kevlarr
+      changes:
+
+        - createTable:
+            tableName: workspaces
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: identifier
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+        - createIndex:
+            tableName: workspaces
+            indexName: workspaces_identifier_idx
+            unique: true
+            columns:
+              - column:
+                  name: identifier
+                  type: uuid

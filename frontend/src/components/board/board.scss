@@ -1,0 +1,24 @@
+.Board {
+    background: #fff;
+    border-radius: 10px;
+    display: inline-block;
+    //padding: 15px 30px;
+    margin: 10px;
+    width: 300px;
+
+    .board-title {
+        border-bottom: 1px dotted #ddd;
+        color: #999;
+        font-size: 14px;
+        padding: 0px 15px 5px 15px;
+    }
+
+    .board-cards {
+        padding: 15px;
+    }
+
+    .board-controls {
+        padding: 15px 0px;
+        text-align: center;
+    }
+}
