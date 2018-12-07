@@ -2,5 +2,11 @@
 
 A very basic (read: comically incomplete) Trello clone with...
 
-- Java backend using Dropwizard stack (Jetty, Jersey, etc.)
-- TypeScript frontend using React & Redux
+**Java backend**
+
+- Dropwizard (Jetty, Jersey, etc.)
+- Liquibase migrations
+
+**TypeScript frontend**
+- React
+- Redux
