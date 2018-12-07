@@ -7,7 +7,7 @@ import io.dropwizard.migrations.MigrationsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import twello.models.Workspace;
-import twello.resources.ApiResourceV1;
+import twello.resources.ApplicationResource;
 
 public class TwelloApplication extends Application<TwelloConfiguration> {
     private HibernateBundle<TwelloConfiguration> hibernate;
@@ -51,6 +51,6 @@ public class TwelloApplication extends Application<TwelloConfiguration> {
 
     @Override
     public void run(TwelloConfiguration conf, Environment env) {
-        env.jersey().register(new ApiResourceV1(hibernate.getSessionFactory()));
+        env.jersey().register(new ApplicationResource(hibernate.getSessionFactory()));
     }
 }

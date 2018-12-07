@@ -9,7 +9,6 @@ import javax.ws.rs.core.MediaType;
 import java.util.LinkedHashMap;
 import java.util.UUID;
 
-@Path("/workspaces")
 @Produces(MediaType.APPLICATION_JSON)
 public class WorkspacesResource {
     private final WorkspaceDAO dao;
