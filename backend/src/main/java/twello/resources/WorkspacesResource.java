@@ -4,8 +4,10 @@ import io.dropwizard.hibernate.UnitOfWork;
 import twello.models.Workspace;
 import twello.models.WorkspaceDAO;
 
+import javax.persistence.NoResultException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.LinkedHashMap;
 import java.util.UUID;
 
@@ -28,8 +30,14 @@ public class WorkspacesResource {
 
     @GET
     @Path("{identifier}")
+    @UnitOfWork
     public Workspace getWorkspace(@PathParam("identifier") String identifier) {
-        return dao.findByIdentifier(UUID.fromString(identifier));
+        try {
+            return dao.findByIdentifier(UUID.fromString(identifier));
+        }
+        catch (NoResultException ex) {
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        }
     }
 
 }
