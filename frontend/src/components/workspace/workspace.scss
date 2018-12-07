@@ -1,0 +1,26 @@
+.Workspace {
+    padding: 25px 50px;
+
+    .workspace-meta {
+        color: #444;
+        margin-bottom: 20px;
+    }
+
+    .workspace-identifier {
+        font-size: 18px;
+        margin: 0;
+    }
+
+    .workspace-disclaimer {
+        font-size: 12px;
+        margin: 0;
+    }
+
+    .add-board {
+        float: right;
+    }
+
+    .star {
+        color: #bf9000;
+    }
+}

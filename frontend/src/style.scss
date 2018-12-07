@@ -12,16 +12,20 @@ body {
     background: #fff;
     border-width: 1px;
     border-style: solid;
-    border-color: #ccc;
+    border-color: #ddd;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 18px;
     padding: 10px 15px;
     transition: background 0.25s, border-color 0.25s;
 
+    &.sm {
+        font-size: 14px;
+    }
+
     &:hover {
-        border-color: #999;
-        background: #bbb;
+        border-color: #ccc;
+        background: #eee;
         transition: background 0.25s, border-color 0.25s;
     }
 }
