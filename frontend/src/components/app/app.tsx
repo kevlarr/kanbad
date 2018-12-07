@@ -1,5 +1,6 @@
 import * as React from 'react';
-import Splash from '../splash';
+import router from '../../lib/router';
+import Home from '../home';
 import Workspace from '../workspace';
 import './app.scss';
 
@@ -14,21 +15,17 @@ export class App extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
 
-        this.state = { location: this.parseRoute() };
+        this.state = { location: router.currentLocation() };
         window.addEventListener(
             'hashchange',
-            () => this.setState({ location: this.parseRoute() }),
+            () => this.setState({ location: router.currentLocation() }),
             false,
         );
     }
 
-    parseRoute(): String {
-        return window.location.hash.replace(/^#\/?/, '');
-    }
-
-    route() {
+    renderMain() {
         switch (this.state.location) {
-            case '': return <Splash />;
+            case '': return <Home />;
             default: return <Workspace workspaceId={this.state.location} />;
         }
     }
@@ -37,10 +34,12 @@ export class App extends React.Component<Props, State> {
         return (
             <div className='App'>
                 <header className='app-header'>
-                    <h1 className='app-name'>twello</h1>
+                    <a href='#/'>
+                        <h1 className='app-name'>twello</h1>
+                    </a>
                 </header>
                 <main className='app-main'>
-                    {this.route()}
+                    {this.renderMain()}
                 </main>
             </div>
         );

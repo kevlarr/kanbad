@@ -1,16 +1,15 @@
 import * as React from 'react';
-import './splash.scss';
+import router from '../../lib/router';
+import './home.scss';
 
 function createWorkspace() {
     fetch('/api/v1/workspaces/new', { method: 'POST' })
         .then(resp => resp.json())
-        .then(({ identifier }) => {
-            window.location.hash = `#/${identifier}`;
-        });
+        .then(({ identifier }) => router.transitionTo(identifier));
 }
 
 export default () => (
-    <div className='Splash'>
+    <div className='Home'>
         <h2 className='welcome'>a <span className='hello'>hello</span> from twello!</h2>
         <p className='caption'>
             Workspaces give you places to make things like boards and cards... and magic!
