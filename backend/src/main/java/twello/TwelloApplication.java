@@ -6,6 +6,7 @@ import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.migrations.MigrationsBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import twello.models.Board;
 import twello.models.Workspace;
 import twello.resources.ApplicationResource;
 
@@ -25,7 +26,8 @@ public class TwelloApplication extends Application<TwelloConfiguration> {
     @Override
     public void initialize(Bootstrap<TwelloConfiguration> bootstrap) {
         hibernate = new HibernateBundle<TwelloConfiguration>(
-            Workspace.class
+            Workspace.class,
+            Board.class
         ) {
             @Override
             public DataSourceFactory getDataSourceFactory(TwelloConfiguration configuration) {
