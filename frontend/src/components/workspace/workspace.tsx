@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { BoardModel, createBoard, updateBoard, deleteBoard } from '../../lib/store';
 import router from '../../lib/router';
 import Board from '../board';
 import './workspace.scss';
