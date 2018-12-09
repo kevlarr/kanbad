@@ -37,5 +37,6 @@ function request(method: string, path: string, data?: {}) {
 export default {
     get: (path: string) => request('GET', path),
     post: (path: string, data: {}) => request('POST', path, data),
+    put: (path: string, data: {}) => request('PUT', path, data),
     delete: (path: string) => request('DELETE', path),
 };
