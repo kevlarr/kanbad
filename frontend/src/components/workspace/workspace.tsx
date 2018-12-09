@@ -13,6 +13,20 @@ interface State {
 }
 
 export class Workspace extends React.Component<Props, State> {
+    newBoard() {
+        fetch(`/api/v1/boards/new?workspace=${this.props.workspace.identifier}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: 'New Board' }),
+        }).then((resp) => {
+            if (resp.status !== 200) {
+                throw new Error(`${resp.status} ${resp.statusText}`);
+            }
+
+            return resp.json();
+        }).then(board => createBoard(board));
+    }
+
     render() {
         const boards = this.props.boards.map(board => (
             <Board key={`board-${board.identifier}`} board={board} />
@@ -21,7 +35,7 @@ export class Workspace extends React.Component<Props, State> {
         return (
             <div className='Workspace'>
                 <div className='workspace-meta'>
-                    <button className='button add-board'>+ Add Board</button>
+                    <button className='button add-board' onClick={() => this.newBoard()}>+ Add Board</button>
                     <h2 className='workspace-identifier'>Workspace #{this.props.workspace.identifier}</h2>
                     <p className='workspace-disclaimer'>
                         Make sure to <strong><span className='star'>★</span>bookmark</strong> this page.
