@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { BoardModel, WorkspaceModel, createBoard, updateBoard, deleteBoard } from '../../lib/store';
-import api from '../../lib/api';
+import twelloApi from '../../lib/api';
 import router from '../../lib/router';
 import Board from '../board';
 import './workspace.scss';
@@ -15,7 +15,7 @@ interface State {
 
 export class Workspace extends React.Component<Props, State> {
     newBoard() {
-        api
+        twelloApi
             .post(`boards/new?workspace=${this.props.workspace.identifier}`, { title: 'New Board' })
             .then(board => createBoard(board));
     }

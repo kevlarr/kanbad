@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { BoardModel } from '../../lib/store';
-import { STORE } from '../../lib/store';
+import { BoardModel, deleteBoard } from '../../lib/store';
+import twelloApi from '../../lib/api';
 import './board.scss';
 
 interface Props {
@@ -11,6 +11,12 @@ interface State {
 }
 
 export class Board extends React.Component<Props, State> {
+    removeBoard() {
+        twelloApi
+            .delete(`boards/${this.props.board.identifier}`)
+            .then(() => deleteBoard(this.props.board));
+    }
+
     render() {
         return (
             <div className='Board'>
@@ -18,6 +24,10 @@ export class Board extends React.Component<Props, State> {
                 <div className='board-cards'>cards</div>
                 <div className='board-controls'>
                     <button className='button sm'>+ Add Card</button>
+                    <button
+                        className='button sm'
+                        onClick={this.removeBoard.bind(this)}
+                    >Delete Board</button>
                 </div>
             </div>
         );

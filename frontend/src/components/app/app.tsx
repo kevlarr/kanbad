@@ -8,7 +8,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { ApplicationState, WorkspaceModel, createWorkspace, createBoards, clearStore } from '../../lib/store';
-import api from '../../lib/api';
+import twelloApi from '../../lib/api';
 import router from '../../lib/router';
 import Home from '../home';
 import Workspace from '../workspace';
@@ -44,9 +44,10 @@ class BaseApp extends React.Component<ApplicationState, {}> {
             clearStore();
         } else if (location && !this.props.workspace) {
             // Make sure the workspace exists before trying to get boards
-            api.get(`workspaces/${location}`)
+            twelloApi
+                .get(`workspaces/${location}`)
                 .then(workspace => createWorkspace(workspace))
-                .then(() => api.get(`boards?workspace=${location}`))
+                .then(() => twelloApi.get(`boards?workspace=${location}`))
                 .then(boards => createBoards(boards))
                 .catch(err => router.updateLocation(''));
         }

@@ -21,8 +21,13 @@ function request(method: string, path: string, data?: {}) {
     }
 
     return fetch(`/api/v1/${path}`, opts).then((resp) => {
-        if (resp.status !== 200) {
+        if (resp.status >= 400) {
             throw new Error(`${resp.status} ${resp.statusText}`);
+        }
+
+        // DELETE returns "204 No Content"
+        if (resp.status == 204) {
+            return true;
         }
 
         return resp.json();
@@ -32,4 +37,5 @@ function request(method: string, path: string, data?: {}) {
 export default {
     get: (path: string) => request('GET', path),
     post: (path: string, data: {}) => request('POST', path, data),
+    delete: (path: string) => request('DELETE', path),
 };

@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { WorkspaceModel, createWorkspace } from '../../lib/store';
-import api from '../../lib/api';
+import twelloApi from '../../lib/api';
 import './home.scss';
 
-const clickCreate = () => api
+const clickCreate = () => twelloApi
     .post('workspaces/new', {})
     .then(workspace => createWorkspace(workspace));
 
