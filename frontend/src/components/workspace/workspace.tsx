@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { BoardModel, WorkspaceModel, createBoard, updateBoard, deleteBoard } from '../../lib/store';
+import api from '../../lib/api';
 import router from '../../lib/router';
 import Board from '../board';
 import './workspace.scss';
@@ -14,17 +15,9 @@ interface State {
 
 export class Workspace extends React.Component<Props, State> {
     newBoard() {
-        fetch(`/api/v1/boards/new?workspace=${this.props.workspace.identifier}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title: 'New Board' }),
-        }).then((resp) => {
-            if (resp.status !== 200) {
-                throw new Error(`${resp.status} ${resp.statusText}`);
-            }
-
-            return resp.json();
-        }).then(board => createBoard(board));
+        api
+            .post(`boards/new?workspace=${this.props.workspace.identifier}`, { title: 'New Board' })
+            .then(board => createBoard(board));
     }
 
     render() {

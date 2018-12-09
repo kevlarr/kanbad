@@ -1,24 +1,19 @@
+/**
+ * `App` is responsible for..
+ *   - Main layout of application
+ *   - Subscribing to store and passing data down
+ *   - Tying the "routing" in with the store changes
+ */
+
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { ApplicationState, WorkspaceModel, createWorkspace, clearStore } from '../../lib/store';
+import api from '../../lib/api';
 import router from '../../lib/router';
 import Home from '../home';
 import Workspace from '../workspace';
 import './app.scss';
 
-// TODO kvlr: better location for this
-function loadWorkspace(identifier: string) {
-    fetch(`/api/v1/workspaces/${identifier}`)
-        .then(resp => {
-            if (resp.status !== 200) {
-                throw new Error(`${resp.status} ${resp.statusText}`);
-            }
-
-            return resp.json();
-        })
-        .then(workspace => createWorkspace(workspace))
-        .catch(err => router.updateLocation(''));
-}
 
 class BaseApp extends React.Component<ApplicationState, {}> {
     constructor(props: ApplicationState) {
@@ -36,17 +31,20 @@ class BaseApp extends React.Component<ApplicationState, {}> {
 
         if (identifier) {
             router.updateLocation(identifier);
-            //loadWorkspace(identifier);
         }
     }
 
     handlePathChange() {
         const location = router.currentLocation();
 
+        // TODO kvlr: this does not handle switching between workspace identifiers,
+        // but that isn't really a supported feature yet anyways..
         if (!location) {
             clearStore();
         } else if (location && !this.props.workspace) {
-            loadWorkspace(location);
+            api.get(`workspaces/${location}`)
+                .then(workspace => createWorkspace(workspace))
+                .catch(err => router.updateLocation(''));
         }
     }
 
