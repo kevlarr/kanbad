@@ -3,7 +3,6 @@ package twello.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
 import java.util.UUID;
@@ -12,6 +11,7 @@ import java.util.UUID;
 @Table(name="boards")
 public class Board {
     @ManyToOne
+    @JsonIgnore
     private Workspace workspace;
 
     public void setWorkspace(Workspace workspace) {

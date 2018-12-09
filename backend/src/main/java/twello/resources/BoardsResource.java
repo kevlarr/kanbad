@@ -12,6 +12,7 @@ import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 import java.util.UUID;
 
 @Produces(MediaType.APPLICATION_JSON)
@@ -24,6 +25,15 @@ public class BoardsResource {
         this.workspaceDao = workspaceDao;
     }
 
+    @GET
+    @UnitOfWork
+    public List<Board> getBoards(
+        @QueryParam("workspace") @NotEmpty String workspaceIdentifier
+    ) {
+        Workspace workspace = loadWorkspace(workspaceIdentifier);
+        return dao.findByWorkspace(workspace);
+    }
+
     @POST
     @Path("new")
     @UnitOfWork
@@ -31,15 +41,8 @@ public class BoardsResource {
         @QueryParam("workspace") @NotEmpty String workspaceIdentifier,
         @Valid Board board
     ) {
-        UUID workspaceUuid;
+        Workspace workspace = loadWorkspace(workspaceIdentifier);
 
-        try {
-            workspaceUuid = UUID.fromString(workspaceIdentifier);
-        } catch (IllegalArgumentException ex) {
-            throw new WebApplicationException(Response.Status.BAD_REQUEST);
-        }
-
-        Workspace workspace = workspaceDao.findByIdentifier(workspaceUuid);
         board.setWorkspace(workspace);
         board.setIdentifier(UUID.randomUUID());
         dao.save(board);
@@ -76,6 +79,19 @@ public class BoardsResource {
         @PathParam("identifier") String identifier
     ) {
         dao.delete(loadBoard(identifier));
+    }
+
+    private Workspace loadWorkspace(String identifier) {
+        UUID workspaceUuid;
+
+        try {
+            workspaceUuid = UUID.fromString(identifier);
+        } catch (IllegalArgumentException ex) {
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        }
+
+        return workspaceDao.findByIdentifier(workspaceUuid);
+
     }
 
     private Board loadBoard(String identifier) {

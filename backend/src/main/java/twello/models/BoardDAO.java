@@ -6,6 +6,7 @@ import org.hibernate.SessionFactory;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.util.List;
 import java.util.UUID;
 
 public class BoardDAO extends AbstractDAO<Workspace> {
@@ -13,8 +14,18 @@ public class BoardDAO extends AbstractDAO<Workspace> {
         super(factory);
     }
 
+    public List<Board> findByWorkspace(Workspace workspace) {
+        CriteriaBuilder b = currentSession().getCriteriaBuilder();
+        CriteriaQuery<Board> crit = b.createQuery(Board.class);
+        Root<Board> root = crit.from(Board.class);
+
+        crit.where(b.equal(root.get("workspace"), workspace));
+
+        return currentSession().createQuery(crit).getResultList();
+    }
+
     public Board findByIdentifier(UUID identifier) {
-        // FIXME kvlr: This could be abstracted better
+        // TODO kvlr: This could be abstracted better
         CriteriaBuilder b = currentSession().getCriteriaBuilder();
         CriteriaQuery<Board> crit = b.createQuery(Board.class);
         Root<Board> root = crit.from(Board.class);

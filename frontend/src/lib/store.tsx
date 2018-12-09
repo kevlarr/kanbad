@@ -27,11 +27,12 @@ enum ActionType {
     CreateBoard = 'board-create',
     UpdateBoard = 'board-update',
     DeleteBoard = 'board-delete',
+    CreateBoards = 'boards-create',
 }
 
 interface Action {
     type: ActionType;
-    model: Model;
+    payload?: any;
 }
 
 export interface ApplicationState {
@@ -52,30 +53,42 @@ const reducers:{ [index:string] : Reducer } = {
     [ActionType.ClearStore]: (state: ApplicationState, action: Action) => ({ ...initialState }),
 
     // Creating a new workspace will clear all prior state
-    [ActionType.CreateWorkspace]: (state: ApplicationState, { model }: Action) => ({
-        workspace: model as WorkspaceModel,
+    [ActionType.CreateWorkspace]: (state: ApplicationState, { payload }: Action) => ({
+        workspace: payload as WorkspaceModel,
         boards: {},
     }),
 
-    [ActionType.CreateBoard]: (state: ApplicationState, { model }: Action) => ({
+    // Adds a new board to the state
+    [ActionType.CreateBoard]: (state: ApplicationState, { payload }: Action) => ({
         ...state,
         boards: {
             ...state.boards,
-            [model.identifier]: model as BoardModel,
+            [payload.identifier]: payload as BoardModel,
         },
     }),
 
-    [ActionType.UpdateBoard]: (state: ApplicationState, { model }: Action) => ({
+    // Creates a new board map from provided array
+    [ActionType.CreateBoards]: (state: ApplicationState, { payload }: Action) => ({
+        ...state,
+        boards: payload.reduce((obj: BoardMap, ele: BoardModel) => {
+            obj[ele.identifier] = ele;
+            return obj;
+        }, {}),
+    }),
+
+    // Updates board based on identifier
+    [ActionType.UpdateBoard]: (state: ApplicationState, { payload }: Action) => ({
         ...state,
         boards: {
             ...state.boards,
-            [model.identifier]: model as BoardModel,
+            [payload.identifier]: payload as BoardModel,
         },
     }),
 
-    [ActionType.DeleteBoard]: (state: ApplicationState, { model }: Action) => {
+    // Deletes board based on identifier
+    [ActionType.DeleteBoard]: (state: ApplicationState, { payload }: Action) => {
         const boards: BoardMap = { ...state.boards };
-        delete boards[model.identifier];
+        delete boards[payload.identifier];
 
         return { ...state, boards };
     },
@@ -109,28 +122,31 @@ export const STORE = createStore(twelloApp);
  * Actions
  */
 
-// TODO kvlr: should ideally avoid the useless "model" here
 export const clearStore = () => STORE.dispatch({
     type: ActionType.ClearStore,
-    model: { identifier: '' },
 });
 
 export const createWorkspace = (workspace: WorkspaceModel) => STORE.dispatch({
     type: ActionType.CreateWorkspace,
-    model: workspace,
+    payload: workspace,
 });
 
 export const createBoard = (board: BoardModel) => STORE.dispatch({
     type: ActionType.CreateBoard,
-    model: board,
+    payload: board,
+});
+
+export const createBoards = (boards: Array<BoardModel>) => STORE.dispatch({
+    type: ActionType.CreateBoards,
+    payload: boards,
 });
 
 export const updateBoard = (board: BoardModel) => STORE.dispatch({
     type: ActionType.UpdateBoard,
-    model: board,
+    payload: board,
 });
 
 export const deleteBoard = (board: BoardModel) => STORE.dispatch({
     type: ActionType.DeleteBoard,
-    model: board,
+    payload: board,
 });
