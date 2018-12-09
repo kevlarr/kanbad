@@ -1,12 +1,11 @@
 import * as React from 'react';
-import router from '../../lib/router';
+import { WorkspaceModel, createWorkspace } from '../../lib/store';
+import twelloApi from '../../lib/api';
 import './home.scss';
 
-function createWorkspace() {
-    fetch('/api/v1/workspaces/new', { method: 'POST' })
-        .then(resp => resp.json())
-        .then(({ identifier }) => router.transitionTo(identifier));
-}
+const clickCreate = () => twelloApi
+    .post('workspaces/new', {})
+    .then(workspace => createWorkspace(workspace));
 
 export default () => (
     <div className='Home'>
@@ -16,7 +15,7 @@ export default () => (
             Create a new one or, if you're really lucky, get a friend to share a workspace with you.
         </p>
         <div className='create'>
-            <button className='button' onClick={createWorkspace}>
+            <button className='button' onClick={clickCreate}>
                 Create workspace
             </button>
         </div>

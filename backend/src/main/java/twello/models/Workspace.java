@@ -9,6 +9,9 @@ import java.util.UUID;
 @Entity
 @Table(name="workspaces")
 public class Workspace {
+    /**
+     * Internal id
+     */
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
@@ -17,16 +20,13 @@ public class Workspace {
     public Long getId() { return id; }
 
     /**
-     * The publicly visible (and way less guessable) identifier
+     * The publicly visible (and way less guessable) unique identifier
      */
     private UUID identifier;
 
     @JsonProperty
     public UUID getIdentifier() { return identifier; }
 
-    /*
-     * Constructors
-     */
 
     public Workspace() { /* For Jackson */ }
 

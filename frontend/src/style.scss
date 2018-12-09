@@ -9,23 +9,34 @@ body {
 }
 
 .button {
+    @mixin fade {
+        transition: background 0.05s, border-color 0.05s;
+    }
+
+    @include fade;
+
     background: #fff;
     border-width: 1px;
     border-style: solid;
-    border-color: #ddd;
+    border-color: #eee;
     border-radius: 5px;
     cursor: pointer;
     font-size: 18px;
+    margin: 5px;
     padding: 10px 15px;
-    transition: background 0.25s, border-color 0.25s;
 
     &.sm {
         font-size: 14px;
     }
 
     &:hover {
-        border-color: #ccc;
+        @include fade;
+        border-color: #ddd;
         background: #eee;
-        transition: background 0.25s, border-color 0.25s;
+    }
+
+    &:active {
+        @include fade;
+        background: #ddd;
     }
 }

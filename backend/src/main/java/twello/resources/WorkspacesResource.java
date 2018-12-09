@@ -32,8 +32,16 @@ public class WorkspacesResource {
     @Path("{identifier}")
     @UnitOfWork
     public Workspace getWorkspace(@PathParam("identifier") String identifier) {
+        UUID uuid;
+
         try {
-            return dao.findByIdentifier(UUID.fromString(identifier));
+            uuid = UUID.fromString(identifier);
+        } catch (IllegalArgumentException ex) {
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        }
+
+        try {
+            return dao.findByIdentifier(uuid);
         }
         catch (NoResultException ex) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);

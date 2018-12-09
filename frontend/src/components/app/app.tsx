@@ -1,36 +1,85 @@
+/**
+ * `App` is responsible for..
+ *   - Main layout of application
+ *   - Subscribing to store and passing data down
+ *   - Tying the "routing" in with the store changes
+ */
+
 import * as React from 'react';
+import { connect } from 'react-redux';
+import { ApplicationState, WorkspaceModel, createWorkspace, createBoards, clearStore } from '../../lib/store';
+import twelloApi from '../../lib/api';
 import router from '../../lib/router';
 import Home from '../home';
 import Workspace from '../workspace';
 import './app.scss';
 
-interface Props {
-}
 
-interface State {
-    location: String;
-}
-
-export class App extends React.Component<Props, State> {
-    constructor(props: Props) {
+class BaseApp extends React.Component<ApplicationState, {}> {
+    constructor(props: ApplicationState) {
         super(props);
 
-        this.state = { location: router.currentLocation() };
-        window.addEventListener(
-            'hashchange',
-            () => this.setState({ location: router.currentLocation() }),
-            false,
-        );
-    }
+        // If page is loaded with workspace identifier, strip it,
+        // assign event listener, and trigger change
+        const identifier = router.currentLocation();
 
-    renderMain() {
-        switch (this.state.location) {
-            case '': return <Home />;
-            default: return <Workspace workspaceId={this.state.location} />;
+        if (identifier) {
+            router.updateLocation('');
+        }
+
+        window.addEventListener('hashchange', this.handlePathChange.bind(this), false);
+
+        if (identifier) {
+            router.updateLocation(identifier);
         }
     }
 
+    handlePathChange() {
+        const location = router.currentLocation();
+
+        // FUTURE
+        // This does not handle switching between workspace identifiers,
+        // but that isn't really a supported feature yet
+        if (!location) {
+            clearStore();
+        } else if (location && !this.props.workspace) {
+            // Make sure the workspace exists before trying to get boards
+            twelloApi
+                .get(`workspaces/${location}`)
+                .then(workspace => createWorkspace(workspace))
+                .then(() => twelloApi.get(`boards?workspace=${location}`))
+                .then(boards => createBoards(boards))
+                .catch(err => router.updateLocation(''));
+        }
+    }
+
+    updateLocation() {
+        const location = router.currentLocation();
+
+        if (this.props.workspace && !location) {
+            router.updateLocation(this.props.workspace.identifier);
+        }
+    }
+
+    renderMain() {
+        if (!this.props.workspace) {
+            return (
+                <Home />
+            );
+        }
+
+        const { boards, workspace} = this.props;
+
+        return (<Workspace
+            boards={Object.keys(boards).map(k => boards[k])}
+            workspace={workspace}
+        />);
+    }
+
     render() {
+        console.log('Render APP');
+        this.updateLocation();
+
         return (
             <div className='App'>
                 <header className='app-header'>
@@ -45,5 +94,9 @@ export class App extends React.Component<Props, State> {
         );
     }
 }
+
+const stateToProps = (state: ApplicationState) => ({ ...state });
+
+export const App = connect(stateToProps)(BaseApp);
 
 export default App;

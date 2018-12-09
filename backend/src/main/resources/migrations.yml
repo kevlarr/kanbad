@@ -7,7 +7,6 @@ databaseChangeLog:
       id: 1
       author: kevlarr
       changes:
-
         - createTable:
             tableName: workspaces
             columns:
@@ -27,6 +26,47 @@ databaseChangeLog:
         - createIndex:
             tableName: workspaces
             indexName: workspaces_identifier_idx
+            unique: true
+            columns:
+              - column:
+                  name: identifier
+                  type: uuid
+
+  - changeSet:
+      id: 2
+      author: kevlarr
+      changes:
+        - createTable:
+            tableName: boards
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: identifier
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: workspace_id
+                  type: int
+                  constraints:
+                    foreignKeyName: boards_workspace_id_fkey
+                    references: workspaces(id)
+                    nullable: false
+              - column:
+                  name: title
+                  type: varchar(30)
+                  constraints:
+                    nullable: false
+
+        - createIndex:
+            tableName: boards
+            indexName: boards_identifier_idx
             unique: true
             columns:
               - column:
