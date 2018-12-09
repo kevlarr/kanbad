@@ -1,11 +1,19 @@
 import * as React from 'react';
-import router from '../../lib/router';
+import { WorkspaceModel, createWorkspace } from '../../lib/store';
 import './home.scss';
 
-function createWorkspace() {
+// TODO kvlr: better location for this
+function createAndLoad() {
     fetch('/api/v1/workspaces/new', { method: 'POST' })
-        .then(resp => resp.json())
-        .then(({ identifier }) => router.transitionTo(identifier));
+        .then(resp => {
+            if (resp.status !== 200) {
+                throw new Error(`${resp.status} ${resp.statusText}`);
+            }
+
+            return resp.json();
+        })
+        .then(workspace => createWorkspace(workspace))
+        .catch(err => console.log(err));
 }
 
 export default () => (
@@ -16,7 +24,7 @@ export default () => (
             Create a new one or, if you're really lucky, get a friend to share a workspace with you.
         </p>
         <div className='create'>
-            <button className='button' onClick={createWorkspace}>
+            <button className='button' onClick={createAndLoad}>
                 Create workspace
             </button>
         </div>

@@ -2,14 +2,14 @@ export default {
     /**
      * Returns the current hash path of the window
      */
-    currentLocation(): String {
+    currentLocation(): string {
         return window.location.hash.replace(/^#\//, '');
     },
 
     /**
      * Updates the window location to specified path
      */
-    transitionTo(path: String) {
+    updateLocation(path: string) {
         window.location.hash = `#/${path}`;
     }
 };

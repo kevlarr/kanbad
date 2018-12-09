@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { BoardModel } from '../../lib/store';
+import { STORE } from '../../lib/store';
 import './board.scss';
 
 interface Props {

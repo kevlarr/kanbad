@@ -32,6 +32,7 @@ public class WorkspacesResource {
     @Path("{identifier}")
     @UnitOfWork
     public Workspace getWorkspace(@PathParam("identifier") String identifier) {
+        // FIXME check for "bad request" on identifier
         try {
             return dao.findByIdentifier(UUID.fromString(identifier));
         }
