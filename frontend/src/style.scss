@@ -8,6 +8,10 @@ body {
     padding: 0;
 }
 
+a {
+    cursor: pointer;
+}
+
 .button {
     @mixin fade {
         transition: background 0.05s, border-color 0.05s;
