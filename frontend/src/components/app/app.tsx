@@ -68,10 +68,12 @@ class BaseApp extends React.Component<ApplicationState, {}> {
             );
         }
 
-        const { boards, workspace} = this.props;
+        // Convert id/model maps to arrays
+        const { boards, cards, workspace} = this.props;
 
         return (<Workspace
             boards={Object.keys(boards).map(k => boards[k])}
+            cards={Object.keys(cards).map(k => cards[k])}
             workspace={workspace}
         />);
     }

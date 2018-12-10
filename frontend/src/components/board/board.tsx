@@ -1,10 +1,12 @@
 import * as React from 'react';
-import { BoardModel, updateBoard, deleteBoard } from '../../lib/store';
+import { BoardModel, CardModel, createCard, updateBoard, deleteBoard } from '../../lib/store';
 import twelloApi from '../../lib/api';
+import Card from '../card';
 import './board.scss';
 
 interface Props {
     board: BoardModel;
+    cards: Array<CardModel>;
 }
 
 interface State {
@@ -37,6 +39,15 @@ export class Board extends React.Component<Props, State> {
             .then(() => deleteBoard(this.props.board));
     }
 
+    addCard() {
+        createCard({
+            board: this.props.board.identifier,
+            body: '',
+            identifier: `card-${Number(new Date())}`,
+            title: 'New Card',
+        });
+    }
+
     renderTitle() {
         if (this.state.editing) {
             return (
@@ -56,13 +67,24 @@ export class Board extends React.Component<Props, State> {
         );
     }
 
+    renderCards() {
+        return this.props.cards.map(card => (
+            <Card key={`card-${card.identifier}`} card={card} />
+        ));
+    }
+
     render() {
         return (
             <div className='Board'>
                 {this.renderTitle()}
-                <div className='board-cards'>cards</div>
+                <div className='board-cards'>
+                    {...this.renderCards()}
+                </div>
                 <div className='board-controls'>
-                    <button className='button sm'>+ Add Card</button>
+                    <button
+                        className='button sm'
+                        onClick={this.addCard.bind(this)}
+                    >+ Add Card</button>
                     <button
                         className='button sm'
                         onClick={this.removeBoard.bind(this)}
