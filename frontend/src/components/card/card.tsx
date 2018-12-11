@@ -46,11 +46,7 @@ export class Card extends React.Component<Props, State> {
                     title,
                     body,
                 })
-                // ... and flatten "board: {"identifier": <uuid>}" from server
-                .then(card => updateCard({
-                    ...card,
-                    board: card.board.identifier,
-                }));
+                .then(card => updateCard(card));
         }
 
         this.setState({ editing: false });

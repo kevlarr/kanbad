@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { BoardModel, CardModel, WorkspaceModel, createBoard, updateBoard, deleteBoard } from '../../lib/store';
+import { BoardModel, CardModel, WorkspaceModel, createBoard, updateBoard, deleteBoard, createCards } from '../../lib/store';
 import twelloApi from '../../lib/api';
 import router from '../../lib/router';
 import Board from '../board';
@@ -25,14 +25,17 @@ export class Workspace extends React.Component<Props, State> {
 
     render() {
         // Group cards based on their board identifier
-        const cardsByBoard: BoardCardMap = this.props.cards.reduce((byBoard: BoardCardMap, card: CardModel) => {
-            if (!byBoard[card.board]) {
-                byBoard[card.board] = [];
-            }
+        const cardsByBoard: BoardCardMap =
+            this.props.cards.reduce((byBoard: BoardCardMap, card: CardModel) => {
+                const board = card.board.identifier;
 
-            byBoard[card.board].push(card);
-            return byBoard;
-        }, {});
+                if (!byBoard[board]) {
+                    byBoard[board] = [];
+                }
+
+                byBoard[board].push(card);
+                return byBoard;
+            }, {});
 
         const boards = this.props.boards.map(board => (
             <Board

@@ -13,7 +13,7 @@ export interface BoardModel extends Model {
 }
 
 export interface CardModel extends Model {
-    board: string;
+    board: { identifier: string };
     body: string;
     title: string;
 }
@@ -64,6 +64,9 @@ export const initialState = { workspace: null, boards: {}, cards: {} };
 
 type Reducer = (state: ApplicationState, action: Action) => ApplicationState;
 
+// FUTURE
+// These do not really make deep copies of any object, so future states technically
+// share memory with past states and can thus 'change history', so to speak
 const reducers:{ [index:string] : Reducer } = {
 
     [ActionType.ClearStore]: (state: ApplicationState, action: Action) => ({ ...initialState }),
@@ -118,7 +121,7 @@ const reducers:{ [index:string] : Reducer } = {
      * Cards
      */
 
-    // Adds a new card to the state
+    // Adds a new card
     [ActionType.CreateCard]: (state: ApplicationState, { payload }: Action) => ({
         ...state,
         cards: {
@@ -127,13 +130,19 @@ const reducers:{ [index:string] : Reducer } = {
         },
     }),
 
-    // Creates a new card map from provided array
+    // Adds each card to card map
     [ActionType.CreateCards]: (state: ApplicationState, { payload }: Action) => ({
         ...state,
-        cards: payload.reduce((obj: CardMap, ele: CardModel) => {
-            obj[ele.identifier] = ele;
-            return obj;
-        }, {}),
+        cards: {
+            // Keep existing cards..
+            ...state.cards,
+
+            // ... and convert new ones from array into map and spread out
+            ...payload.reduce((obj: CardMap, ele: CardModel) => {
+                obj[ele.identifier] = ele;
+                return obj;
+            }, {}),
+        },
     }),
 
     // Updates card based on identifier
@@ -166,8 +175,6 @@ const twelloApp = (state: ApplicationState, action: Action): ApplicationState =>
         
         newState = reducer ? reducer(state, action) : state;
     }
-
-    console.log(`New State: ${JSON.stringify(newState)}`);
 
     return newState;
 };
@@ -211,14 +218,14 @@ export const deleteBoard = (board: BoardModel) => STORE.dispatch({
     payload: board,
 });
 
-export const createCard = (card: CardModel) => STORE.dispatch({
-    type: ActionType.CreateCard,
-    payload: card,
-});
-
 export const createCards = (cards: Array<CardModel>) => STORE.dispatch({
     type: ActionType.CreateCards,
     payload: cards,
+});
+
+export const createCard = (card: CardModel) => STORE.dispatch({
+    type: ActionType.CreateCard,
+    payload: card,
 });
 
 export const updateCard = (card: CardModel) => STORE.dispatch({

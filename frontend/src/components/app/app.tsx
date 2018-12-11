@@ -7,7 +7,7 @@
 
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { ApplicationState, WorkspaceModel, createWorkspace, createBoards, clearStore } from '../../lib/store';
+import { ApplicationState, BoardModel, WorkspaceModel, createWorkspace, createBoards, createCards, clearStore } from '../../lib/store';
 import twelloApi from '../../lib/api';
 import router from '../../lib/router';
 import Home from '../home';
@@ -48,7 +48,13 @@ class BaseApp extends React.Component<ApplicationState, {}> {
                 .get(`workspaces/${location}`)
                 .then(workspace => createWorkspace(workspace))
                 .then(() => twelloApi.get(`boards?workspace=${location}`))
-                .then(boards => createBoards(boards))
+                .then(boards => {
+                    createBoards(boards);
+                    boards.forEach((board: BoardModel) => twelloApi
+                        .get(`cards?board=${board.identifier}`)
+                        .then(cards => createCards(cards))
+                    );
+                })
                 .catch(err => router.updateLocation(''));
         }
     }
