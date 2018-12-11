@@ -3,9 +3,9 @@
     border-radius: 10px;
     display: inline-block;
     margin: 10px;
+    vertical-align: top;
     width: 300px;
 
-    .board-title-input,
     .board-title {
         border-bottom: 1px dotted #ddd;
         color: #999;
@@ -18,11 +18,12 @@
     }
 
     .board-title-input {
-        border: 1px dotted #ddd;
+        color: #777;
         font-family: Tahoma, Verdana, sans-serif;
+        font-size: 14px;
         font-weight: bold;
         margin: 10px;
-        padding: 6px 5px;
+        padding: 4px 5px;
         width: 265px;
     }
 
