@@ -40,12 +40,9 @@ export class Board extends React.Component<Props, State> {
     }
 
     addCard() {
-        createCard({
-            board: this.props.board.identifier,
-            body: '',
-            identifier: `card-${Number(new Date())}`,
-            title: 'New Card',
-        });
+        twelloApi
+            .post(`cards/new?board=${this.props.board.identifier}`, { title: 'New Card' })
+            .then(card => createCard({ ...card, board: card.board.identifier }));
     }
 
     renderTitle() {

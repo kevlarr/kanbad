@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { CardModel, createCard, updateCard, deleteCard } from '../../lib/store';
-//import twelloApi from '../../lib/api';
+import { CardModel, updateCard, deleteCard } from '../../lib/store';
+import twelloApi from '../../lib/api';
 import './card.scss';
 
 interface Props {
@@ -29,15 +29,30 @@ export class Card extends React.Component<Props, State> {
     }
 
     delete() {
-        deleteCard(this.props.card);
+        twelloApi
+            .delete(`cards/${this.props.card.identifier}`)
+            .then(() => deleteCard(this.props.card));
     }
 
     save() {
-        updateCard({
-            ...this.props.card, 
-            title: this.state.titleValue,
-            body: this.state.bodyValue,
-        });
+        const card = this.props.card;
+        const { bodyValue: body, titleValue: title } = this.state;
+
+        if (title !== card.title || body !== card.body) {
+            twelloApi
+                // Need to strip out "board: <uuid>" from card...
+                .put(`cards/${card.identifier}`, {
+                    identifier: card.identifier,
+                    title,
+                    body,
+                })
+                // ... and flatten "board: {"identifier": <uuid>}" from server
+                .then(card => updateCard({
+                    ...card,
+                    board: card.board.identifier,
+                }));
+        }
+
         this.setState({ editing: false });
     }
 

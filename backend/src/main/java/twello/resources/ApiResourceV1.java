@@ -2,6 +2,7 @@ package twello.resources;
 
 import org.hibernate.SessionFactory;
 import twello.models.BoardDAO;
+import twello.models.CardDAO;
 import twello.models.WorkspaceDAO;
 
 import javax.ws.rs.Path;
@@ -26,6 +27,14 @@ public class ApiResourceV1 {
         return new BoardsResource(
             new BoardDAO(factory),
             new WorkspaceDAO(factory)
+        );
+    }
+
+    @Path("cards")
+    public CardsResource getCardsResource() {
+        return new CardsResource(
+                new CardDAO(factory),
+                new BoardDAO(factory)
         );
     }
 }

@@ -72,3 +72,47 @@ databaseChangeLog:
               - column:
                   name: identifier
                   type: uuid
+  
+  - changeSet:
+      id: 3
+      author: kevlarr
+      changes:
+        - createTable:
+            tableName: cards
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: identifier
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: board_id
+                  type: int
+                  constraints:
+                    foreignKeyName: cards_board_id_fkey
+                    references: boards(id)
+                    nullable: false
+              - column:
+                  name: title
+                  type: varchar(30)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: body
+                  type: text
+
+        - createIndex:
+            tableName: cards
+            indexName: cards_identifier_idx
+            unique: true
+            columns:
+              - column:
+                  name: identifier
+                  type: uuid
