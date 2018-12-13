@@ -1,0 +1,3 @@
+class Workspace < ApplicationRecord
+
+end
