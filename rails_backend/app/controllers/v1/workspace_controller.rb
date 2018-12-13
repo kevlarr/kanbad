@@ -1,4 +1,4 @@
-class WorkspaceController < ActionController::API
+class V1::WorkspaceController < ActionController::API
   def create
     ws = Workspace.new identifier: SecureRandom.uuid
     ws.save()
