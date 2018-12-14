@@ -21,7 +21,6 @@ class V1::CardsController < ActionController::API
   end
 
   def update
-    puts "PARAMS #{params}"
     @card.update card_params
 
     if @card.save
