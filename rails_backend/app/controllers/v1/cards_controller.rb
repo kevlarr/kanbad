@@ -1,6 +1,10 @@
 class V1::CardsController < ActionController::API
-  before_action :find_board, only: [:create]
+  before_action :find_board, only: [:index, :create]
   before_action :find_card, only: [:show, :update, :destroy]
+
+  def index
+    render json: Card.for_board(params[:board])
+  end
 
   def create
     card = Card.new(
@@ -32,7 +36,7 @@ class V1::CardsController < ActionController::API
 
   def destroy
     if @card.destroy
-      render status: 200
+      render status: 204
     else
       render json: @card.errors, status: 400
     end

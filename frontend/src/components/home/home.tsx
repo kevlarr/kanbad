@@ -4,7 +4,7 @@ import twelloApi from '../../lib/api';
 import './home.scss';
 
 const clickCreate = () => twelloApi
-    .post('workspaces/new', {})
+    .post('workspaces', {})
     .then(workspace => createWorkspace(workspace));
 
 export default () => (

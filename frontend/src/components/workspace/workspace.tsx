@@ -19,7 +19,7 @@ interface State {
 export class Workspace extends React.Component<Props, State> {
     newBoard() {
         twelloApi
-            .post(`boards/new?workspace=${this.props.workspace.identifier}`, { title: 'New Board' })
+            .post(`boards?workspace=${this.props.workspace.identifier}`, { title: 'New Board' })
             .then(board => createBoard(board));
     }
 

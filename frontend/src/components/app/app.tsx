@@ -55,7 +55,10 @@ class BaseApp extends React.Component<ApplicationState, {}> {
                         .then(cards => createCards(cards))
                     );
                 })
-                .catch(err => router.updateLocation(''));
+                .catch(err => {
+                    console.error(err);
+                    router.updateLocation('');
+                });
         }
     }
 

@@ -2,6 +2,10 @@ class V1::BoardsController < ActionController::API
   before_action :find_workspace, only: [:create]
   before_action :find_board, only: [:show, :update, :destroy]
 
+  def index
+    render json: Board.for_workspace(params[:workspace])
+  end
+
   def create
     board = Board.new(
       workspace: @workspace,
@@ -32,7 +36,7 @@ class V1::BoardsController < ActionController::API
 
   def destroy
     if @board.destroy
-      render status: 200
+      render status: 204
     else
       render json: @board.errors, status: 400
     end

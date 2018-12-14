@@ -41,7 +41,7 @@ export class Board extends React.Component<Props, State> {
 
     addCard() {
         twelloApi
-            .post(`cards/new?board=${this.props.board.identifier}`, { title: 'New Card' })
+            .post(`cards?board=${this.props.board.identifier}`, { title: 'New Card' })
             .then(card => createCard(card));
     }
 
