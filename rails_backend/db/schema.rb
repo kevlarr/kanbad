@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_12_13_205801) do
+ActiveRecord::Schema.define(version: 2018_12_14_000250) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,10 +23,20 @@ ActiveRecord::Schema.define(version: 2018_12_13_205801) do
     t.index ["workspace_id"], name: "index_boards_on_workspace_id"
   end
 
+  create_table "cards", force: :cascade do |t|
+    t.bigint "board_id", null: false
+    t.uuid "identifier", null: false
+    t.string "title", limit: 30, null: false
+    t.text "body"
+    t.index ["board_id"], name: "index_cards_on_board_id"
+    t.index ["identifier"], name: "index_cards_on_identifier", unique: true
+  end
+
   create_table "workspaces", force: :cascade do |t|
     t.uuid "identifier", null: false
     t.index ["identifier"], name: "index_workspaces_on_identifier", unique: true
   end
 
   add_foreign_key "boards", "workspaces"
+  add_foreign_key "cards", "boards"
 end
