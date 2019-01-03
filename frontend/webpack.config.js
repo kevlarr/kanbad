@@ -15,7 +15,7 @@ module.exports = (env, argv) => {
 
         devServer: {
             proxy: {
-                '/api/v1': 'http://localhost:8080',
+                '/api/v1': 'http://localhost:3000',
             },
         },
 
