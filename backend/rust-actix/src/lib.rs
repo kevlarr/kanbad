@@ -25,11 +25,14 @@ pub fn create_workspace(conn: &PgConnection) -> Workspace {
         .expect("Error saving workspace")
 }
 
-pub fn find_workspace(conn: &PgConnection, uuid: Uuid) -> Option<Workspace> {
+pub fn find_workspace(conn: &PgConnection, workspace_identifier: &str) -> Option<Workspace> {
     use self::schema::workspaces::dsl::*;
 
-    match workspaces.filter(identifier.eq(uuid)).first(conn) {
-        Ok(workspace) => Some(workspace),
+    match Uuid::parse_str(workspace_identifier) {
+        Ok(parsed) => match workspaces.filter(identifier.eq(parsed)).first(conn) {
+            Ok(workspace) => Some(workspace),
+            Err(_) => None,
+        }
         Err(_) => None,
     }
 }

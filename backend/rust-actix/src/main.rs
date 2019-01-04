@@ -11,7 +11,6 @@ use diesel::{pg::PgConnection, prelude::*};
 use dotenv::dotenv;
 use std::env;
 use twello::{create_workspace, find_workspace};
-use uuid::Uuid;
 
 struct AppState {
     conn: PgConnection,
@@ -36,12 +35,9 @@ fn post_workspaces(req: &Request) -> HttpResponse {
 
 fn get_workspace(req: &Request) -> HttpResponse {
     match req.match_info().get("identifier") {
-        Some(identifier) => match Uuid::parse_str(identifier) {
-            Ok(parsed) => match find_workspace(&req.state().conn, parsed) {
-                Some(workspace) => HttpResponse::Ok().json(workspace),
-                None => HttpResponse::NotFound().finish(),
-            },
-            Err(_) => HttpResponse::BadRequest().finish(),
+        Some(identifier) => match find_workspace(&req.state().conn, identifier) {
+            Some(workspace) => HttpResponse::Ok().json(workspace),
+            None => HttpResponse::NotFound().finish(),
         },
         None => HttpResponse::BadRequest().finish(),
     }
