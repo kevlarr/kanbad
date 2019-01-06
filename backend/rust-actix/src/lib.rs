@@ -11,8 +11,9 @@ use uuid::Uuid;
 pub mod models;
 pub mod schema;
 
-use self::models::{Workspace, NewWorkspace};
+use self::models::{Board, NewBoard, Workspace, NewWorkspace};
 
+// TODO propagate errors rather than `.expect()`
 pub fn create_workspace(conn: &PgConnection) -> Workspace {
     use self::schema::workspaces;
 
@@ -25,14 +26,36 @@ pub fn create_workspace(conn: &PgConnection) -> Workspace {
         .expect("Error saving workspace")
 }
 
-pub fn find_workspace(conn: &PgConnection, workspace_identifier: &str) -> Option<Workspace> {
+pub fn create_board(conn: &PgConnection, workspace_id: i32) -> Board {
+    use self::schema::boards;
+
+    let identifier = Uuid::new_v4();
+    let new_board = NewBoard {
+        title: "New Board".into(),
+        workspace_id,
+        identifier,
+    };
+
+    diesel::insert_into(boards::table)
+        .values(&new_board)
+        .get_result(conn)
+        .expect("Error saving board")
+}
+
+pub fn find_workspace(conn: &PgConnection, workspace_identifier: Uuid) -> Option<Workspace> {
     use self::schema::workspaces::dsl::*;
 
-    match Uuid::parse_str(workspace_identifier) {
-        Ok(parsed) => match workspaces.filter(identifier.eq(parsed)).first(conn) {
-            Ok(workspace) => Some(workspace),
-            Err(_) => None,
-        }
+    match workspaces.filter(identifier.eq(workspace_identifier)).first(conn) {
+        Ok(workspace) => Some(workspace),
+        Err(_) => None,
+    }
+}
+
+pub fn find_board(conn: &PgConnection, board_identifier: Uuid) -> Option<Board> {
+    use self::schema::boards::dsl::*;
+
+    match boards.filter(identifier.eq(board_identifier)).first(conn) {
+        Ok(board) => Some(board),
         Err(_) => None,
     }
 }
