@@ -45,6 +45,7 @@ pub fn create_board(conn: &PgConnection, workspace_id: i32) -> Board {
 pub fn find_workspace(conn: &PgConnection, workspace_identifier: Uuid) -> Option<Workspace> {
     use self::schema::workspaces::dsl::*;
 
+
     match workspaces.filter(identifier.eq(workspace_identifier)).first(conn) {
         Ok(workspace) => Some(workspace),
         Err(_) => None,
@@ -59,3 +60,23 @@ pub fn find_board(conn: &PgConnection, board_identifier: Uuid) -> Option<Board> 
         Err(_) => None,
     }
 }
+
+pub fn find_boards(conn: &PgConnection, ws_id: i32) -> Option<usize> {
+    use self::schema::boards::dsl::*;
+
+    match boards.filter(workspace_id.eq(ws_id)).execute(conn) {
+        Ok(bs) => Some(bs),
+        Err(_) => None,
+    }
+}
+
+//pub fn find<Q>(conn: &PgConnection, ident: Uuid) -> Option<Q>
+//where
+    //Q: diesel::associations::HasTable
+//{
+    //println!("{:?}", Q::table
+    //match Q::table().filter(Q::table::identifier.eq(ident)).first(conn) {
+        //Ok(q) => Some(q),
+        //Err(_) => None,
+    //}
+//}

@@ -10,7 +10,13 @@ use actix_web::{
 use diesel::{pg::PgConnection, prelude::*};
 use dotenv::dotenv;
 use std::env;
-use twello::{create_workspace, find_workspace, create_board, find_board};
+use twello::{
+    create_workspace,
+    find_workspace,
+    create_board,
+    find_boards,
+    find_board,
+};
 use uuid::Uuid;
 
 struct AppState {
@@ -35,19 +41,20 @@ fn main() {
             .scope("api", |api| { api
                 .nested("v1", |v1| { v1
                     .nested("boards", |boards| { boards
-                        .resource("", |r| { r
-                            .method(Method::POST).f(post_boards)
+                        .resource("", |r| {
+                            r.method(Method::POST).f(post_boards);
+                            r.method(Method::GET).f(get_boards);
                         })
-                        .resource("{identifier}", |r| { r
-                            .method(Method::GET).f(get_board)
+                        .resource("{identifier}", |r| {
+                            r.method(Method::GET).f(get_board);
                         })
                     })
                     .nested("workspaces", |workspaces| { workspaces
-                        .resource("", |r| { r
-                            .method(Method::POST).f(post_workspaces)
+                        .resource("", |r| {
+                            r.method(Method::POST).f(post_workspaces);
                         })
-                        .resource("{identifier}", |r| { r
-                            .method(Method::GET).f(get_workspace)
+                        .resource("{identifier}", |r| {
+                            r.method(Method::GET).f(get_workspace);
                         })
                     })
                 })
@@ -83,6 +90,13 @@ fn get_workspace(req: &Request) -> Response {
         },
         None => Response::BadRequest().finish(),
     }
+}
+
+fn get_boards(req: &Request) -> Response {
+    let conn = &req.state().conn;
+    let body = format!("{:?}", find_boards(conn, 4));
+
+    Response::Ok().body(body)
 }
 
 fn post_boards(req: &Request) -> Response {
