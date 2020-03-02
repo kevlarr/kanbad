@@ -24,3 +24,8 @@ The meat of the playing around, each back end must..
 
 - Rails
 - ActiveRecord migrations
+
+**Rust**
+
+- Actix-Web
+- Diesel migrations
