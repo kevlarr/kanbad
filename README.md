@@ -5,22 +5,30 @@ A very basic (read: comically incomplete) Trello clone that serves as a
 
 ## Usage
 
-
+Recommended apps to run are the [new Next.js](#new) front-end and the [Rust/Actix Web](#rust) back-end.
 
 ## Front End
 
-Currently only has a single front end, using TypeScript with React & Redux.
+### Old
 
-### TypeScript/React
+React/TypeScript/Redux
+
+This was the original front-end (circa late 2018) and no longer even builds properly,
+in large part because of `node-sass` and `node-gyp` issues, but it was class-based
+with 'deprecated' patterns anyway, so...
+
+### New
+
+... it made sense to just rewrite it with React/TypeScript/Next.js to use more modern patterns.
 
 #### Setup
 
 ## Back Ends
 
-The meat of the playing around, each back end must..
+Each back end must..
 
 - Control database migrations
-- Full CRUD for workspaces, boards, and cards
+- Support full CRUD for workspaces, boards, and cards
 - Serve JSON for front-end consumption
 
 ### Rust
