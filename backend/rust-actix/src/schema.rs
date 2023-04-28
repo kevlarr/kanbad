@@ -1,4 +1,6 @@
-table! {
+// @generated automatically by Diesel CLI.
+
+diesel::table! {
     boards (id) {
         id -> Int4,
         identifier -> Uuid,
@@ -7,7 +9,7 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     cards (id) {
         id -> Int4,
         identifier -> Uuid,
@@ -17,17 +19,17 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     workspaces (id) {
         id -> Int4,
         identifier -> Uuid,
     }
 }
 
-joinable!(boards -> workspaces (workspace_id));
-joinable!(cards -> boards (board_id));
+diesel::joinable!(boards -> workspaces (workspace_id));
+diesel::joinable!(cards -> boards (board_id));
 
-allow_tables_to_appear_in_same_query!(
+diesel::allow_tables_to_appear_in_same_query!(
     boards,
     cards,
     workspaces,
