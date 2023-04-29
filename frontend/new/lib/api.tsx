@@ -21,7 +21,6 @@ function request(method: string, path: string, data?: {}) {
     }
 
     return fetch(`/api/v1/${path}`, opts).then((resp) => {
-        debugger
         if (resp.status >= 400) {
             throw new Error(`${resp.status} ${resp.statusText}`);
         }
