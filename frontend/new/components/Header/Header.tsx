@@ -5,7 +5,7 @@ export default function Header() {
     return (
         <header className={css.header}>
             <Link href='/'>
-                <h1 className={css.title}>treclo</h1>
+                <h1 className={css.title}>Kanbad</h1>
             </Link>
         </header>
     )

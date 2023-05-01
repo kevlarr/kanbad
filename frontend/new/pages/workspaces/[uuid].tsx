@@ -1,21 +1,45 @@
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/router'
+import { GetServerSideProps } from 'next'
 
 import api from '@/lib/api'
-import { WorkspaceModel } from '@/lib/models'
-import Workspace from '@/components/Workspace/Workspace'
+import { BoardModel, CardModel, WorkspaceModel } from '@/lib/models'
+import css from './uuid.module.css'
 
-// TODO: Use getServerSideProps and set API URL once CORS issue with
-// local server has been fixed
-export async function getServerSideProps(context) {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+    // TODO: Proper way to `type` context & uuid, etc?
     const { uuid } = context.query
-    const workspace =  await api.get(`workspaces/${uuid}`)
+    const [boards, cards, workspace] = await Promise.all([
+        api.get(`boards?workspace=${uuid}`),
+        api.get(`cards?workspace=${uuid}`),
+        api.get(`workspaces/${uuid}`),
+    ])
 
     return {
-        props: { workspace }
+        props: {
+            boards,
+            cards,
+            workspace,
+        }
     }
 }
 
-export default function WorkspacePage({ workspace }: { workspace: WorkspaceModel}) {
-    return <Workspace workspace={workspace} />
+interface IParams {
+    boards: Array<BoardModel>,
+    cards: Array<CardModel>,
+    workspace: WorkspaceModel,
+}
+
+export default function WorkspacePage({ boards, cards, workspace }: IParams) {
+    return (
+        <div className={css.workspace}>
+            <div className={css.meta}>
+                <button className={css.addBoard}>+ Add Board</button>
+                <h2 className={css.identifier}>{workspace.identifier}</h2>
+                <p className={css.disclaimer}>
+                    Make sure to <strong><span className={css.star}>★</span>bookmark</strong> this page.
+                    While we won't lose the workspace, losing the address means you probably will.
+                </p>
+            </div>
+            TODO: boards
+        </div>
+    )
 }

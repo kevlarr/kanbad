@@ -76,7 +76,7 @@ async fn main() -> io::Result<()> {
 // TODO: Error responses and no `unwrap` in store methods
 #[derive(Deserialize)]
 pub struct ByWorkspace {
-    workspace_uuid: Uuid,
+    workspace: Uuid,
 }
 
 #[get("/boards")]
@@ -84,7 +84,7 @@ pub async fn get_boards(
     state: Data<State>,
     query: Query<ByWorkspace>,
 ) -> impl Responder {
-    Json(store::Board::find_all(&state.pool, &query.workspace_uuid).await)
+    Json(store::Board::find_all(&state.pool, &query.workspace).await)
 }
 
 #[post("/boards")]
@@ -100,7 +100,7 @@ pub async fn get_cards(
     state: Data<State>,
     query: Query<ByWorkspace>,
 ) -> impl Responder {
-    Json(store::Card::find_all(&state.pool, &query.workspace_uuid).await)
+    Json(store::Card::find_all(&state.pool, &query.workspace).await)
 }
 
 #[post("/cards")]

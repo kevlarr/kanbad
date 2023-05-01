@@ -3,18 +3,17 @@
  */
 
 interface Model {
-    identifier: string;
+    identifier: string,
 }
 
 export interface BoardModel extends Model {
-    title: string;
+    title: string,
 }
 
 export interface CardModel extends Model {
-    board: { identifier: string };
-    body: string;
-    title: string;
+    board: { identifier: string },
+    body: string,
+    title: string,
 }
 
-export interface WorkspaceModel extends Model {
-}
+export interface WorkspaceModel extends Model {}
