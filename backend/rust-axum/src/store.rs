@@ -27,6 +27,8 @@ impl Workspace {
     }
 }
 
+// Unit-less only because, for now, there are no params like 'title'
+// but there likely will be, so follow a similar pattern to the others.
 pub struct NewWorkspace;
 
 impl NewWorkspace {
@@ -76,8 +78,9 @@ impl Board {
     }
 }
 
+#[derive(Deserialize)]
 pub struct NewBoard {
-    pub workspace_id: i32,
+    pub workspace_identifier: Uuid,
     pub title: String,
 }
 
@@ -88,12 +91,20 @@ impl NewBoard {
         sqlx::query_as!(
             Board,
             "
-            insert into board (identifier, workspace_id, title)
-            values ($1, $2, $3)
+            insert into board (
+                identifier,
+                workspace_id,
+                title
+            )
+            values (
+                $1,
+                (select id from workspace where identifier = $2),
+                $3
+            )
             returning id, identifier, title, workspace_id
             ",
             &identifier,
-            self.workspace_id,
+            self.workspace_identifier,
             &self.title,
         )
             .fetch_one(pool)
@@ -132,8 +143,9 @@ impl Card {
     }
 }
 
+#[derive(Deserialize)]
 pub struct NewCard {
-    pub board_id: i32,
+    pub board_identifier: Uuid,
     pub title: String,
 }
 
@@ -144,12 +156,20 @@ impl NewCard {
         sqlx::query_as!(
             Card,
             "
-            insert into card (identifier, board_id, title)
-            values ($1, $2, $3)
+            insert into card (
+                identifier,
+                board_id,
+                title
+            )
+            values (
+                $1,
+                (select id from board where identifier = $2),
+                $3
+            )
             returning id, identifier, board_id, title, body
             ",
             &identifier,
-            self.board_id,
+            self.board_identifier,
             &self.title,
         )
             .fetch_one(pool)

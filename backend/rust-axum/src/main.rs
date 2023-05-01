@@ -1,44 +1,127 @@
-use std::net::SocketAddr;
+use std::io;
+use std::env;
+use std::time::Duration;
 
-use axum::{
-    http::{header::CONTENT_TYPE, HeaderValue, Method},
-    // response::IntoResponse,
-    routing::{get, post},
-    // Json,
-    Router,
-};
+use actix_web::{App, HttpServer, Responder, get, post};
+use actix_web::http;
+use actix_web::web::{Data, Json, Path, Query, scope};
+use actix_cors::Cors;
 use dotenvy::dotenv;
-use tower_http::cors::CorsLayer;
+use serde::Deserialize;
+use sqlx::postgres::{PgPool, PgPoolOptions};
+use uuid::Uuid;
 
-use kanbad::handlers::*;
+use kanbad::store;
 
-#[tokio::main]
-async fn main() {
-    dotenv().expect(".env file not found");
-
-    let state = AppState::new().await;
-
-    let addr = SocketAddr::from(([127, 0, 0, 1], 30001));
-    let cors = CorsLayer::new()
-        .allow_origin("http://localhost:3000".parse::<HeaderValue>().unwrap())
-        .allow_methods([Method::GET, Method::POST])
-        .allow_headers([CONTENT_TYPE]);
-
-    // Nested routers would work, as well
-    let app = Router::new()
-        .nest("/api", Router::new()
-            .with_state(state)
-            .layer(cors)
-            // .route("/workspaces", post(create_workspace))
-            .route("/workspaces/:uuid", get(get_workspace))
-        );
-
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
+#[derive(Clone)]
+pub struct State {
+    pub pool: PgPool,
 }
 
-// async fn json() -> impl IntoResponse {
-//     Json(vec!["one", "two", "three"])
-// }
+impl State {
+    pub async fn new() -> Self {
+        let db_url = env::var("DATABASE_URL")
+            .expect("DATABASE_URL not set");
+
+        let pool = PgPoolOptions::new()
+            .acquire_timeout(Duration::from_secs(5))
+            .max_connections(5)
+            .connect(&db_url)
+            .await
+            .expect("failed to connect to database");
+
+        State { pool }
+    }
+}
+
+#[actix_web::main]
+async fn main() -> io::Result<()> {
+    dotenv().expect(".env file not found");
+
+    let state = State::new().await;
+
+    HttpServer::new(move || {
+        let cors = Cors::default()
+            .allowed_origin("http://localhost:3000")
+            .allowed_methods(vec!["GET", "POST"])
+            // .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
+            .allowed_header(http::header::CONTENT_TYPE)
+            .max_age(3600);
+
+        App::new()
+            .app_data(Data::new(state.clone()))
+            .wrap(cors)
+            .service(
+                scope("/api")
+                    .service(create_board)
+                    .service(get_boards)
+                    .service(create_card)
+                    .service(get_cards)
+                    .service(create_workspace)
+                    .service(get_workspace)
+            )
+    })
+        .bind(("127.0.0.1", 3001))?
+        .run()
+        .await?;
+
+    Ok(())
+}
+
+// TODO: Error responses and no `unwrap` in store methods
+#[derive(Deserialize)]
+pub struct ByWorkspace {
+    workspace_uuid: Uuid,
+}
+
+#[get("/boards")]
+pub async fn get_boards(
+    state: Data<State>,
+    query: Query<ByWorkspace>,
+) -> impl Responder {
+    Json(store::Board::find_all(&state.pool, &query.workspace_uuid).await)
+}
+
+#[post("/boards")]
+pub async fn create_board(
+    state: Data<State>,
+    board: Json<store::NewBoard>,
+) -> impl Responder {
+    Json(board.create(&state.pool).await)
+}
+
+#[get("/cards")]
+pub async fn get_cards(
+    state: Data<State>,
+    query: Query<ByWorkspace>,
+) -> impl Responder {
+    Json(store::Card::find_all(&state.pool, &query.workspace_uuid).await)
+}
+
+#[post("/cards")]
+pub async fn create_card(
+    state: Data<State>,
+    card: Json<store::NewCard>,
+) -> impl Responder {
+    Json(card.create(&state.pool).await)
+}
+
+#[post("/workspaces")]
+pub async fn create_workspace(
+    state: Data<State>,
+) -> impl Responder {
+    Json(store::NewWorkspace.create(&state.pool).await)
+}
+
+#[derive(Deserialize)]
+pub struct WorkspacePath {
+    workspace_uuid: Uuid,
+}
+
+#[get("/workspaces/{workspace_uuid}")]
+pub async fn get_workspace(
+    state: Data<State>,
+    path: Path<WorkspacePath>,
+) -> impl Responder {
+    Json(store::Workspace::find(&state.pool, &path.workspace_uuid).await)
+}
