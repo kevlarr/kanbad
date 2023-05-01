@@ -24,6 +24,19 @@ with 'deprecated' patterns anyway, so...
 
 #### Setup
 
+With `node` (tested with v18 LTS) installed:
+
+```bash
+$ npm i
+
+# Create the `.env.local` file to communicate with back-end API.
+#
+# NOTE: This MUST BE `127.0.0.1` instead of `locahost`; otherwise
+# `node-fetch` will not work properly in `getServerSideProps` calls.
+$ echo 'NEXT_PUBLIC_API_URL=http://127.0.0.1:3001/api' > .env.local
+$ npm run dev
+```
+
 ## Back Ends
 
 Each back end must..

@@ -2,6 +2,8 @@
  * Wraps the Fetch API to standardize request headers, error handling, etc.
  */
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL
+
 interface RequestOptions {
     method: string;
     headers: { [index:string] : string };
@@ -20,18 +22,24 @@ function request(method: string, path: string, data?: {}) {
         opts.body = JSON.stringify(data);
     }
 
-    return fetch(`/api/v1/${path}`, opts).then((resp) => {
-        if (resp.status >= 400) {
-            throw new Error(`${resp.status} ${resp.statusText}`);
-        }
+    const fullPath = `${API_URL}/${path}`
+    console.log(`${method} ${fullPath}`)
 
-        // DELETE returns "204 No Content"
-        if (resp.status == 204) {
-            return true;
-        }
+    return fetch(fullPath, opts)
+        .then((resp) => {
+            console.log(resp)
 
-        return resp.json();
-    });
+            if (resp.status >= 400) {
+                throw new Error(`${resp.status} ${resp.statusText}`);
+            }
+
+            // DELETE returns "204 No Content"
+            if (resp.status == 204) {
+                return true;
+            }
+
+            return resp.json();
+        })
 }
 
 export default {

@@ -3,10 +3,12 @@ use std::env;
 use std::time::Duration;
 
 use actix_web::{App, HttpServer, Responder, get, post};
-use actix_web::http;
+use actix_web::http::header;
+use actix_web::middleware::Logger;
 use actix_web::web::{Data, Json, Path, Query, scope};
 use actix_cors::Cors;
 use dotenvy::dotenv;
+use env_logger::Env;
 use serde::Deserialize;
 use sqlx::postgres::{PgPool, PgPoolOptions};
 use uuid::Uuid;
@@ -37,15 +39,18 @@ impl State {
 #[actix_web::main]
 async fn main() -> io::Result<()> {
     dotenv().expect(".env file not found");
+    env_logger::init_from_env(Env::default().default_filter_or("info"));
 
     let state = State::new().await;
 
     HttpServer::new(move || {
         let cors = Cors::default()
             .allowed_origin("http://localhost:3000")
+            .allowed_origin("http://127.0.0.1:3000")
+            .allowed_origin("http://0.0.0.0:3000")
             .allowed_methods(vec!["GET", "POST"])
-            // .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
-            .allowed_header(http::header::CONTENT_TYPE)
+            .allowed_headers(vec![header::ACCEPT])
+            .allowed_header(header::CONTENT_TYPE)
             .max_age(3600);
 
         App::new()
