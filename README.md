@@ -1,12 +1,12 @@
-# TreClo
+# KanBad
 
 
-A very basic (read: comically incomplete) Trello clone that serves as a
+A very basic (read: comically incomplete) Kanban app that serves as a
 "try things in different ways" environment.
 
 ## Usage
 
-Recommended apps to run are the [new Next.js](#new) front-end and the [Rust/Actix Web](#rust) back-end.
+Recommended apps to run are the [new Next.js](#new) front-end and the [new Rust/Actix](#new-rust-actix) back-end.
 
 ## Front End
 
@@ -32,10 +32,15 @@ Each back end must..
 - Support full CRUD for workspaces, boards, and cards
 - Serve JSON for front-end consumption
 
-### Rust
+### New Rust-Actix
 
-- Actix-Web
-- Diesel migrations
+- Actix Web 4.3
+- sqlx & sqlx-cli
+
+This is the newest implementation using Rust, Actix, and sqlx (both for querying
+and for running the migration). I had tried using Axum instead, as I'd wanted to
+give it a shot for awhile now, but momentum was slow due to the paucity of learning materials, struggling with handler function signatures, etc. so I switched back to
+the newest version of Actix Web and had it up and running in a few hours.
 
 #### Setup
 
@@ -46,32 +51,32 @@ With `cargo` and PostgreSQL installed:
 $ createuser --createdb --login --pwprompt treclo
 $ createdb -U treclo treclo
 
-# Export the database connection string to an env var, making sure to
-# replace `<password>` with whatever you supplied during `createuser` above
-$ export TRECLO_DATABASE_URL=postgresql://treclo:<password>@localhost:5432/treclo
+# Create a `.env` file in the rust-axum directory with the given password
+# provided during `createuser` above
+$ echo 'DATABASE_URL=postgresql://kanbad:<password>@localhost:5432/kanbad' > .env
 
 # Install Diesel CLI to run migrations
-$ cargo install diesel_cli
-$ DATABASE_URL=$TRECLO_DATABASE_URL diesel migration run
+$ cargo install sqlx-cli --no-default-features --features rustls,postgres
+$ sqlx migrate run
 
 # Now build & run the app!
 $ cargo run
 ```
+
+### Rust-Actix
+
+- Actix-Web 0.7
+- Diesel migrations
+
+This is the old ~Jan 2019 implementation and is not feature-complete
+and is not easy to update (eg. fix CORS) due to how old crate versions are.
 
 ### Java
 
 - Dropwizard (Jetty, Jersey, etc.)
 - Liquibase migrations
 
-#### Setup
-
-TODO
-
 ### Ruby
 
 - Rails
 - ActiveRecord migrations
-
-#### Setup
-
-TODO

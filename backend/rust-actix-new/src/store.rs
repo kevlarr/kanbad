@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use sqlx::postgres::PgPool;
 use uuid::Uuid;
 
-#[derive(Serialize)]
+#[derive(Debug, Serialize)]
 pub struct Workspace {
     #[serde(skip_serializing)]
     pub id: i32,
@@ -29,6 +29,7 @@ impl Workspace {
 
 // Unit-less only because, for now, there are no params like 'title'
 // but there likely will be, so follow a similar pattern to the others.
+#[derive(Debug)]
 pub struct NewWorkspace;
 
 impl NewWorkspace {
@@ -50,7 +51,7 @@ impl NewWorkspace {
     }
 }
 
-#[derive(Serialize)]
+#[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Board {
     #[serde(skip_serializing)]
@@ -78,7 +79,7 @@ impl Board {
     }
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct NewBoard {
     pub workspace_identifier: Uuid,
     pub title: String,
@@ -113,7 +114,7 @@ impl NewBoard {
     }
 }
 
-#[derive(Serialize)]
+#[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Card {
     #[serde(skip_serializing)]
@@ -143,7 +144,7 @@ impl Card {
     }
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct NewCard {
     pub board_identifier: Uuid,
     pub title: String,
