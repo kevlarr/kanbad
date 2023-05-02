@@ -52,13 +52,13 @@ impl NewWorkspace {
 }
 
 #[derive(Debug, Serialize)]
-#[serde(rename_all = "camelCase")]
 pub struct Board {
     #[serde(skip_serializing)]
     pub id: i32,
     pub identifier: Uuid,
+    #[serde(rename = "workspace")]
+    pub workspace_identifier: Uuid,
     pub title: String,
-    pub workspace_id: i32,
 }
 
 impl Board {
@@ -66,9 +66,15 @@ impl Board {
         sqlx::query_as!(
             Self,
             "
-            select b.id, b.identifier, b.title, b.workspace_id
+            select
+                b.id,
+                b.identifier,
+                b.title,
+                w.identifier as workspace_identifier
+
             from board b
             join workspace w on w.id = b.workspace_id
+
             where w.identifier = $1
             ",
             &workspace_identifier
@@ -77,10 +83,27 @@ impl Board {
             .await
             .unwrap()
     }
+
+    pub async fn delete(pool: &PgPool, board_identifier: &Uuid) -> bool {
+        let rows_affected = sqlx::query!(
+            "
+            delete from board
+            where identifier = $1
+            ",
+            &board_identifier
+        )
+            .execute(pool)
+            .await
+            .unwrap()
+            .rows_affected();
+
+        rows_affected > 0
+    }
 }
 
 #[derive(Debug, Deserialize)]
 pub struct NewBoard {
+    #[serde(rename = "workspace")]
     pub workspace_identifier: Uuid,
     pub title: String,
 }
@@ -91,7 +114,7 @@ impl NewBoard {
 
         sqlx::query_as!(
             Board,
-            "
+            r#"
             insert into board (
                 identifier,
                 workspace_id,
@@ -102,8 +125,8 @@ impl NewBoard {
                 (select id from workspace where identifier = $2),
                 $3
             )
-            returning id, identifier, title, workspace_id
-            ",
+            returning id, identifier, title, $2 as "workspace_identifier!"
+            "#,
             &identifier,
             self.workspace_identifier,
             &self.title,
@@ -115,12 +138,12 @@ impl NewBoard {
 }
 
 #[derive(Debug, Serialize)]
-#[serde(rename_all = "camelCase")]
 pub struct Card {
     #[serde(skip_serializing)]
     pub id: i32,
     pub identifier: Uuid,
-    pub board_id: i32,
+    #[serde(rename = "board")]
+    pub board_identifier: Uuid,
     pub title: String,
     pub body: Option<String>,
 }
@@ -130,10 +153,17 @@ impl Card {
         sqlx::query_as!(
             Self,
             "
-            select c.id, c.identifier, c.board_id, c.title, c.body
+            select
+                c.id,
+                c.identifier,
+                c.title,
+                c.body,
+                b.identifier as board_identifier
+
             from card c
             join board b on b.id = c.board_id
             join workspace w on w.id = b.workspace_id
+
             where w.identifier = $1
             ",
             &workspace_identifier
@@ -146,6 +176,7 @@ impl Card {
 
 #[derive(Debug, Deserialize)]
 pub struct NewCard {
+    #[serde(rename = "board")]
     pub board_identifier: Uuid,
     pub title: String,
 }
@@ -156,7 +187,7 @@ impl NewCard {
 
         sqlx::query_as!(
             Card,
-            "
+            r#"
             insert into card (
                 identifier,
                 board_id,
@@ -167,8 +198,8 @@ impl NewCard {
                 (select id from board where identifier = $2),
                 $3
             )
-            returning id, identifier, board_id, title, body
-            ",
+            returning id, identifier, title, body, $2 as "board_identifier!"
+            "#,
             &identifier,
             self.board_identifier,
             &self.title,

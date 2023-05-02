@@ -2,7 +2,7 @@ use std::io;
 use std::env;
 use std::time::Duration;
 
-use actix_web::{App, HttpServer, Responder, get, post};
+use actix_web::{App, HttpServer, HttpResponse, Responder, get, post, delete};
 use actix_web::http::header;
 use actix_web::middleware::Logger;
 use actix_web::web::{Data, Json, Path, Query, scope};
@@ -44,11 +44,12 @@ async fn main() -> io::Result<()> {
     let state = State::new().await;
 
     HttpServer::new(move || {
+        let logger = Logger::new("%a %{User-Agent}i");
         let cors = Cors::default()
             .allowed_origin("http://localhost:3000")
             .allowed_origin("http://127.0.0.1:3000")
             .allowed_origin("http://0.0.0.0:3000")
-            .allowed_methods(vec!["GET", "POST"])
+            .allowed_methods(vec!["GET", "POST", "DELETE"])
             .allowed_headers(vec![header::ACCEPT])
             .allowed_header(header::CONTENT_TYPE)
             .max_age(3600);
@@ -56,10 +57,12 @@ async fn main() -> io::Result<()> {
         App::new()
             .app_data(Data::new(state.clone()))
             .wrap(cors)
+            .wrap(logger)
             .service(
                 scope("/api")
                     .service(create_board)
                     .service(get_boards)
+                    .service(delete_board)
                     .service(create_card)
                     .service(get_cards)
                     .service(create_workspace)
@@ -93,6 +96,23 @@ pub async fn create_board(
     board: Json<store::NewBoard>,
 ) -> impl Responder {
     Json(board.create(&state.pool).await)
+}
+
+#[derive(Deserialize)]
+pub struct BoardPath {
+    board_uuid: Uuid,
+}
+
+#[delete("/boards/{board_uuid}")]
+pub async fn delete_board(
+    state: Data<State>,
+    path: Path<BoardPath>,
+) -> impl Responder {
+    if store::Board::delete(&state.pool, &path.board_uuid).await {
+        HttpResponse::NoContent()
+    } else {
+        HttpResponse::NotFound()
+    }
 }
 
 #[get("/cards")]

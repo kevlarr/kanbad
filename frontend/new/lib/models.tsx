@@ -7,11 +7,12 @@ interface Model {
 }
 
 export interface BoardModel extends Model {
+    workspace: string,
     title: string,
 }
 
 export interface CardModel extends Model {
-    board: { identifier: string },
+    board: string,
     body: string,
     title: string,
 }
