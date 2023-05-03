@@ -12,7 +12,7 @@ interface IProps {
 export default function Board({ board, cards, createCard, removeBoard }: IProps) {
   return (
     <div className={css.board}>
-      <h3>{board.title}</h3>
+      <p className={css.title}>{board.title}</p>
       <div className={css.cards}>
         {cards?.map(card =>
           <Card
