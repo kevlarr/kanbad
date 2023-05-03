@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { GetServerSideProps } from 'next'
 
 import api from '@/lib/api'
-import { BoardModel, CardModel, WorkspaceModel } from '@/lib/models'
+import { BoardModel, BoardParams, CardModel, WorkspaceModel, compareModelFn } from '@/lib/models'
 import Board from '@/components/Board/Board'
 import css from './uuid.module.css'
 
@@ -33,30 +33,49 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 }
 
 export default function WorkspacePage({ boards, cards, workspace }: IProps) {
-  const [boardList, setBoards] = useState(boards)
-  const [cardList, setCards] = useState(cards)
-
-  const cardsMap =
-    cardList.reduce((map: BoardCardsMap, card: CardModel) => {
-      map[card.board] = map[card.board] || [];
-      map[card.board].push(card)
-      return map
-    }, {})
+  // TODO:
+  //   - Is this a smell, creating state & hooks from props?
+  //   - Should they be loaded client-side within the component?
+  //   - Is this managing too much state, ie. a collection of boards and cards,
+  //     and should there be a different state management solution?
+  //
+  // The reason this is managing cards 'globally' instead of each board managing
+  // its own cards was partially about efficient data loading but also about
+  // implementing drag & drop of cards between boards.
+  //
+  // The joke is that this page is essentially the entire app in and of itself.
+  const [boardList, setBoards] = useState(boards.sort(compareModelFn))
+  const [cardList, setCards] = useState(cards.sort(compareModelFn))
 
   async function createBoard() {
     const data = {
       title: 'New Board',
       workspace: workspace.identifier,
     }
-    await api.post('boards', data).then((newBoard) => {
+
+    return await api.post('boards', data).then((newBoard) => {
       setBoards([...boardList, newBoard])
     })
   }
 
+  async function updateBoard(board: BoardModel, params: BoardParams) {
+    return await api.put(`boards/${board.identifier}`, params)
+      .then((updatedBoard) => {
+        setBoards(boardList.map((existingBoard) => (
+          existingBoard.identifier === updatedBoard.identifier
+            ? updatedBoard
+            : existingBoard
+        )))
+      })
+  }
+
   async function removeBoard(board: BoardModel) {
-    await api.delete(`boards/${board.identifier}`).then(() => {
-      setBoards(boardList.filter((b) => b.identifier !== board.identifier))
-    })
+    return await api.delete(`boards/${board.identifier}`)
+      .then(() => {
+        setBoards(boardList.filter((b) => (
+          b.identifier !== board.identifier
+        )))
+      })
   }
 
   async function createCard(board: BoardModel) {
@@ -64,10 +83,18 @@ export default function WorkspacePage({ boards, cards, workspace }: IProps) {
       board: board.identifier,
       title: 'New Card',
     }
-    await api.post('cards', data).then((newCard) => {
+
+    return await api.post('cards', data).then((newCard) => {
       setCards([...cardList, newCard])
     })
   }
+
+  const cardsMap =
+    cardList.reduce((map: BoardCardsMap, card: CardModel) => {
+      map[card.board] = map[card.board] || [];
+      map[card.board].push(card)
+      return map
+    }, {})
 
   return (
     <div className={css.workspace}>
@@ -86,6 +113,7 @@ export default function WorkspacePage({ boards, cards, workspace }: IProps) {
             board={board}
             cards={cardsMap[board.identifier]}
             createCard={async () => await createCard(board)}
+            updateBoard={async (params: BoardParams) => updateBoard(board, params)}
             removeBoard={async () => await removeBoard(board)}
           />
         )}

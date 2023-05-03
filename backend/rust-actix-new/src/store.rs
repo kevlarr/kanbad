@@ -51,6 +51,11 @@ impl NewWorkspace {
     }
 }
 
+#[derive(Deserialize)]
+pub struct BoardUpdate {
+    pub title: String,
+}
+
 #[derive(Debug, Serialize)]
 pub struct Board {
     #[serde(skip_serializing)]
@@ -84,6 +89,31 @@ impl Board {
             .unwrap()
     }
 
+    pub async fn update(pool: &PgPool, board_identifier: &Uuid, params: &BoardUpdate) -> Self {
+        sqlx::query_as!(
+            Self,
+            "
+            update board
+            set title = $2
+            from workspace w
+
+            where w.id = board.workspace_id
+              and board.identifier = $1
+
+            returning
+                board.id,
+                board.identifier,
+                board.title,
+                w.identifier as workspace_identifier
+            ",
+            &board_identifier,
+            &params.title,
+        )
+            .fetch_one(pool)
+            .await
+            .unwrap()
+    }
+
     pub async fn delete(pool: &PgPool, board_identifier: &Uuid) -> bool {
         let rows_affected = sqlx::query!(
             "
@@ -109,6 +139,8 @@ pub struct NewBoard {
 }
 
 impl NewBoard {
+    // TODO: Put the `NewX` methods on the respective models as associated functions
+    // and accept this as a param, eg. `Board::update`
     pub async fn create(&self, pool: &PgPool) -> Board {
         let identifier = Uuid::new_v4();
 
