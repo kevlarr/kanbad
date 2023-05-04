@@ -1,0 +1,13 @@
+[package]
+name = "kanbad"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+actix-web = "4.3"
+actix-cors = "0.6"
+dotenvy = "0.15"
+env_logger = "0.10"
+serde = "1"
+sqlx = { version = "0.6", features = ["runtime-tokio-rustls", "postgres", "uuid"] }
+uuid = { version = "1", features = ["v4", "serde"] }

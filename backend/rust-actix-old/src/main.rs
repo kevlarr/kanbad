@@ -31,8 +31,8 @@ fn main() {
 
     let create_app = || {
         // Each thread needs own connection
-        let database_url = env::var("DATABASE_URL")
-            .expect("Must set DATABASE_URL");
+        let database_url = env::var("TRECLO_DATABASE_URL")
+            .expect("Must set TRECLO_DATABASE_URL");
         let conn = PgConnection::establish(&database_url)
             .expect("Error connecting to database");
 
