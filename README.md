@@ -9,7 +9,7 @@ A very basic (read: comically incomplete) Kanban app that provides a
 The most current (ie. ‘working’) iteration of the project is comprised of:
 
 - A **TypeScript** & **Next.js** (v13) React [front-end](./web)
-- A **Rust**, **Actix Web** (v4), and **sqlx** [back-end](./api)
+- A **Rust**, **Actix Web** (v4), and **SQLx** [back-end](./api)
 
 
 The [_old](./_old) directory contains all previous front- & back-end iterations, including:
