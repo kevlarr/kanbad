@@ -16,7 +16,7 @@ The most current (ie. ‘working’) iteration of the project is comprised of:
 - A **Rust**, **Actix Web** (v4), and **SQLx** [back-end](./api)
 
 
-The [_old](./_old) directory contains all previous front- & back-end iterations, including:
+The [_archive](./_archive) directory contains all previous front- & back-end iterations, including:
 
 - A **TypeScript** & **React/Redux** front-end (with a homegrown router because it felt like the wild west for React in 2018)
 - A **Java** & **Dropwizard/Jersey** API (which was the 'canonical' back-end for the project at the time)
