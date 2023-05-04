@@ -1,7 +1,7 @@
 import Link from 'next/link'
-import css from './Header.module.css'
+import css from './AppHeader.module.css'
 
-export default function Header() {
+export default function AppHeader() {
   return (
     <header className={css.header}>
       <Link href='/'>

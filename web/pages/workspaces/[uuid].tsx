@@ -11,6 +11,7 @@ import {
   compareModelFn,
 } from '@/lib/models'
 import Board from '@/components/Board/Board'
+import WorkspaceHeader from '@/components/WorkspaceHeader/WorkspaceHeader'
 import css from './uuid.module.css'
 
 type BoardCardsMap = { [index: string] : Array<CardModel> }
@@ -129,14 +130,10 @@ export default function WorkspacePage({ boards, cards, workspace }: IProps) {
 
   return (
     <div className={css.workspace}>
-      <div className={css.meta}>
-        <button className={css.addBoard} onClick={createBoard}>+ Add Board</button>
-        <h2 className={css.identifier}>{workspace.identifier}</h2>
-        <p className={css.disclaimer}>
-          Make sure to <strong><span className={css.star}>★</span>bookmark</strong> this page.
-          While we won't lose the workspace, losing the address means you probably will.
-        </p>
-      </div>
+      <WorkspaceHeader
+        identifier={workspace.identifier}
+        createBoard={createBoard}
+      />
       <div className={css.boards}>
         {boardList.map((board) =>
           <Board

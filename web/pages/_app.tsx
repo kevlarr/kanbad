@@ -2,7 +2,7 @@ import '@/styles/globals.css'
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
 
-import Header from '@/components/Header/Header'
+import AppHeader from '@/components/AppHeader/AppHeader'
 
 export default function App({ Component, pageProps }: AppProps) {
 
@@ -12,7 +12,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <title>Kanbad</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
-      <Header />
+      <AppHeader />
       <Component {...pageProps} />
     </>
   )
