@@ -64,8 +64,10 @@ async fn main() -> io::Result<()> {
                     .service(create_board)
                     .service(update_board)
                     .service(delete_board)
-                    .service(create_card)
                     .service(get_cards)
+                    .service(create_card)
+                    .service(update_card)
+                    .service(delete_card)
                     .service(create_workspace)
                     .service(get_workspace)
             )
@@ -139,6 +141,32 @@ pub async fn create_card(
     card: Json<store::NewCard>,
 ) -> impl Responder {
     Json(card.create(&state.pool).await)
+}
+
+#[derive(Deserialize)]
+pub struct CardPath {
+    card_uuid: Uuid,
+}
+
+#[put("/cards/{card_uuid}")]
+pub async fn update_card(
+    state: Data<State>,
+    path: Path<CardPath>,
+    params: Json<store::CardUpdate>,
+) -> impl Responder {
+    Json(store::Card::update(&state.pool, &path.card_uuid, &params).await)
+}
+
+#[delete("/cards/{card_uuid}")]
+pub async fn delete_card(
+    state: Data<State>,
+    path: Path<CardPath>,
+) -> impl Responder {
+    if store::Card::delete(&state.pool, &path.card_uuid).await {
+        HttpResponse::NoContent()
+    } else {
+        HttpResponse::NotFound()
+    }
 }
 
 #[post("/workspaces")]

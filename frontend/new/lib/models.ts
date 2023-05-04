@@ -6,20 +6,23 @@ interface IModel {
   identifier: string,
 }
 
-export interface BoardModel extends IModel {
-  workspace: string,
-  title: string,
-}
-
-// Represents all updatable properties of a BoardModel
+// The user-updatable properties of a board
 export interface BoardParams {
   title: string,
 }
 
-export interface CardModel extends IModel {
-  board: string,
+export interface BoardModel extends IModel, BoardParams {
+  workspace: string,
+}
+
+// The user-updatable properties of a card
+export interface CardParams {
   body: string,
   title: string,
+}
+
+export interface CardModel extends IModel, CardParams {
+  board: string,
 }
 
 export interface WorkspaceModel extends IModel {}

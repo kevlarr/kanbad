@@ -2,7 +2,14 @@ import { useState } from 'react'
 import { GetServerSideProps } from 'next'
 
 import api from '@/lib/api'
-import { BoardModel, BoardParams, CardModel, WorkspaceModel, compareModelFn } from '@/lib/models'
+import {
+  BoardModel,
+  BoardParams,
+  CardModel,
+  CardParams,
+  WorkspaceModel,
+  compareModelFn,
+} from '@/lib/models'
 import Board from '@/components/Board/Board'
 import css from './uuid.module.css'
 
@@ -43,7 +50,9 @@ export default function WorkspacePage({ boards, cards, workspace }: IProps) {
   // its own cards was partially about efficient data loading but also about
   // implementing drag & drop of cards between boards.
   //
-  // The joke is that this page is essentially the entire app in and of itself.
+  // The joke is that this page is essentially the entire app in and of itself,
+  // storing the global state for the entire workspace and setting up all of the
+  // hooks, API calls, etc.
   const [boardList, setBoards] = useState(boards.sort(compareModelFn))
   const [cardList, setCards] = useState(cards.sort(compareModelFn))
 
@@ -69,7 +78,7 @@ export default function WorkspacePage({ boards, cards, workspace }: IProps) {
       })
   }
 
-  async function removeBoard(board: BoardModel) {
+  async function deleteBoard(board: BoardModel) {
     return await api.delete(`boards/${board.identifier}`)
       .then(() => {
         setBoards(boardList.filter((b) => (
@@ -87,6 +96,28 @@ export default function WorkspacePage({ boards, cards, workspace }: IProps) {
     return await api.post('cards', data).then((newCard) => {
       setCards([...cardList, newCard])
     })
+  }
+
+  // TODO: Abstract this away - this is duplicated from `updateBoard`,
+  // and same with `deleteCard`
+  async function updateCard(card: CardModel, params: CardParams) {
+    return await api.put(`cards/${card.identifier}`, params)
+      .then((updatedCard) => {
+        setCards(cardList.map((existingCard) => (
+          existingCard.identifier === updatedCard.identifier
+            ? updatedCard
+            : existingCard
+        )))
+      })
+  }
+
+  async function deleteCard(card: CardModel) {
+    return await api.delete(`cards/${card.identifier}`)
+      .then(() => {
+        setCards(cardList.filter((b) => (
+          b.identifier !== card.identifier
+        )))
+      })
   }
 
   const cardsMap =
@@ -112,9 +143,11 @@ export default function WorkspacePage({ boards, cards, workspace }: IProps) {
             key={board.identifier}
             board={board}
             cards={cardsMap[board.identifier]}
-            createCard={async () => await createCard(board)}
             updateBoard={async (params: BoardParams) => updateBoard(board, params)}
-            removeBoard={async () => await removeBoard(board)}
+            deleteBoard={async () => await deleteBoard(board)}
+            createCard={async () => await createCard(board)}
+            updateCard={updateCard}
+            deleteCard={deleteCard}
           />
         )}
       </div>

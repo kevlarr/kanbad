@@ -1,0 +1,21 @@
+.cardForm {
+    margin-top: 20px;
+}
+
+.titleInput,
+.bodyInput {
+    font-family: Tahoma, Verdana, sans-serif;
+    font-size: 14px;
+    margin: 5px 0;
+    width: 97%;
+}
+
+.titleInput {
+    padding: 5px 3px;
+}
+
+.bodyInput {
+    height: 5.5em;
+    padding: 5px;
+    resize: none;
+}

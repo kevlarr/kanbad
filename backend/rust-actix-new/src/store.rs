@@ -169,6 +169,12 @@ impl NewBoard {
     }
 }
 
+#[derive(Deserialize)]
+pub struct CardUpdate {
+    pub title: String,
+    pub body: Option<String>,
+}
+
 #[derive(Debug, Serialize)]
 pub struct Card {
     #[serde(skip_serializing)]
@@ -203,6 +209,49 @@ impl Card {
             .fetch_all(pool)
             .await
             .unwrap()
+    }
+
+    pub async fn update(pool: &PgPool, card_identifier: &Uuid, params: &CardUpdate) -> Self {
+        sqlx::query_as!(
+            Self,
+            "
+            update card
+            set title = $2, body = $3
+            from board b
+
+            where b.id = card.board_id
+              and card.identifier = $1
+
+            returning
+                card.id,
+                card.identifier,
+                card.title,
+                card.body,
+                b.identifier as board_identifier
+            ",
+            &card_identifier,
+            &params.title,
+            params.body.as_deref(),
+        )
+            .fetch_one(pool)
+            .await
+            .unwrap()
+    }
+
+    pub async fn delete(pool: &PgPool, card_identifier: &Uuid) -> bool {
+        let rows_affected = sqlx::query!(
+            "
+            delete from card
+            where identifier = $1
+            ",
+            &card_identifier
+        )
+            .execute(pool)
+            .await
+            .unwrap()
+            .rows_affected();
+
+        rows_affected > 0
     }
 }
 
