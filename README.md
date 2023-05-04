@@ -3,6 +3,10 @@
 
 A very basic (read: comically incomplete) Kanban app that provides a
 "try the same things in different ways" learning environment.
+And since all apps are essentially first-pass POCs, there is much room for improvement - even for adding things like "proper error handling", adapting more idiomatic patterns, or just reducing boilerplate and copy & paste.
+
+Eventually it would be *nice* to have a polished design & user experience,
+but whether or not that will happen depends on work & life circumstances.
 
 ---
 
