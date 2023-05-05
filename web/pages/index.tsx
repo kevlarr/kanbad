@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
+import { Button, Center, Container, Stack } from '@mantine/core'
 
 import api from '@/lib/api'
-import css from './index.module.css'
 
 export default function Index() {
   const router = useRouter()
@@ -13,21 +13,20 @@ export default function Index() {
   }
 
   return (
-    <div className={css.home}>
-      <h2 className={css.welcome}>
-        <span className={css.hello}> hello </span>
-        from Kanbad!
-      </h2>
+    <Center style={{width: '100%'}}>
+      <Container>
+        <Stack align='center' spacing='xl' p='xl'>
+          <h2>Hello, from Kanbad!</h2>
+          <p>
+            Workspaces give you places to make things like boards and cards... and magic!
+            Create a new one or, if you're really lucky, get a friend to share a workspace with you.
+          </p>
+          <Button onClick={createWorkspace}>
+            Create workspace
+          </Button>
+        </Stack>
 
-      <p className={css.caption}>
-        Workspaces give you places to make things like boards and cards... and magic!
-        Create a new one or, if you're really lucky, get a friend to share a workspace with you.
-      </p>
-      <div className={css.create}>
-        <button className={css.button} onClick={createWorkspace}>
-          Create workspace
-        </button>
-      </div>
-    </div>
+      </Container>
+    </Center>
   )
 }
