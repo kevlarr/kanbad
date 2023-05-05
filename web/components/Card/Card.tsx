@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Button, Card as MantineCard } from '@mantine/core'
+import { Button, Card as MantineCard, Text, Title } from '@mantine/core'
 
 import { CardModel, CardParams } from '@/lib/models'
 import CardForm from '@/components/CardForm/CardForm'
@@ -26,8 +26,8 @@ export default function Card({ card, updateCard, deleteCard }: IProps) {
         cancelSubmit={() => setEditing(false)}
       />
     : <div>
-        <h4>{card.title}</h4>
-        <p>{card.body}</p>
+        <Title order={4}>{card.title}</Title>
+        <Text lineClamp={4}>{card.body}</Text>
         <div>
           <Button
             compact

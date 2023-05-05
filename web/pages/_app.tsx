@@ -13,15 +13,16 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <AppHeader />
-      <MantineProvider
+      {/* <MantineProvider
         withGlobalStyles
         withNormalizeCSS
         theme={{
           colorScheme: 'light',
+          primaryColor: 'teal',
         }}
-      >
+      > */}
         <Component {...pageProps} />
-      </MantineProvider>
+      {/* </MantineProvider> */}
     </>
   )
 }
