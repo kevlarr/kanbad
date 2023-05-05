@@ -1,7 +1,8 @@
-import { FocusEvent, useState } from 'react'
+import { ChangeEvent, FocusEvent, SyntheticEvent, useState } from 'react'
+import { Button, Group, Stack, TextInput, Textarea } from '@mantine/core'
+import { useForm } from '@mantine/form'
 
 import { CardModel, CardParams } from '@/lib/models'
-import css from './CardForm.module.css'
 
 interface IProps {
   card: CardModel,
@@ -14,54 +15,68 @@ export default function CardForm({
   submitForm,
   cancelSubmit,
 }: IProps) {
-  const [params, setParams] = useState<CardParams>({ title, body })
+  const form = useForm({
+    initialValues: {
+      title,
+      body: body ?? '',
+    },
+    validate: {
+      title: (value) => value ? null : 'A title would be helpful',
+    },
+    validateInputOnChange: true,
+    validateInputOnBlur: true,
+  });
 
-  const value = (evt: FocusEvent) => (
-    (evt.target as HTMLInputElement).value
-  )
+  async function onSubmit(evt: SyntheticEvent) {
+    evt.preventDefault()
 
-  const setTitle = (evt: FocusEvent) => setParams({
-    ...params,
-    title: value(evt),
-  })
-
-  const setBody = (evt: FocusEvent) => setParams({
-    ...params,
-    body: value(evt),
-  })
+    if (form.isValid()) {
+      return await submitForm(form.values)
+    }
+  }
 
   return (
-    <form
-      className={css.cardForm}
-      onSubmit={async (evt) => {
-        evt.preventDefault()
-        return await submitForm(params)
-      }}
-    >
-      <input
-        type='text'
-        className={css.titleInput}
-        autoFocus={true}
-        defaultValue={title}
-        onBlur={setTitle}
-      />
-      <textarea
-        className={css.bodyInput}
-        defaultValue={body}
-        onBlur={setBody}
-      />
-      <button
-        type='submit'
-        className='button sm submit'
-      >
-        Save
-      </button>
-      <button
-        className='button sm cancel'
-        onClick={cancelSubmit}
-      >
-        Cancel
-      </button>
+    <form onSubmit={onSubmit}>
+      <Stack>
+        <TextInput
+          autoFocus={true}
+          label="Title"
+          placeholder="Look into that thing"
+          withAsterisk
+          {...form.getInputProps('title')}
+        />
+
+        <Textarea
+          autosize
+          label="Body"
+          maxRows={8}
+          minRows={4}
+          placeholder="That thing would be really helpful to learn more about, so here's what I should do..."
+          {...form.getInputProps('body')}
+        />
+
+        <Group position="center" spacing="xl">
+          <Button
+            { ...( !form.isValid() && { "data-disabled": true } ) }
+            size="xs"
+            type='submit'
+            variant="subtle"
+            compact
+          >
+            Save
+          </Button>
+
+          <Button
+            compact
+            color="gray"
+            size="xs"
+            variant="subtle"
+            onClick={cancelSubmit}
+          >
+            Cancel
+          </Button>
+        </Group>
+      </Stack>
     </form>
   )
 }

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { GetServerSideProps } from 'next'
+import { Button } from '@mantine/core'
 
 import api from '@/lib/api'
 import {
@@ -148,6 +149,15 @@ export default function WorkspacePage({ boards, cards, workspace }: IProps) {
           />
         )}
       </div>
+      <Button
+        compact
+        color="gray"
+        size="xs"
+        variant="subtle"
+        onClick={createBoard}
+      >
+        Add Board
+      </Button>
     </div>
   )
 }

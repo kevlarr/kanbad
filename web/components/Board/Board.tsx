@@ -1,4 +1,5 @@
 import { FocusEvent, useState } from 'react'
+import { Button } from '@mantine/core'
 
 import { BoardModel, BoardParams, CardModel, CardParams } from '@/lib/models'
 import Card from '@/components/Card/Card'
@@ -65,8 +66,24 @@ export default function Board({
         )}
       </div>
       <div className={css.controls}>
-        <button onClick={createCard}>+ Add Card</button>
-        <button onClick={deleteBoard}>- Remove Board</button>
+        <Button
+          compact
+          color="gray"
+          size="xs"
+          variant="subtle"
+          onClick={createCard
+        }>
+          Add Card
+        </Button>
+        <Button
+          compact
+          color="gray"
+          size="xs"
+          variant="subtle"
+          onClick={deleteBoard}
+        >
+          Remove Board
+        </Button>
       </div>
     </div>
   )

@@ -8,7 +8,6 @@ interface IProps {
 export default function WorkspaceHeader({ identifier, createBoard }: IProps) {
   return (
     <div className={css.header}>
-      <button className={css.addBoard} onClick={createBoard}>+ Add Board</button>
       <h2 className={css.identifier}>{identifier}</h2>
       <p className={css.disclaimer}>
         Make sure to <strong><span className={css.star}>★</span>bookmark</strong> this page.

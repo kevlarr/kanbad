@@ -16,3 +16,7 @@ html, body {
     display: flex;
     height: 100%;
 }
+
+.mantine-UnstyledButton-root.mantine-Button-root[data-disabled] {
+    background: none;
+}

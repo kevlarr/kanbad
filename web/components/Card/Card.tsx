@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Button } from '@mantine/core'
 
 import { CardModel, CardParams } from '@/lib/models'
 import CardForm from '@/components/CardForm/CardForm'
@@ -29,18 +30,24 @@ export default function Card({ card, updateCard, deleteCard }: IProps) {
         <h4 className={css.title}>{card.title}</h4>
         <p className={css.body}>{card.body}</p>
         <div className={css.edit}>
-          <button
-            className='button sm'
+          <Button
+            compact
+            color="gray"
+            size="xs"
+            variant="subtle"
             onClick={() => setEditing(true)}
           >
             Edit
-          </button>
-          <button
-            className='button sm'
+          </Button>
+          <Button
+            compact
+            color="gray"
+            size="xs"
+            variant="subtle"
             onClick={deleteCard}
           >
             Delete
-          </button>
+          </Button>
         </div>
       </div>
 
