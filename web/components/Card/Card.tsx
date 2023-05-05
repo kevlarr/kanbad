@@ -1,9 +1,8 @@
 import { useState } from 'react'
-import { Button } from '@mantine/core'
+import { Button, Card as MantineCard } from '@mantine/core'
 
 import { CardModel, CardParams } from '@/lib/models'
 import CardForm from '@/components/CardForm/CardForm'
-import css from './Card.module.css'
 
 
 interface IProps {
@@ -26,24 +25,24 @@ export default function Card({ card, updateCard, deleteCard }: IProps) {
         submitForm={submitForm}
         cancelSubmit={() => setEditing(false)}
       />
-    : <div className={css.content}>
-        <h4 className={css.title}>{card.title}</h4>
-        <p className={css.body}>{card.body}</p>
-        <div className={css.edit}>
+    : <div>
+        <h4>{card.title}</h4>
+        <p>{card.body}</p>
+        <div>
           <Button
             compact
-            color="gray"
-            size="xs"
-            variant="subtle"
+            color='gray'
+            size='xs'
+            variant='subtle'
             onClick={() => setEditing(true)}
           >
             Edit
           </Button>
           <Button
             compact
-            color="gray"
-            size="xs"
-            variant="subtle"
+            color='gray'
+            size='xs'
+            variant='subtle'
             onClick={deleteCard}
           >
             Delete
@@ -52,9 +51,8 @@ export default function Card({ card, updateCard, deleteCard }: IProps) {
       </div>
 
   return (
-    <div className={css.card}>
-      <div className={css.pin}></div>
+    <MantineCard shadow='md' padding='md' withBorder>
       {content}
-    </div>
+    </MantineCard>
   )
 }

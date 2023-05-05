@@ -1,9 +1,8 @@
 import { FocusEvent, useState } from 'react'
-import { Button } from '@mantine/core'
+import { Button, Card as MantineCard, SimpleGrid } from '@mantine/core'
 
 import { BoardModel, BoardParams, CardModel, CardParams } from '@/lib/models'
 import Card from '@/components/Card/Card'
-import css from './Board.module.css'
 
 interface IProps {
   board: BoardModel,
@@ -40,22 +39,31 @@ export default function Board({
 
   const boardHeader = isEditing
     ? <input
-        className={css.titleInput}
         autoFocus={true}
         defaultValue={board.title}
         onBlur={updateTitle}
       />
     : <h3
-        className={css.title}
         onClick={() => setEditing(true)}
       >
         {board.title}
       </h3>
 
   return (
-    <div className={css.board}>
-      {boardHeader}
-      <div className={css.cards}>
+    <MantineCard shadow='md' withBorder>
+      <MantineCard.Section inheritPadding withBorder>
+        {boardHeader}
+      </MantineCard.Section>
+
+      <SimpleGrid
+        cols={4}
+        mt='lg'
+        breakpoints={[
+          { maxWidth: '82rem', cols: 3 },
+          { maxWidth: '62rem', cols: 2 },
+          { maxWidth: '42rem', cols: 1 },
+        ]}
+      >
         {cards?.map(card =>
           <Card
             key={card.identifier}
@@ -64,27 +72,29 @@ export default function Board({
             deleteCard={async () => await deleteCard(card)}
           />
         )}
-      </div>
-      <div className={css.controls}>
+      </SimpleGrid>
+
+      <MantineCard.Section mt='md' inheritPadding>
         <Button
           compact
-          color="gray"
-          size="xs"
-          variant="subtle"
+          color='gray'
+          size='xs'
+          variant='subtle'
           onClick={createCard
         }>
           Add Card
         </Button>
+
         <Button
           compact
-          color="gray"
-          size="xs"
-          variant="subtle"
+          color='gray'
+          size='xs'
+          variant='subtle'
           onClick={deleteBoard}
         >
           Remove Board
         </Button>
-      </div>
-    </div>
+      </MantineCard.Section>
+    </MantineCard>
   )
 }
