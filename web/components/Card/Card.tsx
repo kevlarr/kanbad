@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { Button, Card as MantineCard, Text, Title } from '@mantine/core'
+import { Button, Card as MantineCard, Title } from '@mantine/core'
 
 import { CardModel, CardParams } from '@/lib/models'
 import CardForm from '@/components/CardForm/CardForm'
+import { Text } from '@/components'
 
 
 interface IProps {
@@ -27,7 +28,7 @@ export default function Card({ card, updateCard, deleteCard }: IProps) {
       />
     : <div>
         <Title order={4}>{card.title}</Title>
-        <Text lineClamp={4}>{card.body}</Text>
+        <Text>{card.body}</Text>
         <div>
           <Button
             compact
