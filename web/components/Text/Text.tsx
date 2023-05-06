@@ -1,8 +1,6 @@
 import { ReactNode, ComponentPropsWithoutRef } from 'react'
 import css from './Text.module.css'
 
-type Tag = 'p' | 'span'
-
 // Pretty sure that `p` and `span` both have the same standard props,
 // but intersect just to be safe?
 // (See: https://react.dev/reference/react-dom/components/common)
@@ -20,7 +18,7 @@ export default function Text({
   strong = false,
   ...rest
 } : Props) {
-  const TagName = inline ? 'span' : 'p'
+  const Tag = inline ? 'span' : 'p'
   let inner = children
 
   if (strong) {
@@ -28,8 +26,8 @@ export default function Text({
   }
 
   return (
-    <TagName className={css.text} {...rest} >
+    <Tag className={css.text} {...rest} >
       {inner}
-    </TagName>
+    </Tag>
   )
 }

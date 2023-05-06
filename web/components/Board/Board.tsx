@@ -1,7 +1,8 @@
 import { FocusEvent, useState } from 'react'
-import { Button, Card as MantineCard, SimpleGrid, Title } from '@mantine/core'
+import { Button, Card as MantineCard, SimpleGrid } from '@mantine/core'
 
 import { BoardModel, BoardParams, CardModel, CardParams } from '@/lib/models'
+import { Heading } from '@/components'
 import Card from '@/components/Card/Card'
 
 interface IProps {
@@ -43,12 +44,12 @@ export default function Board({
         defaultValue={board.title}
         onBlur={updateTitle}
       />
-    : <Title
-        order={3}
+    : <Heading
+        level={3}
         onClick={() => setEditing(true)}
       >
         {board.title}
-      </Title>
+      </Heading>
 
   return (
     <MantineCard shadow='md' withBorder>

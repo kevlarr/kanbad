@@ -2,8 +2,9 @@ import { useState } from 'react'
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import Link from 'next/link'
-import { AppShell, Burger, Flex, Header, MantineProvider, MediaQuery, Navbar, Title } from '@mantine/core'
+import { AppShell, Burger, Flex, Header, MantineProvider, MediaQuery, Navbar } from '@mantine/core'
 
+import { Heading } from '@/components'
 import '@/styles/globals.css'
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -49,7 +50,7 @@ export default function App({ Component, pageProps }: AppProps) {
                 </MediaQuery>
 
                 <Link href='/'>
-                  <Title order={1}>kanbad</Title>
+                  <Heading level={1}>kanbad</Heading>
                 </Link>
               </Flex>
             </Header>

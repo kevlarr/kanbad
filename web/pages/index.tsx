@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
-import { Button, Center, Container, Stack, Title } from '@mantine/core'
-import { Text } from '@/components'
+import { Button, Center, Container, Stack } from '@mantine/core'
 
+import { Heading, Text } from '@/components'
 import api from '@/lib/api'
 
 export default function Index() {
@@ -17,7 +17,7 @@ export default function Index() {
     <Center style={{ width: '100%' }}>
       <Container>
         <Stack align='center' spacing='xl' p='xl'>
-          <Title order={1}>Hello, from Kanbad!</Title>
+          <Heading level={1}>Hello, from Kanbad!</Heading>
           <Text>
             Workspaces give you places to make things like boards and cards... and magic!
             Create a new one or, if you're really lucky, get a friend to share a workspace with you.
