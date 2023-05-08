@@ -1,6 +1,6 @@
 .button {
-    border: none;
-    border-radius: 5px;
+    border: 1px solid transparent;
+    border-radius: 2px;
     cursor: pointer;
     padding: 0.5rem 0.75rem;
 }
@@ -10,32 +10,37 @@
 }
 
 .button.filled {
-    background-color: var(--clr-blue-mid);
+    background-color: var(--frost2);
     border: none;
-    color: var(--clr-white);
+    color: var(--white);
 }
 
 .button.filled:active,
 .button.filled:focus,
 .button.filled:hover {
-    background-color: var(--clr-blue-dark);
+    background-color: var(--frost3);
 }
 
-.button.outlined,
-.button.subtle {
-    background-color: var(--clr-white);
-    color: var(--clr-blue-dark);
+.button.outlined {
+    background-color: transparent;
+    border: 1px solid var(--frost2);
+    color: var(--frost3);
 }
 
 .button.outlined:active,
 .button.outlined:focus,
-.button.outlined:hover,
+.button.outlined:hover {
+    background-color: var(--snow2);
+    border: 1px solid var(--frost3);
+}
+
+.button.subtle {
+    background-color: var(--snow2);
+    color: var(--frost3);
+}
+
 .button.subtle:active,
 .button.subtle:focus,
 .button.subtle:hover {
-    background-color: var(--clr-blue-light);
-}
-
-.button.outlined {
-    border: 1px solid var(--clr-blue-dark);
+    background-color: var(--snow1);
 }

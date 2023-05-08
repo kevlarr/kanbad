@@ -1,9 +1,11 @@
+@import url('nord.css');
+
 :root {
-    background: white;
-    --clr-blue-mid: #63ADD6;
-    --clr-blue-dark: #4B86A7;
-    --clr-blue-light: #E6F2F9;
-    --clr-white: #fff;
+    --white: #fff;
+
+    background-color: var(--nord6);
+    background-color: var(--white);
+    color: var(--nord0);
 }
 
 * {
@@ -19,8 +21,4 @@ html, body {
 #__next {
     display: flex;
     height: 100%;
-}
-
-.mantine-UnstyledButton-root.mantine-Button-root[data-disabled] {
-    background: none;
 }

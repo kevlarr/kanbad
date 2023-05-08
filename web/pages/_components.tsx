@@ -6,7 +6,19 @@ import {
 
 export default function Components() {
   const headings = [1, 2, 3, 4, 5, 6].map((level) => (
-    <Heading level={level as any}>Heading Level {level}</Heading>
+    <Heading key={level} level={level as any}>Heading Level {level}</Heading>
+  ))
+
+  const buttons = [
+    <Button>Default Button</Button>,
+    <Button variant='filled'>Filled Button</Button>,
+    <Button variant='outlined'>Outlined Button</Button>,
+    <Button variant='subtle'>Subtle Button</Button>,
+    <Button compact variant='filled'>Filled Compact</Button>,
+    <Button compact variant='outlined'>Outlined Compact</Button>,
+    <Button compact variant='subtle'>Subtle Compact</Button>,
+  ].map((button, i) => (
+    <div key={i} style={{margin: '1rem 0'}}>{button}</div>
   ))
 
   return (
@@ -23,13 +35,7 @@ export default function Components() {
         {' '}<Text inline strong>strong, inline word</Text>{' '}
         . Pretty neat, huh?
       </Text>
-      <Button>Default Button</Button>
-      <Button variant='filled'>Filled Button</Button>
-      <Button variant='outlined'>Outlined Button</Button>
-      <Button variant='subtle'>Subtle Button</Button>
-      <Button compact variant='filled'>Filled Compact</Button>
-      <Button compact variant='outlined'>Outlined Compact</Button>
-      <Button compact variant='subtle'>Subtle Compact</Button>
+      {buttons}
     </>
   )
 }
