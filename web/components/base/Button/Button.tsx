@@ -4,24 +4,34 @@ import css from './Button.module.css'
 
 type BaseProps = ComponentProps<'button'>
 
-// FIXME: This is allowing passing arbitrary params (eg: `color='gray'` when switching
-// from Mantine button to this) that get converted to HTML attributes
 interface ButtonProps extends BaseProps {
   compact?: boolean,
+  danger?: boolean,
+  size?: 'sm' | 'md',
   type?: 'submit' | 'reset' | 'button',
   variant?: 'filled' | 'outlined' | 'subtle',
 }
 
 export default function Button({
   children,
-  compact,
+  compact = false,
+  danger = false,
+  size = 'md',
   type = 'button',
   variant = 'filled',
   ...rest
 }: ButtonProps) {
+  const classes = [
+    css.button,
+    css[variant],
+    css[size],
+    compact ? css.compact : null,
+    danger ? css.danger : null,
+  ]
+
   return (
     <button
-      className={`${css.button} ${css[variant]} ${compact && css.compact}`}
+      className={classes.join(' ')}
       type={type}
       {...rest}
     >

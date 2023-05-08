@@ -5,42 +5,86 @@
     padding: 0.5rem 0.75rem;
 }
 
+.button.sm {
+  font-size: 0.8rem;
+}
+
+.button.md {
+  font-size: 1rem;
+}
+
 .button.compact {
     padding: 0.15rem 0.35rem;
 }
 
 .button.filled {
-    background-color: var(--frost2);
+    background-color: var(--frost3);
     border: none;
     color: var(--white);
+}
+
+.button.filled.danger {
+    background-color: var(--aurora-red);
 }
 
 .button.filled:active,
 .button.filled:focus,
 .button.filled:hover {
-    background-color: var(--frost3);
+    background-color: var(--frost2);
+}
+
+.button.filled.danger:active,
+.button.filled.danger:focus,
+.button.filled.danger:hover {
+    background-color: var(--aurora-orange);
 }
 
 .button.outlined {
     background-color: transparent;
-    border: 1px solid var(--frost2);
-    color: var(--frost3);
+    border-color: var(--polar3);
+    border-style: solid;
+    border-width: 1px;
+    color: var(--polar3);
+}
+
+.button.outlined.danger {
+    /* border-color: var(--aurora-red); */
+    /* color: var(--aurora-red); */
 }
 
 .button.outlined:active,
 .button.outlined:focus,
 .button.outlined:hover {
-    background-color: var(--snow2);
-    border: 1px solid var(--frost3);
+    border-color: var(--frost2);
+    color: var(--frost3);
+}
+
+.button.outlined.danger:active,
+.button.outlined.danger:focus,
+.button.outlined.danger:hover {
+    border-color: var(--aurora-red);
+    color: var(--aurora-red);
 }
 
 .button.subtle {
-    background-color: var(--snow2);
-    color: var(--frost3);
+    background-color: transparent;
+    color: var(--polar3);
 }
 
 .button.subtle:active,
 .button.subtle:focus,
 .button.subtle:hover {
-    background-color: var(--snow1);
+    background-color: var(--snow2);
+}
+
+.button.subtle.danger {
+    background-color: transparent;
+    /* color: var(--aurora-red); */
+}
+
+.button.subtle.danger:active,
+.button.subtle.danger:focus,
+.button.subtle.danger:hover {
+    background-color: var(--aurora-red);
+    color: var(--white);
 }

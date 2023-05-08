@@ -12,8 +12,7 @@ import {
   compareModelFn,
 } from '@/lib/models'
 import { Button } from '@/components/base'
-import Board from '@/components/Board/Board'
-import WorkspaceHeader from '@/components/WorkspaceHeader/WorkspaceHeader'
+import { Board, WorkspaceHeader } from '@/components'
 import css from './uuid.module.css'
 
 type BoardCardsMap = { [index: string] : Array<CardModel> }
@@ -152,10 +151,7 @@ export default function WorkspacePage({ boards, cards, workspace }: IProps) {
         )}
       </Stack>
 
-      <Button
-        compact
-        onClick={createBoard}
-      >
+      <Button variant='subtle' onClick={createBoard}>
         Add Board
       </Button>
     </div>

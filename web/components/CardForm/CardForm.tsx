@@ -1,8 +1,9 @@
 import { ChangeEvent, FocusEvent, SyntheticEvent, useState } from 'react'
-import { Button, Group, Stack, TextInput, Textarea } from '@mantine/core'
+import { Group, Stack, TextInput, Textarea } from '@mantine/core'
 import { useForm } from '@mantine/form'
 
 import { CardModel, CardParams } from '@/lib/models'
+import { Button } from '@/components/base'
 
 interface IProps {
   card: CardModel,
@@ -58,19 +59,16 @@ export default function CardForm({
         <Group position="center" spacing="xl">
           <Button
             { ...( !form.isValid() && { "data-disabled": true } ) }
-            size="xs"
+            size="sm"
             type='submit'
-            variant="subtle"
-            compact
           >
             Save
           </Button>
 
           <Button
-            compact
-            color="gray"
-            size="xs"
-            variant="subtle"
+            danger
+            size="sm"
+            variant="outlined"
             onClick={cancelSubmit}
           >
             Cancel

@@ -1,9 +1,9 @@
 import { FocusEvent, useState } from 'react'
-import { Button, Card as MantineCard, SimpleGrid } from '@mantine/core'
+import { Card as MantineCard, SimpleGrid } from '@mantine/core'
 
 import { BoardModel, BoardParams, CardModel, CardParams } from '@/lib/models'
-import { Heading } from '@/components/base'
-import Card from '@/components/Card/Card'
+import { Button, Heading } from '@/components/base'
+import { Card } from '@/components'
 
 interface IProps {
   board: BoardModel,
@@ -79,8 +79,7 @@ export default function Board({
       <MantineCard.Section mt='md' inheritPadding>
         <Button
           compact
-          color='gray'
-          size='xs'
+          size='sm'
           variant='subtle'
           onClick={createCard
         }>
@@ -89,8 +88,8 @@ export default function Board({
 
         <Button
           compact
-          color='gray'
-          size='xs'
+          danger
+          size='sm'
           variant='subtle'
           onClick={deleteBoard}
         >
