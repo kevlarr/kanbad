@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { GetServerSideProps } from 'next'
-import { Button, Stack } from '@mantine/core'
+import { Stack } from '@mantine/core'
 
 import api from '@/lib/api'
 import {
@@ -11,6 +11,7 @@ import {
   WorkspaceModel,
   compareModelFn,
 } from '@/lib/models'
+import { Button } from '@/components/base'
 import Board from '@/components/Board/Board'
 import WorkspaceHeader from '@/components/WorkspaceHeader/WorkspaceHeader'
 import css from './uuid.module.css'
@@ -153,9 +154,6 @@ export default function WorkspacePage({ boards, cards, workspace }: IProps) {
 
       <Button
         compact
-        color="gray"
-        size="xs"
-        variant="subtle"
         onClick={createBoard}
       >
         Add Board
