@@ -2,7 +2,7 @@ import { FocusEvent, useState } from 'react'
 import { Button, Card as MantineCard, SimpleGrid } from '@mantine/core'
 
 import { BoardModel, BoardParams, CardModel, CardParams } from '@/lib/models'
-import { Heading } from '@/components'
+import { Heading } from '@/components/base'
 import Card from '@/components/Card/Card'
 
 interface IProps {

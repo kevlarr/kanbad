@@ -1,15 +1,15 @@
-import { ReactNode, ComponentPropsWithoutRef } from 'react'
+import { ComponentProps } from 'react'
 import css from './Heading.module.css'
 
 type Level = 1 | 2 | 3 | 4 | 5 | 6
 
 type BaseProps =
-  ComponentPropsWithoutRef<'h1'> &
-  ComponentPropsWithoutRef<'h2'> &
-  ComponentPropsWithoutRef<'h3'> &
-  ComponentPropsWithoutRef<'h4'> &
-  ComponentPropsWithoutRef<'h5'> &
-  ComponentPropsWithoutRef<'h6'>
+  ComponentProps<'h1'> &
+  ComponentProps<'h2'> &
+  ComponentProps<'h3'> &
+  ComponentProps<'h4'> &
+  ComponentProps<'h5'> &
+  ComponentProps<'h6'>
 
 function headingTag(level: Level) {
   switch (level) {
@@ -23,7 +23,6 @@ function headingTag(level: Level) {
 }
 
 interface Props extends BaseProps {
-  children?: ReactNode,
   level: Level,
 }
 

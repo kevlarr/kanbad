@@ -4,7 +4,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { AppShell, Burger, Flex, Header, MantineProvider, MediaQuery, Navbar } from '@mantine/core'
 
-import { Heading } from '@/components'
+import { Heading } from '@/components/base'
 import '@/styles/globals.css'
 
 export default function App({ Component, pageProps }: AppProps) {

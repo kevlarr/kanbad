@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
-import { Button, Center, Container, Stack } from '@mantine/core'
+import { Center, Container, Stack } from '@mantine/core'
 
-import { Heading, Text } from '@/components'
+import { Button, Heading, Text } from '@/components/base'
 import api from '@/lib/api'
 
 export default function Index() {

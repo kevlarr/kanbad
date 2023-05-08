@@ -3,7 +3,7 @@ import { Button, Card as MantineCard } from '@mantine/core'
 
 import { CardModel, CardParams } from '@/lib/models'
 import CardForm from '@/components/CardForm/CardForm'
-import { Heading, Text } from '@/components'
+import { Heading, Text } from '@/components/base'
 
 
 interface IProps {

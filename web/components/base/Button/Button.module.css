@@ -1,0 +1,41 @@
+.button {
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 0.5rem 0.75rem;
+}
+
+.button.compact {
+    padding: 0.15rem 0.35rem;
+}
+
+.button.filled {
+    background-color: var(--clr-blue-mid);
+    border: none;
+    color: var(--clr-white);
+}
+
+.button.filled:active,
+.button.filled:focus,
+.button.filled:hover {
+    background-color: var(--clr-blue-dark);
+}
+
+.button.outlined,
+.button.subtle {
+    background-color: var(--clr-white);
+    color: var(--clr-blue-dark);
+}
+
+.button.outlined:active,
+.button.outlined:focus,
+.button.outlined:hover,
+.button.subtle:active,
+.button.subtle:focus,
+.button.subtle:hover {
+    background-color: var(--clr-blue-light);
+}
+
+.button.outlined {
+    border: 1px solid var(--clr-blue-dark);
+}

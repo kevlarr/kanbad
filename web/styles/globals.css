@@ -1,5 +1,9 @@
 :root {
     background: white;
+    --clr-blue-mid: #63ADD6;
+    --clr-blue-dark: #4B86A7;
+    --clr-blue-light: #E6F2F9;
+    --clr-white: #fff;
 }
 
 * {

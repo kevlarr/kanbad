@@ -1,13 +1,12 @@
-import { ReactNode, ComponentPropsWithoutRef } from 'react'
+import { ComponentProps } from 'react'
 import css from './Text.module.css'
 
 // Pretty sure that `p` and `span` both have the same standard props,
 // but intersect just to be safe?
 // (See: https://react.dev/reference/react-dom/components/common)
-type BaseProps = ComponentPropsWithoutRef<'p'> & ComponentPropsWithoutRef<'span'>
+type BaseProps = ComponentProps<'p'> & ComponentProps<'span'>
 
 interface Props extends BaseProps {
-  children?: ReactNode,
   inline?: boolean,
   strong?: boolean,
 }
