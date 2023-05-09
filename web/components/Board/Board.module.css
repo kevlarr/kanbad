@@ -1,0 +1,9 @@
+.board {
+  background-color: var(--snow0);
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.boardHeader {
+  margin-bottom: 1rem;
+}

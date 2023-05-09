@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { GetServerSideProps } from 'next'
-import { Stack } from '@mantine/core'
 
 import api from '@/lib/api'
 import {
@@ -135,8 +134,7 @@ export default function WorkspacePage({ boards, cards, workspace }: IProps) {
         identifier={workspace.identifier}
         createBoard={createBoard}
       />
-
-      <Stack>
+      <div>
         {boardList.map((board) =>
           <Board
             key={board.identifier}
@@ -149,7 +147,7 @@ export default function WorkspacePage({ boards, cards, workspace }: IProps) {
             deleteCard={deleteCard}
           />
         )}
-      </Stack>
+      </div>
 
       <Button variant='subtle' onClick={createBoard}>
         Add Board

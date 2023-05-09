@@ -1,9 +1,9 @@
 import { FocusEvent, useState } from 'react'
-import { Card as MantineCard, SimpleGrid } from '@mantine/core'
 
 import { BoardModel, BoardParams, CardModel, CardParams } from '@/lib/models'
 import { Button, Heading } from '@/components/base'
 import { Card } from '@/components'
+import css from './Board.module.css'
 
 interface IProps {
   board: BoardModel,
@@ -52,50 +52,35 @@ export default function Board({
       </Heading>
 
   return (
-    <MantineCard shadow='md' withBorder>
-      <MantineCard.Section inheritPadding withBorder>
+    <div className={css.board}>
+      <div className={css.boardHeader}>
         {boardHeader}
-      </MantineCard.Section>
-
-      <SimpleGrid
-        cols={4}
-        mt='lg'
-        breakpoints={[
-          { maxWidth: '82rem', cols: 3 },
-          { maxWidth: '62rem', cols: 2 },
-          { maxWidth: '42rem', cols: 1 },
-        ]}
+      </div>
+      {cards?.map(card =>
+        <Card
+        key={card.identifier}
+        card={card}
+        updateCard={async (params: CardParams) => await updateCard(card, params)}
+        deleteCard={async () => await deleteCard(card)}
+        />
+      )}
+      <Button
+        compact
+        size='sm'
+        variant='subtle'
+        onClick={createCard
+      }>
+        Add Card
+      </Button>
+      <Button
+        compact
+        danger
+        size='sm'
+        variant='subtle'
+        onClick={deleteBoard}
       >
-        {cards?.map(card =>
-          <Card
-            key={card.identifier}
-            card={card}
-            updateCard={async (params: CardParams) => await updateCard(card, params)}
-            deleteCard={async () => await deleteCard(card)}
-          />
-        )}
-      </SimpleGrid>
-
-      <MantineCard.Section mt='md' inheritPadding>
-        <Button
-          compact
-          size='sm'
-          variant='subtle'
-          onClick={createCard
-        }>
-          Add Card
-        </Button>
-
-        <Button
-          compact
-          danger
-          size='sm'
-          variant='subtle'
-          onClick={deleteBoard}
-        >
-          Remove Board
-        </Button>
-      </MantineCard.Section>
-    </MantineCard>
+        Remove Board
+      </Button>
+    </div>
   )
 }

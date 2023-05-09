@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { Card as MantineCard } from '@mantine/core'
 
 import { CardModel, CardParams } from '@/lib/models'
 import { Button, Heading, Text } from '@/components/base'
 import { CardForm } from '@/components'
+import css from './Card.module.css'
 
 
 interface IProps {
@@ -51,8 +51,8 @@ export default function Card({ card, updateCard, deleteCard }: IProps) {
       </div>
 
   return (
-    <MantineCard shadow='md' padding='md' withBorder>
+    <div className={css.card}>
       {content}
-    </MantineCard>
+    </div>
   )
 }

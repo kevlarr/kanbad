@@ -1,0 +1,5 @@
+.card {
+  background-color: var(--white);
+  margin-bottom: 1rem;
+  padding: 1rem;
+}
