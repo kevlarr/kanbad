@@ -1,6 +1,7 @@
 .inputGroup {
     display: flex;
     flex-direction: column;
+    margin-bottom: var(--margin-md);
 }
 
 .label {
@@ -9,6 +10,11 @@
     margin-bottom: var(--margin-md);
 }
 
-.error {
-    margin-top: var(--margin-sm);
+.input {
+    display: flex;
+    margin-bottom: var(--margin-sm);
+}
+
+.input > * {
+    flex: 1;
 }

@@ -22,9 +22,11 @@ export default function InputGroup({
       {label &&
         <label className={css.label} {...(id && {htmlFor: id})}>{label}</label>
       }
-      {children}
+      <div className={css.input}>
+        {children}
+      </div>
       {error &&
-        <Text className={css.error} size='sm' warn >{error}</Text>
+        <Text size='sm' warn >{error}</Text>
       }
     </div>
   )
