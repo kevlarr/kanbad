@@ -31,6 +31,27 @@ input, textarea {
     font-size: 1rem;
 }
 
+:focus {
+    outline: none;
+}
+
+/*
+ * default to "medium" thickness for buttons and links to make keyboard
+ * nav more apparent, relative to inputs where "thin" looks better
+ */
+:focus-visible {
+    outline: var(--frost2) solid;
+}
+
+/*
+ * :focus-visible is applied to input and textarea elements regardless of
+ * whether they were activated by keyboard or mouse click
+ */
+input:focus-visible,
+textarea:focus-visible {
+    outline-width: thin;
+}
+
 #__next {
     height: 100%;
 }

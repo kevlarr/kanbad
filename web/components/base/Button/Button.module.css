@@ -7,11 +7,6 @@
     padding: var(--padding-md);
 }
 
-.button:active,
-.button:focus {
-    outline: none;
-}
-
 .button.sm {
   font-size: var(--font-size-sm);
 }

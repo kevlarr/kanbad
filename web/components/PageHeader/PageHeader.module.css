@@ -1,0 +1,21 @@
+.pageHeader {
+    background-color: var(--nord0);
+    padding: var(--padding-md);
+}
+
+.logotype {
+    border-color: var(--snow0);
+    border-radius: var(--border-radius);
+    border-width: 2px;
+    border-style: solid;
+    color: var(--snow0);
+    display: inline-block;
+    padding: var(--padding-md);
+}
+
+.logotype:active,
+.logotype:focus,
+.logotype:hover {
+    border-color: var(--white);
+    color: var(--white);
+}

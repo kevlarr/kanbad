@@ -8,11 +8,6 @@
     resize: none;
 }
 
-.textarea:active,
-.textarea:focus {
-    border-color: var(--frost2);
-}
-
 .error {
     border-color: var(--aurora-red);
 }
