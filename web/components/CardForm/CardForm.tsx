@@ -82,6 +82,7 @@ export default function CardForm({
       <TextArea
         label='Body'
         placeholder='Something something here...'
+        resize='y'
         defaultValue={formValues.body}
         onChange={setBody}
       />

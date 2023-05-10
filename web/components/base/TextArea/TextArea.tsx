@@ -4,21 +4,34 @@ import { InputGroup } from '@/components/base'
 import css from './TextArea.module.css'
 
 type BaseProps = ComponentProps<'textarea'>
+type Resize = 'x' | 'y' | 'xy' | null
 
 interface TextAreaProps extends BaseProps {
   error?: string | null,
   label?: string | null,
+  resize?: 'x' | 'y' | 'xy' | null,
 }
 
 export default function TextArea({
   id,
   error,
   label,
+  resize = null,
   ...rest
 }: TextAreaProps) {
+
   const classes = [
     css.textarea,
-    error ? css.error : null,
+    error
+      ? css.error
+      : null,
+    resize
+      ? {
+        x: css.resizeX,
+        y: css.resizeY,
+        xy: css.resizeXY
+      }[resize]
+      : null
   ]
 
   return (
