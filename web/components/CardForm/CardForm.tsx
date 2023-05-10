@@ -72,7 +72,7 @@ export default function CardForm({
       <TextInput
         autoFocus={true}
         label='Title'
-        value={formValues.title}
+        defaultValue={formValues.title}
         error={formErrors.title}
         id='asdf'
         placeholder='Look into that thing'
@@ -82,7 +82,7 @@ export default function CardForm({
       <TextArea
         label='Body'
         placeholder='Something something here...'
-        value={formValues.body}
+        defaultValue={formValues.body}
         onChange={setBody}
       />
       <Button

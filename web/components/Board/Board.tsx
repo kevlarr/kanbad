@@ -1,7 +1,7 @@
 import { FocusEvent, useState } from 'react'
 
 import { BoardModel, BoardParams, CardModel, CardParams } from '@/lib/models'
-import { Button, Heading } from '@/components/base'
+import { Button, Heading, TextInput } from '@/components/base'
 import { Card } from '@/components'
 import css from './Board.module.css'
 
@@ -39,7 +39,7 @@ export default function Board({
   }
 
   const boardHeader = isEditing
-    ? <input
+    ? <TextInput
         autoFocus={true}
         defaultValue={board.title}
         onBlur={updateTitle}
