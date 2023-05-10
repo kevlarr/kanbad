@@ -8,13 +8,18 @@ type BaseProps = ComponentProps<'p'> & ComponentProps<'span'>
 
 interface Props extends BaseProps {
   inline?: boolean,
+  size?: 'sm' | 'md',
   strong?: boolean,
+  warn?: boolean,
 }
 
 export default function Text({
   children,
+  className,
   inline = false,
+  size = 'md',
   strong = false,
+  warn = false,
   ...rest
 } : Props) {
   const Tag = inline ? 'span' : 'p'
@@ -24,8 +29,15 @@ export default function Text({
     inner = <strong>{inner}</strong>
   }
 
+  const classes = [
+    className,
+    css.text,
+    css[size],
+    warn ? css.warn : null,
+  ]
+
   return (
-    <Tag className={css.text} {...rest} >
+    <Tag className={classes.join(' ')} {...rest} >
       {inner}
     </Tag>
   )

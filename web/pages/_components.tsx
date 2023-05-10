@@ -19,15 +19,15 @@ export default function Components() {
     <Button compact variant='filled'>Filled Compact</Button>,
     <Button compact variant='outlined'>Outlined Compact</Button>,
     <Button compact variant='subtle'>Subtle Compact</Button>,
-    // Danger variants
-    <Button danger>Danger Button</Button>,
-    <Button danger variant='filled'>Danger Filled Button</Button>,
-    <Button danger variant='outlined'>Danger Outlined Button</Button>,
-    <Button danger variant='subtle'>Danger Subtle Button</Button>,
-    // Danger compact
-    <Button danger compact variant='filled'>Danger Filled Compact</Button>,
-    <Button danger compact variant='outlined'>Danger Outlined Compact</Button>,
-    <Button danger compact variant='subtle'>Danger Subtle Compact</Button>,
+    // Warn variants
+    <Button warn>Warn Button</Button>,
+    <Button warn variant='filled'>Warn Filled Button</Button>,
+    <Button warn variant='outlined'>Warn Outlined Button</Button>,
+    <Button warn variant='subtle'>Warn Subtle Button</Button>,
+    // Warn compact
+    <Button warn compact variant='filled'>Warn Filled Compact</Button>,
+    <Button warn compact variant='outlined'>Warn Outlined Compact</Button>,
+    <Button warn compact variant='subtle'>Warn Subtle Compact</Button>,
   ].map((button, i) => (
     <div key={i} style={{margin: '1rem 0'}}>{button}</div>
   ))

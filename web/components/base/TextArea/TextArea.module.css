@@ -1,0 +1,18 @@
+.textarea {
+    border-color: var(--snow0);
+    border-radius: var(--border-radius);
+    border-style: solid;
+    border-width: var(--border-width);
+    outline: none;
+    padding: var(--padding-md);
+    resize: none;
+}
+
+.textarea:active,
+.textarea:focus {
+    border-color: var(--frost2);
+}
+
+.error {
+    border-color: var(--aurora-red);
+}

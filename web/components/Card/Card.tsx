@@ -40,7 +40,7 @@ export default function Card({ card, updateCard, deleteCard }: IProps) {
           </Button>
           <Button
             compact
-            danger
+            warn
             size='sm'
             variant='subtle'
             onClick={deleteCard}

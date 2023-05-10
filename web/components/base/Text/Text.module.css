@@ -2,3 +2,14 @@
     margin: 0;
     padding: 0;
 }
+
+.md {
+    font-size: 1rem;
+}
+
+.sm {
+    font-size: var(--font-size-sm);
+}
+.warn {
+    color: var(--aurora-red);
+}

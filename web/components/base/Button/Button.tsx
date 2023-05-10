@@ -6,19 +6,19 @@ type BaseProps = ComponentProps<'button'>
 
 interface ButtonProps extends BaseProps {
   compact?: boolean,
-  danger?: boolean,
   size?: 'sm' | 'md',
   type?: 'submit' | 'reset' | 'button',
   variant?: 'filled' | 'outlined' | 'subtle',
+  warn?: boolean,
 }
 
 export default function Button({
   children,
   compact = false,
-  danger = false,
   size = 'md',
   type = 'button',
   variant = 'filled',
+  warn = false,
   ...rest
 }: ButtonProps) {
   const classes = [
@@ -26,7 +26,7 @@ export default function Button({
     css[variant],
     css[size],
     compact ? css.compact : null,
-    danger ? css.danger : null,
+    warn ? css.warn : null,
   ]
 
   return (

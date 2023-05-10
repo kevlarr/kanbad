@@ -74,7 +74,7 @@ export default function Board({
       </Button>
       <Button
         compact
-        danger
+        warn
         size='sm'
         variant='subtle'
         onClick={deleteBoard}

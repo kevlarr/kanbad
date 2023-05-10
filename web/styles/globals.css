@@ -1,6 +1,14 @@
 @import url('nord.css');
 
 :root {
+    --border-radius: 2px;
+    --border-width: 1px;
+    --font-size-sm: 0.85rem;
+    --font-weight-semibold: 600;
+    --padding-sm: 0.15rem 0.25rem;
+    --padding-md: 0.4rem 0.5rem;
+    --margin-sm: 0.25rem;
+    --margin-md: 0.5rem;
     --white: #fff;
 
     background-color: var(--nord6);
@@ -19,6 +27,5 @@ html, body {
 }
 
 #__next {
-    display: flex;
     height: 100%;
 }

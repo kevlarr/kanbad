@@ -1,9 +1,9 @@
 import { ChangeEvent, FocusEvent, SyntheticEvent, useState } from 'react'
-import { Group, Stack, TextInput, Textarea } from '@mantine/core'
+import { TextInput as MantineInput, Textarea as MantineTextarea } from '@mantine/core'
 import { useForm } from '@mantine/form'
 
 import { CardModel, CardParams } from '@/lib/models'
-import { Button } from '@/components/base'
+import { Button, TextArea, TextInput } from '@/components/base'
 
 interface IProps {
   card: CardModel,
@@ -38,43 +38,45 @@ export default function CardForm({
 
   return (
     <form onSubmit={onSubmit}>
-      <Stack>
-        <TextInput
-          autoFocus={true}
-          label="Title"
-          placeholder="Look into that thing"
-          withAsterisk
-          {...form.getInputProps('title')}
-        />
+      <MantineInput
+        label='Title'
+        placeholder='Look into that thing'
+        withAsterisk
+        {...form.getInputProps('title')}
+      />
 
-        <Textarea
-          autosize
-          label="Body"
-          maxRows={8}
-          minRows={4}
-          placeholder="That thing would be really helpful to learn more about, so here's what I should do..."
-          {...form.getInputProps('body')}
-        />
-
-        <Group position="center" spacing="xl">
-          <Button
-            { ...( !form.isValid() && { "data-disabled": true } ) }
-            size="sm"
-            type='submit'
-          >
-            Save
-          </Button>
-
-          <Button
-            danger
-            size="sm"
-            variant="outlined"
-            onClick={cancelSubmit}
-          >
-            Cancel
-          </Button>
-        </Group>
-      </Stack>
+      <TextInput
+        autoFocus={true}
+        label='Title'
+        id='asdf'
+        placeholder='Look into that thing'
+      />
+      <MantineTextarea
+        autosize
+        label='Body'
+        maxRows={8}
+        minRows={4}
+        placeholder='Something something here...'
+        {...form.getInputProps('body')}
+      />
+      <TextArea
+        label='Body'
+        placeholder='Something something here...'
+      />
+      <Button
+        { ...( !form.isValid() && { 'data-disabled': true } ) }
+        size='sm'
+        type='submit'
+      >
+        Save
+      </Button>
+      <Button
+        size='sm'
+        variant='outlined'
+        onClick={cancelSubmit}
+      >
+        Cancel
+      </Button>
     </form>
   )
 }
