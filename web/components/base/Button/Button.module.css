@@ -4,7 +4,7 @@
     border-style: solid;
     border-width: var(--border-width);
     cursor: pointer;
-    padding: var(--padding-md);
+    padding: var(--padding-sm) var(--padding-md);
 }
 
 .button.sm {
@@ -16,7 +16,7 @@
 }
 
 .button.compact {
-    padding: var(--padding-sm);
+    padding: var(--padding-xs) var(--padding-sm);
 }
 
 /*
@@ -77,7 +77,7 @@
 .button.subtle:active,
 .button.subtle:focus,
 .button.subtle:hover {
-    background-color: var(--snow2);
+    background-color: var(--snow0);
 }
 
 .button.subtle.warn {

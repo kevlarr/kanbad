@@ -1,0 +1,32 @@
+.flexContainer {
+    display: flex;
+    gap: none;
+}
+
+.row {
+    flex-direction: row;
+}
+
+.column {
+    flex-direction: column;
+}
+
+.xs {
+    gap: var(--margin-xs);
+}
+
+.sm {
+    gap: var(--margin-sm);
+}
+
+.md {
+    gap: var(--margin-md);
+}
+
+.lg {
+    gap: var(--margin-lg);
+}
+
+.xl {
+    gap: var(--margin-xl);
+}

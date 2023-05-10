@@ -16,22 +16,18 @@ export default function TextArea({
   id,
   error,
   label,
-  resize = null,
+  resize,
   ...rest
 }: TextAreaProps) {
 
   const classes = [
     css.textarea,
-    error
-      ? css.error
-      : null,
-    resize
-      ? {
-        x: css.resizeX,
-        y: css.resizeY,
-        xy: css.resizeXY
-      }[resize]
-      : null
+    error && css.error,
+    resize && {
+      x: css.resizeX,
+      y: css.resizeY,
+      xy: css.resizeXY
+    }[resize]
   ]
 
   return (

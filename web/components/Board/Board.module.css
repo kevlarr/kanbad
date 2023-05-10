@@ -1,9 +1,6 @@
 .board {
-  background-color: var(--snow0);
-  padding: 1rem;
-  margin-bottom: 1rem;
-}
-
-.boardHeader {
-  margin-bottom: 1rem;
+  background-color: var(--snow2);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow-md);
+  padding: var(--padding-lg) var(--padding-xl);
 }
