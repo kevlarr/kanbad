@@ -1,8 +1,15 @@
 .heading {
+    border-width: 0;
     margin: 0;
     padding: 0;
 }
 
 .inline {
     display: inline-block;
+}
+
+.underline {
+    border-color: var(--polar3);
+    border-style: solid;
+    border-bottom-width: 1px;
 }

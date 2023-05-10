@@ -25,18 +25,21 @@ function headingTag(level: Level) {
 interface Props extends BaseProps {
   inline?: boolean,
   level: Level,
+  underline?: boolean,
 }
 
 export default function Text({
   children,
-  inline = false,
   level,
+  inline = false,
+  underline = false,
   ...rest
 } : Props) {
   const Tag = headingTag(level)
   const classes = [
     css.heading,
     inline ? css.inline : null,
+    underline ? css.underline : null,
   ]
 
   return (

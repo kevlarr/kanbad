@@ -7,6 +7,7 @@ type BaseProps = ComponentProps<'div'>
 interface FlexContainerProps extends BaseProps {
   direction?: 'row' | 'column',
   gap?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | null,
+  pad?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | null,
 }
 
 export default function FlexContainer({
@@ -14,13 +15,15 @@ export default function FlexContainer({
   className,
   direction = 'row',
   gap = null,
+  pad = null,
   ...rest
 }: FlexContainerProps) {
   const classes = [
     className,
     css.flexContainer,
-    gap && css[gap],
     css[direction],
+    gap && css[`gap${gap}`],
+    pad && css[`pad${pad}`],
   ]
 
   return (

@@ -3,30 +3,17 @@
     gap: none;
 }
 
-.row {
-    flex-direction: row;
-}
+.row    { flex-direction: row; }
+.column { flex-direction: column; }
 
-.column {
-    flex-direction: column;
-}
+.gapxs { gap: var(--margin-xs); }
+.gapsm { gap: var(--margin-sm); }
+.gapmd { gap: var(--margin-md); }
+.gaplg { gap: var(--margin-lg); }
+.gapxl { gap: var(--margin-xl); }
 
-.xs {
-    gap: var(--margin-xs);
-}
-
-.sm {
-    gap: var(--margin-sm);
-}
-
-.md {
-    gap: var(--margin-md);
-}
-
-.lg {
-    gap: var(--margin-lg);
-}
-
-.xl {
-    gap: var(--margin-xl);
-}
+.padxs { padding: calc(2 * var(--padding-xs)); }
+.padsm { padding: calc(2 * var(--padding-sm)); }
+.padmd { padding: calc(2 * var(--padding-md)); }
+.padlg { padding: calc(2 * var(--padding-lg)); }
+.padxl { padding: calc(2 * var(--padding-xl)); }
