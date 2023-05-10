@@ -29,7 +29,7 @@ export default function Card({ card, updateCard, deleteCard }: CardProps) {
     : <div>
         <Heading level={4}>{card.title}</Heading>
         <Text>{card.body}</Text>
-        <div>
+        <div className={css.controls}>
           <Button
             compact
             size='sm'
