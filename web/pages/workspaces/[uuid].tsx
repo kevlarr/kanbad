@@ -10,12 +10,13 @@ import {
   WorkspaceModel,
   compareModelFn,
 } from '@/lib/models'
-import Board from '@/components/Board/Board'
+import { Button } from '@/components/base'
+import { Board, WorkspaceHeader } from '@/components'
 import css from './uuid.module.css'
 
 type BoardCardsMap = { [index: string] : Array<CardModel> }
 
-interface IProps {
+interface WorkspacePageProps {
   boards: Array<BoardModel>,
   cards: Array<CardModel>,
   workspace: WorkspaceModel,
@@ -39,7 +40,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 }
 
-export default function WorkspacePage({ boards, cards, workspace }: IProps) {
+export default function WorkspacePage({
+  boards,
+  cards,
+  workspace,
+}: WorkspacePageProps) {
   // TODO:
   //   - Is this a smell, creating state & hooks from props?
   //   - Should they be loaded client-side within the component?
@@ -129,15 +134,11 @@ export default function WorkspacePage({ boards, cards, workspace }: IProps) {
 
   return (
     <div className={css.workspace}>
-      <div className={css.meta}>
-        <button className={css.addBoard} onClick={createBoard}>+ Add Board</button>
-        <h2 className={css.identifier}>{workspace.identifier}</h2>
-        <p className={css.disclaimer}>
-          Make sure to <strong><span className={css.star}>★</span>bookmark</strong> this page.
-          While we won't lose the workspace, losing the address means you probably will.
-        </p>
-      </div>
-      <div className={css.boards}>
+      <WorkspaceHeader
+        identifier={workspace.identifier}
+        createBoard={createBoard}
+      />
+      <div>
         {boardList.map((board) =>
           <Board
             key={board.identifier}
@@ -151,6 +152,10 @@ export default function WorkspacePage({ boards, cards, workspace }: IProps) {
           />
         )}
       </div>
+
+      <Button variant='subtle' onClick={createBoard}>
+        Add Board
+      </Button>
     </div>
   )
 }

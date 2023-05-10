@@ -1,0 +1,20 @@
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: var(--margin-md);
+}
+
+.label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--margin-md);
+}
+
+.input {
+    display: flex;
+    margin-bottom: var(--margin-sm);
+}
+
+.input > * {
+    flex: 1;
+}

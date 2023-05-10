@@ -1,67 +1,105 @@
-import { FocusEvent, useState } from 'react'
+import { ChangeEvent, SyntheticEvent, useState } from 'react'
 
 import { CardModel, CardParams } from '@/lib/models'
-import css from './CardForm.module.css'
+import { Button, TextArea, TextInput } from '@/components/base'
 
-interface IProps {
+type Event = ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+
+interface CardFormProps {
   card: CardModel,
-  submitForm(params: CardParams): any
-  cancelSubmit(): any
+  submitForm(params: CardParams): any,
+  cancelSubmit(): any,
+}
+
+interface FormValues {
+  title: string,
+  body: string,
+}
+
+interface FormErrors {
+  title: string | null,
 }
 
 export default function CardForm({
   card: { title, body },
   submitForm,
   cancelSubmit,
-}: IProps) {
-  const [params, setParams] = useState<CardParams>({ title, body })
-
-  const value = (evt: FocusEvent) => (
-    (evt.target as HTMLInputElement).value
-  )
-
-  const setTitle = (evt: FocusEvent) => setParams({
-    ...params,
-    title: value(evt),
+}: CardFormProps) {
+  // TODO: Abstract form handling & validation into a more generalized utility
+  const [formValues, setFormValues] = useState<FormValues>({
+    title,
+    body: body || '',
+  })
+  const [formErrors, setFormErrors] = useState<FormErrors>({
+    title: null,
   })
 
-  const setBody = (evt: FocusEvent) => setParams({
-    ...params,
-    body: value(evt),
-  })
+  function setTitle(evt: Event) {
+    const { value } = evt.target
+
+    setFormValues({
+      ...formValues,
+      title: value,
+    })
+    setFormErrors({
+      title: value ? null : 'A title would be helpful',
+    })
+  }
+
+  function setBody(evt: Event) {
+    const { value } = evt.target
+
+    setFormValues({
+      ...formValues,
+      body: value,
+    })
+  }
+
+  function isValid() {
+    return !formErrors.title
+  }
+
+  async function onSubmit(evt: SyntheticEvent) {
+    evt.preventDefault()
+
+    if (isValid()) {
+      return await submitForm(formValues)
+    }
+  }
 
   return (
-    <form
-      className={css.cardForm}
-      onSubmit={async (evt) => {
-        evt.preventDefault()
-        return await submitForm(params)
-      }}
-    >
-      <input
-        type='text'
-        className={css.titleInput}
+    <form onSubmit={onSubmit}>
+      <TextInput
         autoFocus={true}
-        defaultValue={title}
+        label='Title'
+        defaultValue={formValues.title}
+        error={formErrors.title}
+        id='asdf'
+        placeholder='Look into that thing'
+        onChange={setTitle}
         onBlur={setTitle}
       />
-      <textarea
-        className={css.bodyInput}
-        defaultValue={body}
-        onBlur={setBody}
+      <TextArea
+        label='Body'
+        placeholder='Something something here...'
+        resize='y'
+        defaultValue={formValues.body}
+        onChange={setBody}
       />
-      <button
+      <Button
+        { ...( !isValid() && { disabled: true } ) }
+        size='sm'
         type='submit'
-        className='button sm submit'
       >
         Save
-      </button>
-      <button
-        className='button sm cancel'
+      </Button>
+      <Button
+        size='sm'
+        variant='outlined'
         onClick={cancelSubmit}
       >
         Cancel
-      </button>
+      </Button>
     </form>
   )
 }

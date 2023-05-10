@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
 
+import { Button, Heading, Text } from '@/components/base'
 import api from '@/lib/api'
-import css from './index.module.css'
 
 export default function Index() {
   const router = useRouter()
@@ -13,21 +13,15 @@ export default function Index() {
   }
 
   return (
-    <div className={css.home}>
-      <h2 className={css.welcome}>
-        <span className={css.hello}> hello </span>
-        from Kanbad!
-      </h2>
-
-      <p className={css.caption}>
+    <div>
+      <Heading level={1}>Hello, from Kanbad!</Heading>
+      <Text>
         Workspaces give you places to make things like boards and cards... and magic!
         Create a new one or, if you're really lucky, get a friend to share a workspace with you.
-      </p>
-      <div className={css.create}>
-        <button className={css.button} onClick={createWorkspace}>
-          Create workspace
-        </button>
-      </div>
+      </Text>
+      <Button onClick={createWorkspace}>
+        Create workspace
+      </Button>
     </div>
   )
 }

@@ -1,10 +1,11 @@
 import { FocusEvent, useState } from 'react'
 
 import { BoardModel, BoardParams, CardModel, CardParams } from '@/lib/models'
-import Card from '@/components/Card/Card'
+import { Button, Heading, TextInput } from '@/components/base'
+import { Card } from '@/components'
 import css from './Board.module.css'
 
-interface IProps {
+interface BoardProps {
   board: BoardModel,
   cards: Array<CardModel> | undefined,
   updateBoard(params: BoardParams): Promise<any>,
@@ -22,7 +23,7 @@ export default function Board({
   createCard,
   updateCard,
   deleteCard,
-}: IProps) {
+}: BoardProps) {
   const [isEditing, setEditing] = useState(false)
 
   async function updateTitle(evt: FocusEvent) {
@@ -38,36 +39,48 @@ export default function Board({
   }
 
   const boardHeader = isEditing
-    ? <input
-        className={css.titleInput}
+    ? <TextInput
         autoFocus={true}
         defaultValue={board.title}
         onBlur={updateTitle}
       />
-    : <h3
-        className={css.title}
+    : <Heading
+        level={3}
         onClick={() => setEditing(true)}
       >
         {board.title}
-      </h3>
+      </Heading>
 
   return (
     <div className={css.board}>
-      {boardHeader}
-      <div className={css.cards}>
-        {cards?.map(card =>
-          <Card
-            key={card.identifier}
-            card={card}
-            updateCard={async (params: CardParams) => await updateCard(card, params)}
-            deleteCard={async () => await deleteCard(card)}
-          />
-        )}
+      <div className={css.boardHeader}>
+        {boardHeader}
       </div>
-      <div className={css.controls}>
-        <button onClick={createCard}>+ Add Card</button>
-        <button onClick={deleteBoard}>- Remove Board</button>
-      </div>
+      {cards?.map(card =>
+        <Card
+        key={card.identifier}
+        card={card}
+        updateCard={async (params: CardParams) => await updateCard(card, params)}
+        deleteCard={async () => await deleteCard(card)}
+        />
+      )}
+      <Button
+        compact
+        size='sm'
+        variant='subtle'
+        onClick={createCard
+      }>
+        Add Card
+      </Button>
+      <Button
+        compact
+        warn
+        size='sm'
+        variant='subtle'
+        onClick={deleteBoard}
+      >
+        Remove Board
+      </Button>
     </div>
   )
 }

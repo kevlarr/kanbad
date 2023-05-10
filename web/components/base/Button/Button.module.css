@@ -1,0 +1,104 @@
+.button {
+    border-color: transparent;
+    border-radius: var(--border-radius);
+    border-style: solid;
+    border-width: var(--border-width);
+    cursor: pointer;
+    padding: var(--padding-md);
+}
+
+.button.sm {
+  font-size: var(--font-size-sm);
+}
+
+.button.md {
+  font-size: 1rem;
+}
+
+.button.compact {
+    padding: var(--padding-sm);
+}
+
+/*
+ * Styling for active FILLED buttons
+ */
+.button.filled {
+    background-color: var(--frost3);
+    color: var(--white);
+}
+
+.button.filled.warn {
+    background-color: var(--aurora-red);
+}
+
+.button.filled:active,
+.button.filled:focus,
+.button.filled:hover {
+    background-color: var(--frost2);
+}
+
+.button.filled.warn:active,
+.button.filled.warn:focus,
+.button.filled.warn:hover {
+    background-color: var(--aurora-orange);
+}
+
+/*
+ * Styling for active OUTLINED buttons
+ */
+.button.outlined {
+    background-color: transparent;
+    border-color: var(--polar3);
+    color: var(--polar3);
+}
+
+.button.outlined:active,
+.button.outlined:focus,
+.button.outlined:hover {
+    border-color: var(--frost2);
+    color: var(--frost3);
+}
+
+.button.outlined.warn:active,
+.button.outlined.warn:focus,
+.button.outlined.warn:hover {
+    border-color: var(--aurora-red);
+    color: var(--aurora-red);
+}
+
+/*
+ * Styling for active SUBTLE buttons
+ */
+.button.subtle {
+    background-color: transparent;
+    color: var(--polar3);
+}
+
+.button.subtle:active,
+.button.subtle:focus,
+.button.subtle:hover {
+    background-color: var(--snow2);
+}
+
+.button.subtle.warn {
+    background-color: transparent;
+}
+
+.button.subtle.warn:active,
+.button.subtle.warn:focus,
+.button.subtle.warn:hover {
+    background-color: var(--aurora-red);
+    color: var(--white);
+}
+
+/*
+ * Styling for all DISABLED buttons
+ */
+.button[disabled] {
+    cursor: default;
+    pointer-events: none;
+}
+
+.button.filled[disabled] {
+    background-color: var(--snow0);
+}

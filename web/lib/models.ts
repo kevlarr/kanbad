@@ -2,7 +2,7 @@
  * Models
  */
 
-interface IModel {
+interface Model {
   identifier: string,
 }
 
@@ -11,23 +11,23 @@ export interface BoardParams {
   title: string,
 }
 
-export interface BoardModel extends IModel, BoardParams {
+export interface BoardModel extends Model, BoardParams {
   workspace: string,
 }
 
 // The user-updatable properties of a card
 export interface CardParams {
-  body: string,
+  body: string | null,
   title: string,
 }
 
-export interface CardModel extends IModel, CardParams {
+export interface CardModel extends Model, CardParams {
   board: string,
 }
 
-export interface WorkspaceModel extends IModel {}
+export interface WorkspaceModel extends Model {}
 
-export function compareModelFn(a: IModel, b: IModel) {
+export function compareModelFn(a: Model, b: Model) {
   if (a.identifier == b.identifier) { return 0 }
   if (a.identifier < b.identifier) { return -1 }
   return 1

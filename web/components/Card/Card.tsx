@@ -1,17 +1,18 @@
 import { useState } from 'react'
 
 import { CardModel, CardParams } from '@/lib/models'
-import CardForm from '@/components/CardForm/CardForm'
+import { Button, Heading, Text } from '@/components/base'
+import { CardForm } from '@/components'
 import css from './Card.module.css'
 
 
-interface IProps {
+interface CardProps {
   card: CardModel,
   updateCard(params: CardParams): Promise<any>,
   deleteCard(): any,
 }
 
-export default function Card({ card, updateCard, deleteCard }: IProps) {
+export default function Card({ card, updateCard, deleteCard }: CardProps) {
   const [isEditing, setEditing] = useState(false)
 
   async function submitForm(params: CardParams) {
@@ -25,28 +26,32 @@ export default function Card({ card, updateCard, deleteCard }: IProps) {
         submitForm={submitForm}
         cancelSubmit={() => setEditing(false)}
       />
-    : <div className={css.content}>
-        <h4 className={css.title}>{card.title}</h4>
-        <p className={css.body}>{card.body}</p>
-        <div className={css.edit}>
-          <button
-            className='button sm'
+    : <div>
+        <Heading level={4}>{card.title}</Heading>
+        <Text>{card.body}</Text>
+        <div className={css.controls}>
+          <Button
+            compact
+            size='sm'
+            variant='subtle'
             onClick={() => setEditing(true)}
           >
             Edit
-          </button>
-          <button
-            className='button sm'
+          </Button>
+          <Button
+            compact
+            warn
+            size='sm'
+            variant='subtle'
             onClick={deleteCard}
           >
-            Delete
-          </button>
+            Remove
+          </Button>
         </div>
       </div>
 
   return (
     <div className={css.card}>
-      <div className={css.pin}></div>
       {content}
     </div>
   )

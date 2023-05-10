@@ -1,26 +1,5 @@
 .workspace {
     padding: 25px 50px;
-}
-
-.meta {
-    color: #444;
-    margin-bottom: 20px;
-}
-
-.identifier {
-    font-size: 18px;
-    margin: 0;
-}
-
-.disclaimer {
-    font-size: 12px;
-    margin: 0;
-}
-
-.addBoard {
-    float: right;
-}
-
-.star {
-    color: #bf9000;
+    flex: 1;
+    overflow-y: scroll;
 }
