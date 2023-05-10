@@ -1,70 +1,92 @@
-import { ChangeEvent, FocusEvent, SyntheticEvent, useState } from 'react'
-import { TextInput as MantineInput, Textarea as MantineTextarea } from '@mantine/core'
-import { useForm } from '@mantine/form'
+import { ChangeEvent, SyntheticEvent, useState } from 'react'
 
 import { CardModel, CardParams } from '@/lib/models'
 import { Button, TextArea, TextInput } from '@/components/base'
 
-interface IProps {
+type Event = ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+
+interface CardFormProps {
   card: CardModel,
-  submitForm(params: CardParams): any
-  cancelSubmit(): any
+  submitForm(params: CardParams): any,
+  cancelSubmit(): any,
+}
+
+interface FormValues {
+  title: string,
+  body: string,
+}
+
+interface FormErrors {
+  title: string | null,
 }
 
 export default function CardForm({
   card: { title, body },
   submitForm,
   cancelSubmit,
-}: IProps) {
-  const form = useForm({
-    initialValues: {
-      title,
-      body: body ?? '',
-    },
-    validate: {
-      title: (value) => value ? null : 'A title would be helpful',
-    },
-    validateInputOnChange: true,
-    validateInputOnBlur: true,
-  });
+}: CardFormProps) {
+  // TODO: Abstract form handling & validation into a more generalized utility
+  const [formValues, setFormValues] = useState<FormValues>({
+    title,
+    body: body || '',
+  })
+  const [formErrors, setFormErrors] = useState<FormErrors>({
+    title: null,
+  })
+
+  function setTitle(evt: Event) {
+    const { value } = evt.target
+
+    setFormValues({
+      ...formValues,
+      title: value,
+    })
+    setFormErrors({
+      title: value ? null : 'A title would be helpful',
+    })
+  }
+
+  function setBody(evt: Event) {
+    const { value } = evt.target
+
+    setFormValues({
+      ...formValues,
+      body: value,
+    })
+  }
+
+  function isValid() {
+    return !formErrors.title
+  }
 
   async function onSubmit(evt: SyntheticEvent) {
     evt.preventDefault()
 
-    if (form.isValid()) {
-      return await submitForm(form.values)
+    if (isValid()) {
+      return await submitForm(formValues)
     }
   }
 
   return (
     <form onSubmit={onSubmit}>
-      <MantineInput
-        label='Title'
-        placeholder='Look into that thing'
-        withAsterisk
-        {...form.getInputProps('title')}
-      />
-
       <TextInput
         autoFocus={true}
         label='Title'
+        value={formValues.title}
+        error={formErrors.title}
         id='asdf'
         placeholder='Look into that thing'
-      />
-      <MantineTextarea
-        autosize
-        label='Body'
-        maxRows={8}
-        minRows={4}
-        placeholder='Something something here...'
-        {...form.getInputProps('body')}
+        onChange={setTitle}
+        onBlur={setTitle}
       />
       <TextArea
         label='Body'
         placeholder='Something something here...'
+        value={formValues.body}
+        onChange={setBody}
       />
       <Button
-        { ...( !form.isValid() && { 'data-disabled': true } ) }
+        { ...( !isValid() && { disabled: true } ) }
         size='sm'
         type='submit'
       >

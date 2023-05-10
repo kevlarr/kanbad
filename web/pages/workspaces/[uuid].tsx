@@ -16,7 +16,7 @@ import css from './uuid.module.css'
 
 type BoardCardsMap = { [index: string] : Array<CardModel> }
 
-interface IProps {
+interface WorkspacePageProps {
   boards: Array<BoardModel>,
   cards: Array<CardModel>,
   workspace: WorkspaceModel,
@@ -40,7 +40,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 }
 
-export default function WorkspacePage({ boards, cards, workspace }: IProps) {
+export default function WorkspacePage({
+  boards,
+  cards,
+  workspace,
+}: WorkspacePageProps) {
   // TODO:
   //   - Is this a smell, creating state & hooks from props?
   //   - Should they be loaded client-side within the component?

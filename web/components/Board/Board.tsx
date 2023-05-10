@@ -5,7 +5,7 @@ import { Button, Heading } from '@/components/base'
 import { Card } from '@/components'
 import css from './Board.module.css'
 
-interface IProps {
+interface BoardProps {
   board: BoardModel,
   cards: Array<CardModel> | undefined,
   updateBoard(params: BoardParams): Promise<any>,
@@ -23,7 +23,7 @@ export default function Board({
   createCard,
   updateCard,
   deleteCard,
-}: IProps) {
+}: BoardProps) {
   const [isEditing, setEditing] = useState(false)
 
   async function updateTitle(evt: FocusEvent) {

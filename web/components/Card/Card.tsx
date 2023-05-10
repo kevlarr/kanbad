@@ -6,13 +6,13 @@ import { CardForm } from '@/components'
 import css from './Card.module.css'
 
 
-interface IProps {
+interface CardProps {
   card: CardModel,
   updateCard(params: CardParams): Promise<any>,
   deleteCard(): any,
 }
 
-export default function Card({ card, updateCard, deleteCard }: IProps) {
+export default function Card({ card, updateCard, deleteCard }: CardProps) {
   const [isEditing, setEditing] = useState(false)
 
   async function submitForm(params: CardParams) {

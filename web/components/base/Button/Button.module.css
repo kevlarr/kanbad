@@ -7,6 +7,11 @@
     padding: var(--padding-md);
 }
 
+.button:active,
+.button:focus {
+    outline: none;
+}
+
 .button.sm {
   font-size: var(--font-size-sm);
 }
@@ -19,6 +24,9 @@
     padding: var(--padding-sm);
 }
 
+/*
+ * Styling for active FILLED buttons
+ */
 .button.filled {
     background-color: var(--frost3);
     color: var(--white);
@@ -40,6 +48,9 @@
     background-color: var(--aurora-orange);
 }
 
+/*
+ * Styling for active OUTLINED buttons
+ */
 .button.outlined {
     background-color: transparent;
     border-color: var(--polar3);
@@ -60,6 +71,9 @@
     color: var(--aurora-red);
 }
 
+/*
+ * Styling for active SUBTLE buttons
+ */
 .button.subtle {
     background-color: transparent;
     color: var(--polar3);
@@ -80,4 +94,16 @@
 .button.subtle.warn:hover {
     background-color: var(--aurora-red);
     color: var(--white);
+}
+
+/*
+ * Styling for all DISABLED buttons
+ */
+.button[disabled] {
+    cursor: default;
+    pointer-events: none;
+}
+
+.button.filled[disabled] {
+    background-color: var(--snow0);
 }

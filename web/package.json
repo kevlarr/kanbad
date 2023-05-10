@@ -9,11 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@emotion/react": "^11.10.8",
-    "@mantine/core": "^6.0.10",
-    "@mantine/dates": "^6.0.10",
-    "@mantine/form": "^6.0.10",
-    "@mantine/next": "^6.0.10",
     "@types/node": "18.16.2",
     "@types/react": "18.2.0",
     "@types/react-dom": "18.2.1",
