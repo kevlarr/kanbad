@@ -8,6 +8,7 @@ interface FlexContainerProps extends BaseProps {
   direction?: 'row' | 'column',
   gap?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | null,
   pad?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | null,
+  scroll?: 'x' | 'y' | null,
 }
 
 export default function FlexContainer({
@@ -16,6 +17,7 @@ export default function FlexContainer({
   direction = 'row',
   gap = null,
   pad = null,
+  scroll = null,
   ...rest
 }: FlexContainerProps) {
   const classes = [
@@ -24,6 +26,7 @@ export default function FlexContainer({
     css[direction],
     gap && css[`gap${gap}`],
     pad && css[`pad${pad}`],
+    scroll && css[`scroll${scroll}`],
   ]
 
   return (

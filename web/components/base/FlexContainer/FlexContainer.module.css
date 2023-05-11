@@ -17,3 +17,7 @@
 .padmd { padding: calc(2 * var(--padding-md)); }
 .padlg { padding: calc(2 * var(--padding-lg)); }
 .padxl { padding: calc(2 * var(--padding-xl)); }
+
+.scrollx  { overflow-x: scroll; }
+.scrolly  { overflow-y: scroll; }
+.scrollxy { overflow: scroll; }

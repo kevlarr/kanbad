@@ -133,7 +133,7 @@ export default function WorkspacePage({
     }, {})
 
   return (
-    <FlexContainer className={css.workspace} direction='column' gap='lg'>
+    <FlexContainer className={css.workspace} direction='column' gap='lg' scroll='y'>
       <WorkspaceHeader
         identifier={workspace.identifier}
         createBoard={createBoard}

@@ -9,9 +9,21 @@ import {
  } from '@/components/base'
 
 export default function Components() {
+  const colorSquare = (color: string) => (
+    <div key={color} style={{
+      backgroundColor: `var(--${color})`,
+      height: '50px',
+      width: '50px',
+    }}></div>
+  )
+  const auroraSquares = [11, 12, 13, 14, 15].map((num) => (
+    colorSquare(`nord${num}`)
+  ))
+
   const buttons = (
     <FlexContainer direction='column' gap='md'>
       <Heading level={1} underline>Button</Heading>
+
       <FlexContainer gap='md'>
         <Button>Default Button</Button>
         <Button variant='filled'>Filled Button</Button>
@@ -21,15 +33,52 @@ export default function Components() {
         <Button compact variant='outlined'>Outlined Compact</Button>
         <Button compact variant='subtle'>Subtle Compact</Button>
       </FlexContainer>
+
       <FlexContainer gap='md'>
         <Button warn>Warn Button</Button>
-        <Button warn variant='filled'>Warn Filled Button</Button>
-        <Button warn variant='outlined'>Warn Outlined Button</Button>
-        <Button warn variant='subtle'>Warn Subtle Button</Button>
+        <Button warn variant='filled'>Warn Filled</Button>
+        <Button warn variant='outlined'>Warn Outlined</Button>
+        <Button warn variant='subtle'>Warn Subtle</Button>
         <Button warn compact variant='filled'>Warn Filled Compact</Button>
         <Button warn compact variant='outlined'>Warn Outlined Compact</Button>
         <Button warn compact variant='subtle'>Warn Subtle Compact</Button>
       </FlexContainer>
+    </FlexContainer>
+  )
+
+  const flexContainers = (
+    <FlexContainer direction='column' gap='md'>
+      <Heading level={1} underline>FlexContainer</Heading>
+
+      <Heading level={2}>Default</Heading>
+      <FlexContainer>{auroraSquares}</FlexContainer>
+
+      <Heading level={2}>Column</Heading>
+      <FlexContainer direction='column'>{auroraSquares}</FlexContainer>
+
+      <Heading level={2}>Gaps</Heading>
+      <Heading level={3}>xs</Heading>
+      <FlexContainer gap='xs'>{auroraSquares}</FlexContainer>
+      <Heading level={3}>sm</Heading>
+      <FlexContainer gap='sm'>{auroraSquares}</FlexContainer>
+      <Heading level={3}>md</Heading>
+      <FlexContainer gap='md'>{auroraSquares}</FlexContainer>
+      <Heading level={3}>lg</Heading>
+      <FlexContainer gap='lg'>{auroraSquares}</FlexContainer>
+      <Heading level={3}>xl</Heading>
+      <FlexContainer gap='xl'>{auroraSquares}</FlexContainer>
+
+      <Heading level={2}>Padding</Heading>
+      <Heading level={3}>xs</Heading>
+      <FlexContainer style={{backgroundColor: 'var(--snow0)'}} pad='xs'>{auroraSquares}</FlexContainer>
+      <Heading level={3}>sm</Heading>
+      <FlexContainer style={{backgroundColor: 'var(--snow0)'}} pad='sm'>{auroraSquares}</FlexContainer>
+      <Heading level={3}>md</Heading>
+      <FlexContainer style={{backgroundColor: 'var(--snow0)'}} pad='md'>{auroraSquares}</FlexContainer>
+      <Heading level={3}>lg</Heading>
+      <FlexContainer style={{backgroundColor: 'var(--snow0)'}} pad='lg'>{auroraSquares}</FlexContainer>
+      <Heading level={3}>xl</Heading>
+      <FlexContainer style={{backgroundColor: 'var(--snow0)'}} pad='xl'>{auroraSquares}</FlexContainer>
     </FlexContainer>
   )
 
@@ -59,7 +108,29 @@ export default function Components() {
     </FlexContainer>
   )
 
-  const textInput = (
+  const textAreas = (
+    <FlexContainer direction='column' gap='md'>
+    <Heading level={1} underline>TextArea</Heading>
+
+    <Heading level={2}>No Label</Heading>
+    <TextArea defaultValue='This is some text input' />
+
+    <Heading level={2}>With Label</Heading>
+    <TextArea defaultValue='This is some text input' label='Some Label' />
+
+    <Heading level={2}>With Label and Error</Heading>
+    <TextArea
+      defaultValue='This is some text input'
+      error='This is an error message, fix your stuff.'
+      label='Some Label'
+    />
+
+    <Heading level={2}>Resize</Heading>
+    <TextArea resize rows={10} />
+  </FlexContainer>
+  )
+
+  const textInputs = (
     <FlexContainer direction='column' gap='md'>
       <Heading level={1} underline>TextInput</Heading>
 
@@ -69,7 +140,7 @@ export default function Components() {
       <Heading level={2}>With Label</Heading>
       <TextInput defaultValue='This is some text input' label='Some Label' />
 
-      <Heading level={3}>With Label and Error</Heading>
+      <Heading level={2}>With Label and Error</Heading>
       <TextInput
         defaultValue='This is some text input'
         error='This is an error message, fix your stuff.'
@@ -80,11 +151,13 @@ export default function Components() {
 
 
   return (
-    <FlexContainer direction='column' gap='xl' pad='xl'>
+    <FlexContainer direction='column' gap='xl' pad='xl' scroll='y'>
       {buttons}
+      {flexContainers}
       {headings}
       {text}
-      {textInput}
+      {textAreas}
+      {textInputs}
     </FlexContainer>
   )
 }
