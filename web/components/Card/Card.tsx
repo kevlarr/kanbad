@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 import { CardModel, CardParams } from '@/lib/models'
-import { Button, Heading, Text } from '@/components/base'
+import { Button, FlexContainer, Heading, Text } from '@/components/base'
 import { CardForm } from '@/components'
 import css from './Card.module.css'
 
@@ -26,10 +26,10 @@ export default function Card({ card, updateCard, deleteCard }: CardProps) {
         submitForm={submitForm}
         cancelSubmit={() => setEditing(false)}
       />
-    : <div>
+    : <FlexContainer direction='column' gap='sm'>
         <Heading level={4}>{card.title}</Heading>
         <Text>{card.body}</Text>
-        <div className={css.controls}>
+        <FlexContainer>
           <Button
             compact
             size='sm'
@@ -47,8 +47,8 @@ export default function Card({ card, updateCard, deleteCard }: CardProps) {
           >
             Remove
           </Button>
-        </div>
-      </div>
+        </FlexContainer>
+      </FlexContainer>
 
   return (
     <div className={css.card}>

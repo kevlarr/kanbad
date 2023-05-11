@@ -8,18 +8,6 @@
     resize: none;
 }
 
-.error {
-    border-color: var(--aurora-red);
-}
+.error { border-color: var(--aurora-red); }
 
-.resizeX {
-    resize: horizontal;
-}
-
-.resizeY {
-    resize: vertical;
-}
-
-.resizeXY {
-    resize: both;
-}
+.resize { resize: vertical; }

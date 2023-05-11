@@ -1,5 +1,4 @@
-import { Heading, Text } from '@/components/base'
-import css from './Workspace.module.css'
+import { FlexContainer, Heading, Text } from '@/components/base'
 
 interface WprkspaceHeaderProps {
   identifier: string,
@@ -11,12 +10,12 @@ export default function WorkspaceHeader({
   createBoard,
 }: WprkspaceHeaderProps) {
   return (
-    <div className={css.header}>
+    <FlexContainer direction='column'>
       <Heading level={2}>{identifier}</Heading>
       <Text>
         Make sure to <Text inline strong>★bookmark</Text> this page.
         While we won't lose the workspace, losing the address means you probably will.
       </Text>
-    </div>
+    </FlexContainer>
   )
 }

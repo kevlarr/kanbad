@@ -1,6 +1,6 @@
 import { ComponentProps } from 'react'
 
-import { Text } from '@/components/base'
+import { FlexContainer, Text } from '@/components/base'
 import css from './InputGroup.module.css'
 
 type BaseProps = ComponentProps<'div'>
@@ -18,16 +18,17 @@ export default function InputGroup({
   ...rest
 }: InputGroupProps) {
   return (
-    <div className={css.inputGroup} {...rest}>
+    <FlexContainer direction='column' gap='xs' {...rest}>
       {label &&
         <label className={css.label} {...(id && {htmlFor: id})}>{label}</label>
       }
-      <div className={css.input}>
+      {/* Wrap in a flex container so the child input stretches with `flex: 1` */}
+      <FlexContainer className={css.input}>
         {children}
-      </div>
+      </FlexContainer>
       {error &&
         <Text size='sm' warn >{error}</Text>
       }
-    </div>
+    </FlexContainer>
   )
 }

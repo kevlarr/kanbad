@@ -9,29 +9,21 @@ type Resize = 'x' | 'y' | 'xy' | null
 interface TextAreaProps extends BaseProps {
   error?: string | null,
   label?: string | null,
-  resize?: 'x' | 'y' | 'xy' | null,
+  resize?: boolean,
 }
 
 export default function TextArea({
   id,
   error,
   label,
-  resize = null,
+  resize = false,
   ...rest
 }: TextAreaProps) {
 
   const classes = [
     css.textarea,
-    error
-      ? css.error
-      : null,
-    resize
-      ? {
-        x: css.resizeX,
-        y: css.resizeY,
-        xy: css.resizeXY
-      }[resize]
-      : null
+    error && css.error,
+    resize && css.resize,
   ]
 
   return (

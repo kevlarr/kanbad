@@ -1,7 +1,7 @@
 import { FocusEvent, useState } from 'react'
 
 import { BoardModel, BoardParams, CardModel, CardParams } from '@/lib/models'
-import { Button, Heading, TextInput } from '@/components/base'
+import { Button, FlexContainer, Heading, TextInput } from '@/components/base'
 import { Card } from '@/components'
 import css from './Board.module.css'
 
@@ -52,35 +52,39 @@ export default function Board({
       </Heading>
 
   return (
-    <div className={css.board}>
-      <div className={css.boardHeader}>
-        {boardHeader}
-      </div>
-      {cards?.map(card =>
-        <Card
-        key={card.identifier}
-        card={card}
-        updateCard={async (params: CardParams) => await updateCard(card, params)}
-        deleteCard={async () => await deleteCard(card)}
-        />
-      )}
-      <Button
-        compact
-        size='sm'
-        variant='subtle'
-        onClick={createCard
-      }>
-        Add Card
-      </Button>
-      <Button
-        compact
-        warn
-        size='sm'
-        variant='subtle'
-        onClick={deleteBoard}
-      >
-        Remove Board
-      </Button>
-    </div>
+    <FlexContainer className={css.board} direction='column' gap='md'>
+      {boardHeader}
+      {cards &&
+        <FlexContainer direction='column' gap='lg'>
+          {cards?.map(card =>
+            <Card
+            key={card.identifier}
+            card={card}
+            updateCard={async (params: CardParams) => await updateCard(card, params)}
+            deleteCard={async () => await deleteCard(card)}
+            />
+          )}
+        </FlexContainer>
+      }
+      <FlexContainer gap='sm'>
+        <Button
+          compact
+          size='sm'
+          variant='subtle'
+          onClick={createCard
+        }>
+          Add Card
+        </Button>
+        <Button
+          compact
+          warn
+          size='sm'
+          variant='subtle'
+          onClick={deleteBoard}
+        >
+          Remove Board
+        </Button>
+      </FlexContainer>
+    </FlexContainer>
   )
 }

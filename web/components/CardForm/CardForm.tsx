@@ -1,7 +1,7 @@
 import { ChangeEvent, SyntheticEvent, useState } from 'react'
 
 import { CardModel, CardParams } from '@/lib/models'
-import { Button, TextArea, TextInput } from '@/components/base'
+import { Button, FlexContainer, TextArea, TextInput } from '@/components/base'
 
 type Event = ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
 
@@ -69,37 +69,42 @@ export default function CardForm({
 
   return (
     <form onSubmit={onSubmit}>
-      <TextInput
-        autoFocus={true}
-        label='Title'
-        defaultValue={formValues.title}
-        error={formErrors.title}
-        id='asdf'
-        placeholder='Look into that thing'
-        onChange={setTitle}
-        onBlur={setTitle}
-      />
-      <TextArea
-        label='Body'
-        placeholder='Something something here...'
-        resize='y'
-        defaultValue={formValues.body}
-        onChange={setBody}
-      />
-      <Button
-        { ...( !isValid() && { disabled: true } ) }
-        size='sm'
-        type='submit'
-      >
-        Save
-      </Button>
-      <Button
-        size='sm'
-        variant='outlined'
-        onClick={cancelSubmit}
-      >
-        Cancel
-      </Button>
+      <FlexContainer direction='column' gap='md'>
+        <TextInput
+          autoFocus={true}
+          label='Title'
+          defaultValue={formValues.title}
+          error={formErrors.title}
+          id='asdf'
+          placeholder='Look into that thing'
+          onChange={setTitle}
+          onBlur={setTitle}
+        />
+        <TextArea
+          label='Body'
+          placeholder='Something something here...'
+          resize='y'
+          rows={5}
+          defaultValue={formValues.body}
+          onChange={setBody}
+        />
+        <FlexContainer gap='md'>
+          <Button
+            { ...( !isValid() && { disabled: true } ) }
+            size='sm'
+            type='submit'
+          >
+            Save
+          </Button>
+          <Button
+            size='sm'
+            variant='outlined'
+            onClick={cancelSubmit}
+          >
+            Cancel
+          </Button>
+        </FlexContainer>
+      </FlexContainer>
     </form>
   )
 }
