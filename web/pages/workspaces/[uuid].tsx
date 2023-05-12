@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { DragEvent, useState } from 'react'
 import { GetServerSideProps } from 'next'
 
 import api from '@/lib/api'
@@ -125,6 +125,46 @@ export default function WorkspacePage({
       })
   }
 
+  // And now to define and pass down EVEN MORE handlers. Yeesh.
+  function onCardDrag(evt: DragEvent, card: CardModel) {
+    console.debug(`DRAG: card ${card.identifier}`)
+  }
+
+  function onCardDragStart(evt: DragEvent, card: CardModel) {
+    console.debug(`DRAG-START: card ${card.identifier}`)
+
+    // Using a custom data type helps for a few reasons:
+    //
+    // - All default drag events will set `text/plain` so using a custom type
+    //   makes it easier for the drop zone to cancel drags from other types
+    //
+    // - Not including `text/plain` type means that the card can't be dragged
+    //   into a drop zone on another site (since there is nothing meaningful
+    //   to share)
+    //
+    // See: https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/Recommended_drag_types#dragging_custom_data
+    evt.dataTransfer.setData('kanbad/cardId', card.identifier)
+  }
+
+  function onCardDragEnd(evt: DragEvent, card: CardModel) {
+    console.debug(`DRAG-END: card ${card.identifier}`)
+  }
+
+  function onCardDragOver(evt: DragEvent, board: BoardModel) {
+    const cardId = evt.dataTransfer.getData('kanbad/cardId')
+
+    if (!cardId) {
+      return false
+    }
+
+    evt.preventDefault()
+    console.debug(`DRAG-OVER: Board ${board.identifier}`)
+  }
+
+  function onCardDrop(evt: DragEvent, board: BoardModel) {
+    console.debug(`DROP: Board ${board.identifier}`)
+  }
+
   const cardsMap =
     cardList.reduce((map: BoardCardsMap, card: CardModel) => {
       map[card.board] = map[card.board] || [];
@@ -150,6 +190,11 @@ export default function WorkspacePage({
               createCard={async () => await createCard(board)}
               updateCard={updateCard}
               deleteCard={deleteCard}
+              onCardDrag={onCardDrag}
+              onCardDragStart={onCardDragStart}
+              onCardDragEnd={onCardDragEnd}
+              onCardDragOver={onCardDragOver}
+              onCardDrop={onCardDrop}
             />
           )}
         </FlexContainer>

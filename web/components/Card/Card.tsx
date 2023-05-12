@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { DragEvent, useState } from 'react'
 
 import { CardModel, CardParams } from '@/lib/models'
 import { Button, FlexContainer, Heading, Text } from '@/components/base'
@@ -8,11 +8,23 @@ import css from './Card.module.css'
 
 interface CardProps {
   card: CardModel,
+  // TODO: Better typing
   updateCard(params: CardParams): Promise<any>,
   deleteCard(): any,
+  // TODO: Type these
+  onDrag(evt: DragEvent, card: CardModel): any,
+  onDragStart(evt: DragEvent, card: CardModel): any,
+  onDragEnd(evt: DragEvent, card: CardModel): any,
 }
 
-export default function Card({ card, updateCard, deleteCard }: CardProps) {
+export default function Card({
+  card,
+  updateCard,
+  deleteCard,
+  onDrag,
+  onDragStart,
+  onDragEnd,
+}: CardProps) {
   const [isEditing, setEditing] = useState(false)
 
   // While there are several ways to make child elements selectable within
@@ -23,9 +35,6 @@ export default function Card({ card, updateCard, deleteCard }: CardProps) {
   async function submitForm(params: CardParams) {
     updateCard(params)
       .then(() => setEditing(false))
-  }
-
-  function onDragStart(evt: any) {
   }
 
   const content = isEditing
@@ -69,7 +78,11 @@ export default function Card({ card, updateCard, deleteCard }: CardProps) {
       direction='column'
       pad='md'
       draggable={isDraggable}
-      onDragStart={onDragStart}
+      {...(isDraggable && {
+        onDrag: (e) => onDrag(e, card),
+        onDragStart: (e) => onDragStart(e, card),
+        onDragEnd: (e) => onDragEnd(e, card),
+      })}
     >
       <FlexContainer
         className={css.content}
