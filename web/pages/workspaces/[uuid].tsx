@@ -7,6 +7,7 @@ import {
   BoardParams,
   CardModel,
   CardParams,
+  CardLocationParams,
   WorkspaceModel,
   compareModelFn,
 } from '@/lib/models'
@@ -73,7 +74,7 @@ export default function WorkspacePage({
   }
 
   async function updateBoard(board: BoardModel, params: BoardParams) {
-    return await api.put(`boards/${board.identifier}`, params)
+    return await api.patch(`boards/${board.identifier}`, params)
       .then((updatedBoard) => {
         setBoards(boardList.map((existingBoard) => (
           existingBoard.identifier === updatedBoard.identifier
@@ -106,13 +107,27 @@ export default function WorkspacePage({
   // TODO: Abstract this away - this is duplicated from `updateBoard`,
   // and same with `deleteCard`
   async function updateCard(card: CardModel, params: CardParams) {
-    return await api.put(`cards/${card.identifier}`, params)
+    return await api.patch(`cards/${card.identifier}`, params)
       .then((updatedCard) => {
         setCards(cardList.map((existingCard) => (
           existingCard.identifier === updatedCard.identifier
             ? updatedCard
             : existingCard
         )))
+      })
+  }
+
+  async function updateCardLocations(paramList: Array<CardLocationParams>) {
+    return await api.patch(`cards`, paramList)
+      .then((updatedCards) => {
+        // FIXME: Optimize this
+        updatedCards.forEach((updatedCard: CardModel) => {
+          setCards(cardList.map((existingCard) => (
+            existingCard.identifier === updatedCard.identifier
+              ? updatedCard
+              : existingCard
+          )))
+        })
       })
   }
 
@@ -162,10 +177,22 @@ export default function WorkspacePage({
   }
 
   function onCardDrop(evt: DragEvent, board: BoardModel) {
-    console.debug(`DROP: Board ${board.identifier}`)
+    const cardId = evt.dataTransfer.getData('kanbad/cardId')
+    const card = cardList.find((card) => card.identifier === cardId)!
+
+    console.log(`DROP: Card<${card.identifier}> on Board<${board.identifier}>`)
+
+    if (card.board === board.identifier) {
+      return
+    }
+
+    updateCardLocations([{
+      card: card.identifier,
+      board: board.identifier,
+    }])
   }
 
-  const cardsMap =
+  const cardsByBoard =
     cardList.reduce((map: BoardCardsMap, card: CardModel) => {
       map[card.board] = map[card.board] || [];
       map[card.board].push(card)
@@ -184,7 +211,7 @@ export default function WorkspacePage({
             <Board
               key={board.identifier}
               board={board}
-              cards={cardsMap[board.identifier]}
+              cards={cardsByBoard[board.identifier]}
               updateBoard={async (params: BoardParams) => updateBoard(board, params)}
               deleteBoard={async () => await deleteBoard(board)}
               createCard={async () => await createCard(board)}

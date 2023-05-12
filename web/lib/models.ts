@@ -21,8 +21,16 @@ export interface CardParams {
   title: string,
 }
 
-export interface CardModel extends Model, CardParams {
+// Params for updating a card's board & position
+export interface CardLocationParams {
   board: string,
+  card: string,
+}
+
+export interface CardModel extends Model {
+  board: string,
+  body: string | null,
+  title: string,
 }
 
 export interface WorkspaceModel extends Model {}

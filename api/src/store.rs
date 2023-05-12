@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use sqlx::FromRow;
 use sqlx::postgres::PgPool;
 use uuid::Uuid;
 
@@ -175,7 +176,15 @@ pub struct CardUpdate {
     pub body: Option<String>,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Deserialize)]
+pub struct CardLocationUpdate {
+    #[serde(rename = "board")]
+    pub board_identifier: String,
+    #[serde(rename = "card")]
+    pub card_identifier: String,
+}
+
+#[derive(Debug, FromRow, Serialize)]
 pub struct Card {
     #[serde(skip_serializing)]
     pub id: i32,
@@ -215,8 +224,9 @@ impl Card {
         sqlx::query_as!(
             Self,
             "
-            update card
-            set title = $2, body = $3
+            update card set
+                title = $2, body = $3
+
             from board b
 
             where b.id = card.board_id
@@ -234,6 +244,45 @@ impl Card {
             params.body.as_deref(),
         )
             .fetch_one(pool)
+            .await
+            .unwrap()
+    }
+
+    #[deprecated(note = "FIXME: sql injection")]
+    pub async fn update_locations(pool: &PgPool, param_list: &[CardLocationUpdate]) -> Vec<Self> {
+        let values = param_list.iter()
+            .map(|p| format!(
+                "('{}', '{}')",
+                &p.card_identifier,
+                &p.board_identifier,
+            ))
+            .collect::<Vec<_>>()
+            .join(", ");
+
+        sqlx::query_as::<_, Self>(
+            &format!(
+                "
+                update card set
+                    board_id = board.id
+
+                from board
+                join (values {values}) vals (
+                    card_identifier,
+                    board_identifier
+                ) on vals.board_identifier::uuid = board.identifier
+
+                where vals.card_identifier::uuid = card.identifier
+
+                returning
+                    card.id,
+                    card.identifier,
+                    card.title,
+                    card.body,
+                    board.identifier as board_identifier
+                "),
+
+        )
+            .fetch_all(pool)
             .await
             .unwrap()
     }
