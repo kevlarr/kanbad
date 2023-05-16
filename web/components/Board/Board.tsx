@@ -65,7 +65,7 @@ export default function Board({
       const { offsetTop } = ref.current!
       const dist = Math.abs(offsetTop - clientY)
 
-      if (!closestDist || dist < closestDist) {
+      if (closestDist === undefined || dist < closestDist) {
         closestDist = dist
         closest = i
       }
