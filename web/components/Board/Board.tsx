@@ -1,8 +1,8 @@
-import { DragEvent, FocusEvent, useState } from 'react'
+import { DragEvent, FocusEvent, Fragment, RefObject, createRef, useState } from 'react'
 
 import { BoardModel, BoardParams, CardModel, CardParams } from '@/lib/models'
 import { Button, FlexContainer, Heading, TextInput } from '@/components/base'
-import { Card } from '@/components'
+import { Card, Dropzone } from '@/components'
 import css from './Board.module.css'
 
 interface BoardProps {
@@ -37,6 +37,12 @@ export default function Board({
   onCardDrop,
 }: BoardProps) {
   const [isEditing, setEditing] = useState(false)
+  const [activeDropzone, setActiveDropzone] = useState(-1)
+
+  const dropzoneRefs: Array<RefObject<HTMLDivElement>> = [
+    createRef(),
+    ...((cards?.map(() => createRef()) || []) as Array<RefObject<HTMLDivElement>>)
+  ]
 
   async function updateTitle(evt: FocusEvent) {
     const title = (evt.target as HTMLInputElement).value
@@ -48,6 +54,34 @@ export default function Board({
 
     updateBoard({ title })
       .then(() => setEditing(false))
+  }
+
+  function onDragOver(evt: DragEvent) {
+    const { clientY } = evt
+    let closest: number
+    let closestDist: number
+
+    dropzoneRefs.forEach((ref, i) => {
+      const { offsetTop } = ref.current!
+      const dist = Math.abs(offsetTop - clientY)
+
+      if (!closestDist || dist < closestDist) {
+        closestDist = dist
+        closest = i
+      }
+    })
+
+    setActiveDropzone(closest!)
+    return onCardDragOver(evt, board)
+  }
+
+  function onDragLeave(evt: DragEvent) {
+    setActiveDropzone(-1)
+  }
+
+  function onDrop(evt: DragEvent) {
+    setActiveDropzone(-1)
+    return onCardDrop(evt, board)
   }
 
   const boardHeader = isEditing
@@ -63,18 +97,26 @@ export default function Board({
         {board.title}
       </Heading>
 
+  const dropzone = (i: number, key: boolean = false) => <Dropzone
+    ref={dropzoneRefs[i]}
+    active={i === activeDropzone}
+    {...(key && { key: `drop${i}` })}
+  />
+
   return (
     <FlexContainer
       className={css.board}
       direction='column'
-      gap='md'
-      onDragOver={(e) => onCardDragOver(e, board)}
-      onDrop={(e) => onCardDrop(e, board)}
+      gap='sm'
+      onDragOver={onDragOver}
+      onDragLeave={onDragLeave}
+      onDrop={onDrop}
     >
       {boardHeader}
-      {cards &&
-        <FlexContainer direction='column' gap='lg'>
-          {cards?.map(card =>
+      <FlexContainer direction='column' gap='sm'>
+        {dropzone(0)}
+        {cards?.map((card, i) =>
+          <Fragment key={card.identifier}>
             <Card
               key={card.identifier}
               card={card}
@@ -84,9 +126,10 @@ export default function Board({
               onDragStart={onCardDragStart}
               onDragEnd={onCardDragEnd}
             />
-          )}
-        </FlexContainer>
-      }
+            {dropzone(i + 1, true)}
+          </Fragment>
+        )}
+      </FlexContainer>
       <FlexContainer gap='sm'>
         <Button
           compact

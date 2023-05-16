@@ -1,6 +1,6 @@
 .board {
-  background-color: var(--snow2);
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow-md);
-  padding: var(--padding-lg) var(--padding-xl);
+    background-color: var(--snow2);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow-md);
+    padding: var(--padding-lg) var(--padding-xl);
 }

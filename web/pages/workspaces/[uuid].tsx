@@ -146,8 +146,6 @@ export default function WorkspacePage({
   }
 
   function onCardDragStart(evt: DragEvent, card: CardModel) {
-    console.debug(`DRAG-START: card ${card.identifier}`)
-
     // Using a custom data type helps for a few reasons:
     //
     // - All default drag events will set `text/plain` so using a custom type
@@ -173,14 +171,11 @@ export default function WorkspacePage({
     }
 
     evt.preventDefault()
-    console.debug(`DRAG-OVER: Board ${board.identifier}`)
   }
 
   function onCardDrop(evt: DragEvent, board: BoardModel) {
     const cardId = evt.dataTransfer.getData('kanbad/cardId')
     const card = cardList.find((card) => card.identifier === cardId)!
-
-    console.log(`DROP: Card<${card.identifier}> on Board<${board.identifier}>`)
 
     if (card.board === board.identifier) {
       return

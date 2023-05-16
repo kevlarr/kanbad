@@ -76,7 +76,7 @@ export default function Card({
     <FlexContainer
       className={classes.join(' ')}
       direction='column'
-      pad='md'
+      pad='sm'
       draggable={isDraggable}
       {...(isDraggable && {
         onDrag: (e) => onDrag(e, card),
