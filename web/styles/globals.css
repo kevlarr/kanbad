@@ -22,9 +22,6 @@
     --margin-lg: 1.5rem;
     --margin-xl: 2.0rem;
     --white: #fff;
-
-    background-color: var(--snow1);
-    color: var(--polar0);
 }
 
 * {
@@ -40,6 +37,12 @@ html, body {
 input, textarea {
     font-family: unset;
     font-size: 1rem;
+}
+
+body {
+    background-color: var(--snow1);
+    color: var(--polar0);
+    font-size: 14px;
 }
 
 :focus {

@@ -1,9 +1,14 @@
-import { DragEvent, FocusEvent, Fragment, RefObject, createRef, useState } from 'react'
+import { DragEvent, FocusEvent, Fragment, RefObject, SyntheticEvent, createRef, useState } from 'react'
 
 import { BoardModel, BoardParams, CardModel, CardParams } from '@/lib/models'
 import { Button, FlexContainer, Heading, TextInput } from '@/components/base'
 import { Card, Dropzone } from '@/components'
 import css from './Board.module.css'
+
+interface DraggingCard {
+  card: CardModel,
+  index: number,
+}
 
 interface BoardProps {
   board: BoardModel,
@@ -36,8 +41,9 @@ export default function Board({
   onCardDragOver,
   onCardDrop,
 }: BoardProps) {
-  const [isEditing, setEditing] = useState(false)
   const [activeDropzone, setActiveDropzone] = useState(-1)
+  const [draggingCard, setDraggingCard] = useState<DraggingCard | null>(null)
+  const [isEditing, setEditing] = useState(false)
 
   const dropzoneRefs: Array<RefObject<HTMLDivElement>> = [
     createRef(),
@@ -71,16 +77,71 @@ export default function Board({
       }
     })
 
-    setActiveDropzone(closest!)
-    return onCardDragOver(evt, board)
+    // The dropzone immediately before or after the card should never
+    // activate, since it doesn't make sense to position a card before
+    // or after itself.
+    //
+    // Given:
+    //   Dropzone i=0
+    //   Card     j=0
+    //   Dropzone i=1 <Never activate>
+    //   Card     j=1 <If dragging>
+    //   Dropzone i=2 <Never activate>
+    //
+    // If the second card (j=1) is being dragged, then dropzones at
+    // 1 & 2
+    //
+    // Note: This only applies if the card being dragged is currently
+    // on the board already
+    console.debug(`draggingCard.card.board: ${draggingCard?.card.board}`)
+    console.debug(`draggingCard.index: ${draggingCard?.index}`)
+    console.debug(`board: ${board.identifier}`)
+    console.debug(`dropzone: ${closest!}`)
+
+    if (
+      draggingCard &&
+      draggingCard.card.board === board.identifier &&
+      (
+        draggingCard.index === closest! ||
+        draggingCard.index === closest! - 1
+      )
+    ) {
+      setActiveDropzone(-1)
+    } else {
+      setActiveDropzone(closest!)
+    }
+
+    // TODO: Comment why this is necessary because I already forgot
+    onCardDragOver(evt, board)
+  }
+
+  function onDragStart(evt: DragEvent, card: CardModel, index: number) {
+    setDraggingCard({ card, index })
+    onCardDragStart(evt, card)
+  }
+
+  function onDragEnter(evt: DragEvent) {
+    console.log(`enter board ${board.identifier}`)
   }
 
   function onDragLeave(evt: DragEvent) {
-    setActiveDropzone(-1)
+    if (evt.currentTarget === evt.target) {
+      setActiveDropzone(-1)
+
+      // FIXME: Getting messy... dropping a card onto another board won't clear the `draggingCard`
+      // state from the origin board (or any others it was dragged over) but clearing that on leave
+      // complicates setting it if the card is dragged back OVER
+      //
+      // Should MOST of this then be handled in the broader workspace that sets up all the other handlers?
+      // Like, should `draggingCard` be passed in as a prop, and this only handles tracking the drop zone
+      // that's being activated?
+      setDraggingCard(null)
+    }
   }
 
   function onDrop(evt: DragEvent) {
     setActiveDropzone(-1)
+    setDraggingCard(null)
     return onCardDrop(evt, board)
   }
 
@@ -109,6 +170,7 @@ export default function Board({
       direction='column'
       gap='sm'
       onDragOver={onDragOver}
+      onDragEnter={(onDragEnter)}
       onDragLeave={onDragLeave}
       onDrop={onDrop}
     >
@@ -123,7 +185,7 @@ export default function Board({
               updateCard={async (params: CardParams) => await updateCard(card, params)}
               deleteCard={async () => await deleteCard(card)}
               onDrag={onCardDrag}
-              onDragStart={onCardDragStart}
+              onDragStart={(e) => onDragStart(e, card, i)}
               onDragEnd={onCardDragEnd}
             />
             {dropzone(i + 1, true)}
