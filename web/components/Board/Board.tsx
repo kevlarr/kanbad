@@ -72,13 +72,13 @@ export default function Board({
     // for the type being dragged
     evt.preventDefault()
 
-    const { clientY } = evt
+    const { clientY: evtY } = evt
     let closest = -1
     let closestDist: number
 
     dropzoneRefs.forEach((ref, i) => {
-      const { offsetTop } = ref.current!
-      const dist = Math.abs(offsetTop - clientY)
+      const { y: refY } = ref.current!.getBoundingClientRect()
+      const dist = Math.abs(refY - evtY)
 
       if (closestDist === undefined || dist < closestDist) {
         closestDist = dist
@@ -126,10 +126,10 @@ export default function Board({
       return
     }
 
+    // Cancel the event to tell the browser this IS a valid drop zone
+    // for the type being dragged
     evt.preventDefault()
-
     setActiveDropzone(-1)
-
 
     if (card.board === board.identifier) {
       return
