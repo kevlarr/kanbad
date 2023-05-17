@@ -82,6 +82,9 @@ impl Board {
             join workspace w on w.id = b.workspace_id
 
             where w.identifier = $1
+
+            order by
+                b.id asc
             ",
             &workspace_identifier
         )
@@ -212,6 +215,10 @@ impl Card {
             join workspace w on w.id = b.workspace_id
 
             where w.identifier = $1
+
+            order by
+                c.position asc nulls last,
+                c.id asc
             ",
             &workspace_identifier
         )

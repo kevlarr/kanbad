@@ -6,13 +6,18 @@ interface Model {
   identifier: string,
 }
 
+interface Positionable {
+  position: string | null,
+}
+
 // The user-updatable properties of a board
 export interface BoardParams {
   title: string,
 }
 
-export interface BoardModel extends Model, BoardParams {
+export interface BoardModel extends Model {
   workspace: string,
+  title: string,
 }
 
 // The user-updatable properties of a card
@@ -27,16 +32,10 @@ export interface CardLocationParams {
   card: string,
 }
 
-export interface CardModel extends Model {
+export interface CardModel extends Model, Positionable {
   board: string,
   body: string | null,
   title: string,
 }
 
 export interface WorkspaceModel extends Model {}
-
-export function compareModelFn(a: Model, b: Model) {
-  if (a.identifier == b.identifier) { return 0 }
-  if (a.identifier < b.identifier) { return -1 }
-  return 1
-}

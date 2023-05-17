@@ -5,14 +5,10 @@ import { Button, FlexContainer, Heading, TextInput } from '@/components/base'
 import { Card, Dropzone } from '@/components'
 import css from './Board.module.css'
 
-interface DraggingCard {
-  card: CardModel,
-  index: number,
-}
-
 interface BoardProps {
   board: BoardModel,
   cards: Array<CardModel> | undefined,
+  // CRUD handlers
   updateBoard(params: BoardParams): Promise<any>,
   deleteBoard(): any,
   createCard(): any,
@@ -20,10 +16,12 @@ interface BoardProps {
   deleteCard(card: CardModel): any,
   // Card drag handlers
   // TODO: Type these
-  onCardDrag(evt: DragEvent, card: CardModel): any,
   onCardDragStart(evt: DragEvent, card: CardModel): any,
-  onCardDragEnd(evt: DragEvent, card: CardModel): any,
+  onCardDrag(evt: DragEvent): any,
+  onCardDragEnd(evt: DragEvent): any,
   onCardDragOver(evt: DragEvent, board: BoardModel): any,
+  onCardDragEnter(evt: DragEvent, board: BoardModel): any,
+  onCardDragLeave(evt: DragEvent, board: BoardModel): any,
   onCardDrop(evt: DragEvent, board: BoardModel): any,
 }
 
@@ -35,14 +33,15 @@ export default function Board({
   createCard,
   updateCard,
   deleteCard,
-  onCardDrag,
   onCardDragStart,
-  onCardDragEnd,
+  onCardDrag,
   onCardDragOver,
+  onCardDragEnter,
+  onCardDragLeave,
+  onCardDragEnd,
   onCardDrop,
 }: BoardProps) {
   const [activeDropzone, setActiveDropzone] = useState(-1)
-  const [draggingCard, setDraggingCard] = useState<DraggingCard | null>(null)
   const [isEditing, setEditing] = useState(false)
 
   const dropzoneRefs: Array<RefObject<HTMLDivElement>> = [
@@ -62,7 +61,21 @@ export default function Board({
       .then(() => setEditing(false))
   }
 
+  function onDragLeave(evt: DragEvent) {
+    if (evt.currentTarget === evt.target) {
+      setActiveDropzone(-1)
+    }
+
+    onCardDragLeave(evt, board)
+  }
+
   function onDragOver(evt: DragEvent) {
+    const draggedCard = onCardDragOver(evt, board)
+
+    if (!draggedCard) {
+      return
+    }
+
     const { clientY } = evt
     let closest: number
     let closestDist: number
@@ -93,56 +106,23 @@ export default function Board({
     //
     // Note: This only applies if the card being dragged is currently
     // on the board already
-    console.debug(`draggingCard.card.board: ${draggingCard?.card.board}`)
-    console.debug(`draggingCard.index: ${draggingCard?.index}`)
-    console.debug(`board: ${board.identifier}`)
-    console.debug(`dropzone: ${closest!}`)
-
     if (
-      draggingCard &&
-      draggingCard.card.board === board.identifier &&
+      draggedCard &&
+      draggedCard.board === board.identifier &&
       (
-        draggingCard.index === closest! ||
-        draggingCard.index === closest! - 1
+        draggedCard === (cards && cards[closest!]) ||
+        draggedCard === (cards && cards[closest! - 1])
       )
     ) {
       setActiveDropzone(-1)
     } else {
       setActiveDropzone(closest!)
     }
-
-    // TODO: Comment why this is necessary because I already forgot
-    onCardDragOver(evt, board)
-  }
-
-  function onDragStart(evt: DragEvent, card: CardModel, index: number) {
-    setDraggingCard({ card, index })
-    onCardDragStart(evt, card)
-  }
-
-  function onDragEnter(evt: DragEvent) {
-    console.log(`enter board ${board.identifier}`)
-  }
-
-  function onDragLeave(evt: DragEvent) {
-    if (evt.currentTarget === evt.target) {
-      setActiveDropzone(-1)
-
-      // FIXME: Getting messy... dropping a card onto another board won't clear the `draggingCard`
-      // state from the origin board (or any others it was dragged over) but clearing that on leave
-      // complicates setting it if the card is dragged back OVER
-      //
-      // Should MOST of this then be handled in the broader workspace that sets up all the other handlers?
-      // Like, should `draggingCard` be passed in as a prop, and this only handles tracking the drop zone
-      // that's being activated?
-      setDraggingCard(null)
-    }
   }
 
   function onDrop(evt: DragEvent) {
     setActiveDropzone(-1)
-    setDraggingCard(null)
-    return onCardDrop(evt, board)
+    onCardDrop(evt, board)
   }
 
   const boardHeader = isEditing
@@ -169,8 +149,8 @@ export default function Board({
       className={css.board}
       direction='column'
       gap='sm'
+      onDragEnter={(e) => onCardDragEnter(e, board)}
       onDragOver={onDragOver}
-      onDragEnter={(onDragEnter)}
       onDragLeave={onDragLeave}
       onDrop={onDrop}
     >
@@ -184,8 +164,8 @@ export default function Board({
               card={card}
               updateCard={async (params: CardParams) => await updateCard(card, params)}
               deleteCard={async () => await deleteCard(card)}
+              onDragStart={(e) => onCardDragStart(e, card)}
               onDrag={onCardDrag}
-              onDragStart={(e) => onDragStart(e, card, i)}
               onDragEnd={onCardDragEnd}
             />
             {dropzone(i + 1, true)}
