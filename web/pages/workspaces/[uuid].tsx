@@ -1,4 +1,4 @@
-import { DragEvent, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { GetServerSideProps } from 'next'
 
 import api from '@/lib/api'
@@ -58,12 +58,14 @@ export default function WorkspacePage({
   const [boardList, setBoards] = useState(boards)
   const [cardList, setCards] = useState(cards)
 
-  const cardsByBoard =
-    cardList.reduce((map: BoardCardsMap, card: CardModel) => {
+  const cardsByBoard = useMemo(
+    () => cardList.reduce((map: BoardCardsMap, card: CardModel) => {
       map[card.board] = map[card.board] || [];
       map[card.board].push(card)
       return map
-    }, {})
+    }, {}),
+    [cardList],
+  )
 
   /* Board CRUD handlers
    */
@@ -129,17 +131,46 @@ export default function WorkspacePage({
       })
   }
 
-  async function updateCardLocations(paramList: Array<CardLocationParams>) {
+  async function updateCardLocations(board: BoardModel, card: CardModel, position: number) {
+    // Regardless of whether or not the card is being moved to a different board
+    // or simply reordered in its current board, this builds an appropriate list
+    // of cards by position in the "destination" board...
+    const destinationBoardCards = (cardsByBoard[board.identifier] || [])
+      .filter((c) => c.identifier !== card.identifier)
+
+    let paramList = [
+      ...destinationBoardCards.slice(0, position),
+      card,
+      ...destinationBoardCards.slice(position),
+    ].map((c, i) => ({
+      board: board.identifier,
+      card: c.identifier,
+      position: i,
+     }))
+
+    // ... but if it IS being moved to a different board, the previous board's cards
+    // all need to have their positions updated, too.
+
+    if (card.board !== board.identifier) {
+      paramList = paramList.concat(
+        cardsByBoard[card.board]
+          .filter((c) => c.identifier !== card.identifier)
+          .map((c, i) => ({
+            board: card.board,
+            card: c.identifier,
+            position: i,
+          }))
+      )
+    }
+
     return await api.patch(`cards`, paramList)
       .then((updatedCards) => {
-        // FIXME: Optimize this
-        updatedCards.forEach((updatedCard: CardModel) => {
-          setCards(cardList.map((existingCard) => (
-            existingCard.identifier === updatedCard.identifier
-              ? updatedCard
-              : existingCard
-          )))
-        })
+        const updatedById = updatedCards.reduce((obj: any, c: CardModel) => ({
+          ...obj,
+          [c.identifier]: c,
+        }), {})
+
+        setCards(cardList.map((c) => updatedById[c.identifier] ?? c))
       })
   }
 

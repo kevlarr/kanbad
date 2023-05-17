@@ -1,4 +1,4 @@
-import { DragEvent, FocusEvent, Fragment, RefObject, createRef, useState } from 'react'
+import { DragEvent, FocusEvent, Fragment, RefObject, createRef, useMemo, useState } from 'react'
 
 import { getEventDataCard } from '@/lib/dnd'
 import { BoardModel, BoardParams, CardModel, CardLocationParams, CardParams } from '@/lib/models'
@@ -13,7 +13,7 @@ interface BoardProps {
   deleteBoard(): any,
   createCard(): any,
   updateCard(card: CardModel, params: CardParams): Promise<any>,
-  updateCardLocations(paramList: Array<CardLocationParams>): any,
+  updateCardLocations(board: BoardModel, card: CardModel, position: number): any,
   deleteCard(card: CardModel): any,
 }
 
@@ -29,6 +29,26 @@ export default function Board({
 }: BoardProps) {
   const [activeDropzone, setActiveDropzone] = useState(-1)
   const [isEditing, setEditing] = useState(false)
+
+  const sortedCards = useMemo(
+    () => {
+      // The moment any list gets reordered, all existing cards get positions.
+      // New cards will default to Infinity and be placed at the end of the list.
+      //
+      // This doesn't specify an ordering for a board where NO cards have a position,
+      // but what would be the default there - title? Creation date?
+      const position = (card: CardModel) => card.position ?? Infinity
+
+      function byPosition(a: CardModel, b: CardModel) {
+        if (position(a) < position(b)) { return -1 }
+        if (position(a) > position(b)) { return 1 }
+        return 0
+      }
+
+      return cards?.sort(byPosition)
+    },
+    [cards],
+  )
 
   const dropzoneRefs: Array<RefObject<HTMLDivElement>> = [
     createRef(),
@@ -130,15 +150,7 @@ export default function Board({
     // for the type being dragged
     evt.preventDefault()
     setActiveDropzone(-1)
-
-    if (card.board === board.identifier) {
-      return
-    }
-
-    updateCardLocations([{
-      card: card.identifier,
-      board: board.identifier,
-    }])
+    updateCardLocations(board, card, activeDropzone)
   }
 
   const boardHeader = isEditing
@@ -173,7 +185,7 @@ export default function Board({
       {boardHeader}
       <FlexContainer direction='column' gap='sm'>
         {dropzone(0)}
-        {cards?.map((card, i) =>
+        {sortedCards?.map((card, i) =>
           <Fragment key={card.identifier}>
             <Card
               key={card.identifier}

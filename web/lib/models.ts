@@ -30,6 +30,7 @@ export interface CardParams {
 export interface CardLocationParams {
   board: string,
   card: string,
+  position: number,
 }
 
 export interface CardModel extends Model, Positionable {
