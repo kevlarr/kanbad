@@ -14,20 +14,6 @@ import { Button, FlexContainer } from '@/components/base'
 import { Board, WorkspaceHeader } from '@/components'
 import css from './uuid.module.css'
 
-/* Using custom data "types" in drag events is useful for a few reasons:
- *
- * - All default drag events will set `text/plain` so using a custom type
- *   makes it easier for the drop zone to cancel drags from other types
- *
- * - Not including `text/plain` type means that the card can't be dragged
- *   into a drop zone on another site (since there is nothing meaningful
- *   to share)
- *
- * See: https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/Recommended_drag_types#dragging_custom_data
- */
-const CARD_DRAG_TYPE = 'kanbad/cardId'
-const BOARD_DRAG_TYPE = 'kanbad/boardId'
-
 type BoardCardsMap = { [index: string] : Array<CardModel> }
 
 interface WorkspacePageProps {
@@ -71,7 +57,6 @@ export default function WorkspacePage({
    */
   const [boardList, setBoards] = useState(boards)
   const [cardList, setCards] = useState(cards)
-  const [draggingCard, setDraggingCard] = useState<CardModel | null>(null)
 
   const cardsByBoard =
     cardList.reduce((map: BoardCardsMap, card: CardModel) => {
@@ -167,98 +152,6 @@ export default function WorkspacePage({
       })
   }
 
-  /* Card drag handlers
-   *
-   * These are defined in the top-level workspace primarily because they
-   * involve interactions BETWEEN boards, rather than just within a
-   * single board
-   *
-   * Draggable elements defined as having...
-   *   - the `draggable="true"` attribute
-   *   - the `ondragstart` event handler
-   *   - (optional) the `ondrag` event handler
-   *   - (optional) the `ondragend` event handler
-   *
-   * Droppable elements (eg. drop zones) are defined as having...
-   *   - the `ondragenter` event handler
-   *   - the `ondragover` event handler
-   *   - (optional) the `ondragleave` event handler
-   *   - (optional) the `ondrop` event handler
-   */
-  function onCardDragStart(evt: DragEvent, card: CardModel) {
-    console.debug(`DRAG-START: card<${card.identifier}>`)
-    evt.stopPropagation()
-    evt.dataTransfer.setData(CARD_DRAG_TYPE, card.identifier)
-    evt.dataTransfer.setData(BOARD_DRAG_TYPE, card.board)
-    setDraggingCard(card)
-  }
-
-  function onCardDrag(evt: DragEvent) {
-    console.debug(`DRAG: card<${draggingCard?.identifier}>`)
-  }
-
-  function onCardDragOver(evt: DragEvent, board: BoardModel): CardModel | null {
-    console.debug(`DRAG-OVER: board<${board.identifier}>, card<${draggingCard?.identifier}>`)
-
-    evt.stopPropagation()
-    // Necessary or onDrop won't be called..?
-    evt.preventDefault()
-
-    return draggingCard
-  }
-
-  // onEnter/onLeave is a workaround for needing to unset the card being dragged
-  // when outside of a drop area, since 'dropping' there won't trigger a 'dragend'
-  // event and will keep the `draggingCard` set. If that happens, a user can select
-  // any other draggable element (eg. plain text), drag it around to boards, and
-  // cause the previously-dragged (and canceled) card to be moved
-  function onCardDragEnter(evt: DragEvent, board: BoardModel) {
-    console.debug(`DRAG-ENTER: board<${board.identifier}>, card<${draggingCard?.identifier}>`)
-
-    const cardId = evt.dataTransfer.getData(CARD_DRAG_TYPE)
-
-    if (!cardId) {
-      return
-    }
-
-    if (!draggingCard) {
-      // TODO: Avoid iterating through all cards when entering any valid drop area
-      setDraggingCard(cards.find((c) => c.identifier === cardId)!)
-    }
-
-  }
-
-  function onCardDragLeave(evt: DragEvent, board: BoardModel) {
-    console.debug(`DRAG-LEAVE: board<${board.identifier}>, card<${draggingCard?.identifier}>`)
-
-    // FIXME: Can child elements stop having these events? Ie. can board capture event?
-    // FIXME: This doesn't actually work...
-    if (evt.target === evt.currentTarget) {
-      setDraggingCard(null)
-    }
-  }
-
-  function onCardDrop(evt: DragEvent, board: BoardModel) {
-    console.debug(`DROP: board<${board.identifier}>, card<${draggingCard?.identifier}>`)
-
-    if (!draggingCard || draggingCard.board === board.identifier) {
-      return
-    }
-
-    updateCardLocations([{
-      card: draggingCard.identifier,
-      board: board.identifier,
-    }]).finally(() => setDraggingCard(null))
-  }
-
-  // This SEEMS to be reliably called when canceling via escape, but it seems to
-  // be called only intermittently on dropping a draggable
-  function onCardDragEnd(evt: DragEvent) {
-    console.debug(`DRAG-END: card<${draggingCard?.identifier}>`)
-    setDraggingCard(null)
-  }
-
-
   return (
     <FlexContainer className={css.workspace} direction='column' gap='lg' scroll='y'>
       <WorkspaceHeader
@@ -272,20 +165,12 @@ export default function WorkspacePage({
               key={board.identifier}
               board={board}
               cards={cardsByBoard[board.identifier]}
-              // CRUD handlers
               updateBoard={async (params: BoardParams) => updateBoard(board, params)}
               deleteBoard={async () => await deleteBoard(board)}
               createCard={async () => await createCard(board)}
               updateCard={updateCard}
+              updateCardLocations={updateCardLocations}
               deleteCard={deleteCard}
-              // Drag handlers
-              onCardDragStart={onCardDragStart}
-              onCardDrag={onCardDrag}
-              onCardDragOver={onCardDragOver}
-              onCardDragEnter={onCardDragEnter}
-              onCardDragLeave={onCardDragLeave}
-              onCardDragEnd={onCardDragEnd}
-              onCardDrop={onCardDrop}
             />
           )}
         </FlexContainer>

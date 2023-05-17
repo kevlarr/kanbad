@@ -1,6 +1,7 @@
-import { DragEvent, FocusEvent, Fragment, RefObject, SyntheticEvent, createRef, useState } from 'react'
+import { DragEvent, FocusEvent, Fragment, RefObject, createRef, useState } from 'react'
 
-import { BoardModel, BoardParams, CardModel, CardParams } from '@/lib/models'
+import { getEventDataCard } from '@/lib/dnd'
+import { BoardModel, BoardParams, CardModel, CardLocationParams, CardParams } from '@/lib/models'
 import { Button, FlexContainer, Heading, TextInput } from '@/components/base'
 import { Card, Dropzone } from '@/components'
 import css from './Board.module.css'
@@ -8,21 +9,12 @@ import css from './Board.module.css'
 interface BoardProps {
   board: BoardModel,
   cards: Array<CardModel> | undefined,
-  // CRUD handlers
   updateBoard(params: BoardParams): Promise<any>,
   deleteBoard(): any,
   createCard(): any,
   updateCard(card: CardModel, params: CardParams): Promise<any>,
+  updateCardLocations(paramList: Array<CardLocationParams>): any,
   deleteCard(card: CardModel): any,
-  // Card drag handlers
-  // TODO: Type these
-  onCardDragStart(evt: DragEvent, card: CardModel): any,
-  onCardDrag(evt: DragEvent): any,
-  onCardDragEnd(evt: DragEvent): any,
-  onCardDragOver(evt: DragEvent, board: BoardModel): any,
-  onCardDragEnter(evt: DragEvent, board: BoardModel): any,
-  onCardDragLeave(evt: DragEvent, board: BoardModel): any,
-  onCardDrop(evt: DragEvent, board: BoardModel): any,
 }
 
 export default function Board({
@@ -32,14 +24,8 @@ export default function Board({
   deleteBoard,
   createCard,
   updateCard,
+  updateCardLocations,
   deleteCard,
-  onCardDragStart,
-  onCardDrag,
-  onCardDragOver,
-  onCardDragEnter,
-  onCardDragLeave,
-  onCardDragEnd,
-  onCardDrop,
 }: BoardProps) {
   const [activeDropzone, setActiveDropzone] = useState(-1)
   const [isEditing, setEditing] = useState(false)
@@ -61,23 +47,33 @@ export default function Board({
       .then(() => setEditing(false))
   }
 
-  function onDragLeave(evt: DragEvent) {
-    if (evt.currentTarget === evt.target) {
-      setActiveDropzone(-1)
-    }
+  function onDragEnter(evt: DragEvent) {
+    console.debug(`DRAG-ENTER: board<${board.identifier}>`)
+    evt.stopPropagation()
+  }
 
-    onCardDragLeave(evt, board)
+  function onDragLeave(evt: DragEvent) {
+    console.debug(`DRAG-LEAVE: board<${board.identifier}>`)
+    evt.stopPropagation()
+    setActiveDropzone(-1)
   }
 
   function onDragOver(evt: DragEvent) {
-    const draggedCard = onCardDragOver(evt, board)
+    console.debug(`DRAG-OVER: board<${board.identifier}>`)
+    evt.stopPropagation()
 
-    if (!draggedCard) {
+    const card = getEventDataCard(evt)
+
+    if (!card) {
       return
     }
 
+    // Cancel the event to tell the browser this IS a valid drop zone
+    // for the type being dragged
+    evt.preventDefault()
+
     const { clientY } = evt
-    let closest: number
+    let closest = -1
     let closestDist: number
 
     dropzoneRefs.forEach((ref, i) => {
@@ -107,11 +103,11 @@ export default function Board({
     // Note: This only applies if the card being dragged is currently
     // on the board already
     if (
-      draggedCard &&
-      draggedCard.board === board.identifier &&
+      card &&
+      card.board === board.identifier &&
       (
-        draggedCard === (cards && cards[closest!]) ||
-        draggedCard === (cards && cards[closest! - 1])
+        card.identifier === (cards && cards[closest]?.identifier) ||
+        card.identifier === (cards && cards[closest - 1]?.identifier)
       )
     ) {
       setActiveDropzone(-1)
@@ -121,8 +117,28 @@ export default function Board({
   }
 
   function onDrop(evt: DragEvent) {
+    console.debug(`DROP: board<${board.identifier}>`)
+    evt.stopPropagation()
+
+    const card = getEventDataCard(evt)
+
+    if (!card) {
+      return
+    }
+
+    evt.preventDefault()
+
     setActiveDropzone(-1)
-    onCardDrop(evt, board)
+
+
+    if (card.board === board.identifier) {
+      return
+    }
+
+    updateCardLocations([{
+      card: card.identifier,
+      board: board.identifier,
+    }])
   }
 
   const boardHeader = isEditing
@@ -149,7 +165,7 @@ export default function Board({
       className={css.board}
       direction='column'
       gap='sm'
-      onDragEnter={(e) => onCardDragEnter(e, board)}
+      onDragEnter={onDragEnter}
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
       onDrop={onDrop}
@@ -164,9 +180,6 @@ export default function Board({
               card={card}
               updateCard={async (params: CardParams) => await updateCard(card, params)}
               deleteCard={async () => await deleteCard(card)}
-              onDragStart={(e) => onCardDragStart(e, card)}
-              onDrag={onCardDrag}
-              onDragEnd={onCardDragEnd}
             />
             {dropzone(i + 1, true)}
           </Fragment>

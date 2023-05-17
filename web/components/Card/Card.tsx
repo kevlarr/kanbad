@@ -1,5 +1,6 @@
 import { DragEvent, useState } from 'react'
 
+import { setEventDataCard } from '@/lib/dnd'
 import { CardModel, CardParams } from '@/lib/models'
 import { Button, FlexContainer, Heading, Text } from '@/components/base'
 import { CardForm } from '@/components'
@@ -11,19 +12,12 @@ interface CardProps {
   // TODO: Better typing
   updateCard(params: CardParams): Promise<any>,
   deleteCard(): any,
-  // TODO: Type these
-  onDrag(evt: DragEvent, card: CardModel): any,
-  onDragStart(evt: DragEvent, card: CardModel): any,
-  onDragEnd(evt: DragEvent, card: CardModel): any,
 }
 
 export default function Card({
   card,
   updateCard,
   deleteCard,
-  onDrag,
-  onDragStart,
-  onDragEnd,
 }: CardProps) {
   const [isEditing, setEditing] = useState(false)
 
@@ -33,8 +27,23 @@ export default function Card({
   const [isDraggable, setDraggable] = useState(true)
 
   async function submitForm(params: CardParams) {
-    updateCard(params)
-      .then(() => setEditing(false))
+    updateCard(params).then(() => setEditing(false))
+  }
+
+  function onDragStart(evt: DragEvent) {
+    console.debug(`DRAG-START: card<${card.identifier}>`)
+    evt.stopPropagation()
+    setEventDataCard(evt, card)
+  }
+
+  function onDrag(evt: DragEvent) {
+    console.debug(`DRAG: card<${card.identifier}>`)
+    evt.stopPropagation()
+  }
+
+  function onDragEnd(evt: DragEvent) {
+    console.debug(`DRAG-END: card<${card.identifier}>`)
+    evt.stopPropagation()
   }
 
   const content = isEditing
@@ -79,9 +88,9 @@ export default function Card({
       pad='sm'
       draggable={isDraggable}
       {...(isDraggable && {
-        onDrag: (e) => onDrag(e, card),
-        onDragStart: (e) => onDragStart(e, card),
-        onDragEnd: (e) => onDragEnd(e, card),
+        onDragStart: onDragStart,
+        onDrag: onDrag,
+        onDragEnd: onDragEnd,
       })}
     >
       <FlexContainer
