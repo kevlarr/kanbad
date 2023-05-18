@@ -1,6 +1,6 @@
 .flexContainer {
     display: flex;
-    gap: none;
+    gap: unset;
 }
 
 .row    { flex-direction: row; }

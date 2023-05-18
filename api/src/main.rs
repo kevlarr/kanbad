@@ -2,7 +2,7 @@ use std::io;
 use std::env;
 use std::time::Duration;
 
-use actix_web::{App, HttpServer, HttpResponse, Responder, get, post, put, delete};
+use actix_web::{App, HttpServer, HttpResponse, Responder, get, post, patch, delete};
 use actix_web::http::header;
 use actix_web::middleware::Logger;
 use actix_web::web::{Data, Json, Path, Query, scope};
@@ -49,7 +49,7 @@ async fn main() -> io::Result<()> {
             .allowed_origin("http://localhost:3000")
             .allowed_origin("http://127.0.0.1:3000")
             .allowed_origin("http://0.0.0.0:3000")
-            .allowed_methods(vec!["GET", "POST", "PUT", "DELETE"])
+            .allowed_methods(vec!["GET", "POST", "PATCH", "DELETE"])
             .allowed_headers(vec![header::ACCEPT])
             .allowed_header(header::CONTENT_TYPE)
             .max_age(3600);
@@ -65,6 +65,7 @@ async fn main() -> io::Result<()> {
                     .service(update_board)
                     .service(delete_board)
                     .service(get_cards)
+                    .service(update_cards)
                     .service(create_card)
                     .service(update_card)
                     .service(delete_card)
@@ -106,7 +107,7 @@ pub struct BoardPath {
     board_uuid: Uuid,
 }
 
-#[put("/boards/{board_uuid}")]
+#[patch("/boards/{board_uuid}")]
 pub async fn update_board(
     state: Data<State>,
     path: Path<BoardPath>,
@@ -143,12 +144,20 @@ pub async fn create_card(
     Json(card.create(&state.pool).await)
 }
 
+#[patch("/cards")]
+pub async fn update_cards(
+    state: Data<State>,
+    params: Json<Vec<store::CardLocationUpdate>>,
+) -> impl Responder {
+    Json(store::Card::update_locations(&state.pool, &params).await)
+}
+
 #[derive(Deserialize)]
 pub struct CardPath {
     card_uuid: Uuid,
 }
 
-#[put("/cards/{card_uuid}")]
+#[patch("/cards/{card_uuid}")]
 pub async fn update_card(
     state: Data<State>,
     path: Path<CardPath>,

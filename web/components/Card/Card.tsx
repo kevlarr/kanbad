@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { DragEvent, useState } from 'react'
 
+import { setEventDataCard } from '@/lib/dnd'
 import { CardModel, CardParams } from '@/lib/models'
 import { Button, FlexContainer, Heading, Text } from '@/components/base'
 import { CardForm } from '@/components'
@@ -8,16 +9,41 @@ import css from './Card.module.css'
 
 interface CardProps {
   card: CardModel,
+  // TODO: Better typing
   updateCard(params: CardParams): Promise<any>,
   deleteCard(): any,
 }
 
-export default function Card({ card, updateCard, deleteCard }: CardProps) {
+export default function Card({
+  card,
+  updateCard,
+  deleteCard,
+}: CardProps) {
   const [isEditing, setEditing] = useState(false)
 
+  // While there are several ways to make child elements selectable within
+  // a draggable parent, they typically don't work in Firefox, but simply
+  // setting the draggable attribute to false while inside the content does.
+  const [isDraggable, setDraggable] = useState(true)
+
   async function submitForm(params: CardParams) {
-    updateCard(params)
-      .then(() => setEditing(false))
+    updateCard(params).then(() => setEditing(false))
+  }
+
+  function onDragStart(evt: DragEvent) {
+    console.debug(`DRAG-START: card<${card.identifier}>`)
+    evt.stopPropagation()
+    setEventDataCard(evt, card)
+  }
+
+  function onDrag(evt: DragEvent) {
+    console.debug(`DRAG: card<${card.identifier}>`)
+    evt.stopPropagation()
+  }
+
+  function onDragEnd(evt: DragEvent) {
+    console.debug(`DRAG-END: card<${card.identifier}>`)
+    evt.stopPropagation()
   }
 
   const content = isEditing
@@ -50,9 +76,31 @@ export default function Card({ card, updateCard, deleteCard }: CardProps) {
         </FlexContainer>
       </FlexContainer>
 
+  const classes = [
+    css.card,
+    isDraggable ? css.draggable : null,
+  ]
+
   return (
-    <div className={css.card}>
-      {content}
-    </div>
+    <FlexContainer
+      className={classes.join(' ')}
+      direction='column'
+      pad='sm'
+      draggable={isDraggable}
+      {...(isDraggable && {
+        onDragStart: onDragStart,
+        onDrag: onDrag,
+        onDragEnd: onDragEnd,
+      })}
+    >
+      <FlexContainer
+        className={css.content}
+        direction='column'
+        onMouseEnter={() => setDraggable(false)}
+        onMouseLeave={() => setDraggable(true)}
+      >
+        {content}
+      </FlexContainer>
+    </FlexContainer>
   )
 }

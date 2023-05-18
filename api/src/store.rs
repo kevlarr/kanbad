@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use sqlx::FromRow;
 use sqlx::postgres::PgPool;
 use uuid::Uuid;
 
@@ -81,6 +82,9 @@ impl Board {
             join workspace w on w.id = b.workspace_id
 
             where w.identifier = $1
+
+            order by
+                b.id asc
             ",
             &workspace_identifier
         )
@@ -175,7 +179,16 @@ pub struct CardUpdate {
     pub body: Option<String>,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Deserialize)]
+pub struct CardLocationUpdate {
+    #[serde(rename = "board")]
+    pub board_identifier: String,
+    #[serde(rename = "card")]
+    pub card_identifier: String,
+    pub position: i32,
+}
+
+#[derive(Debug, FromRow, Serialize)]
 pub struct Card {
     #[serde(skip_serializing)]
     pub id: i32,
@@ -184,6 +197,7 @@ pub struct Card {
     pub board_identifier: Uuid,
     pub title: String,
     pub body: Option<String>,
+    pub position: Option<i32>,
 }
 
 impl Card {
@@ -192,17 +206,18 @@ impl Card {
             Self,
             "
             select
-                c.id,
-                c.identifier,
-                c.title,
-                c.body,
-                b.identifier as board_identifier
+                card.id,
+                card.identifier,
+                card.title,
+                card.body,
+                card.position,
+                board.identifier as board_identifier
 
-            from card c
-            join board b on b.id = c.board_id
-            join workspace w on w.id = b.workspace_id
+            from card
+            join board on board.id = card.board_id
+            join workspace on workspace.id = board.workspace_id
 
-            where w.identifier = $1
+            where workspace.identifier = $1
             ",
             &workspace_identifier
         )
@@ -215,8 +230,9 @@ impl Card {
         sqlx::query_as!(
             Self,
             "
-            update card
-            set title = $2, body = $3
+            update card set
+                title = $2, body = $3
+
             from board b
 
             where b.id = card.board_id
@@ -227,6 +243,7 @@ impl Card {
                 card.identifier,
                 card.title,
                 card.body,
+                card.position,
                 b.identifier as board_identifier
             ",
             &card_identifier,
@@ -234,6 +251,49 @@ impl Card {
             params.body.as_deref(),
         )
             .fetch_one(pool)
+            .await
+            .unwrap()
+    }
+
+    #[deprecated(note = "FIXME: sql injection")]
+    pub async fn update_locations(pool: &PgPool, param_list: &[CardLocationUpdate]) -> Vec<Self> {
+        let values = param_list.iter()
+            .map(|p| format!(
+                "('{}', '{}', {})",
+                &p.board_identifier,
+                &p.card_identifier,
+                p.position,
+            ))
+            .collect::<Vec<_>>()
+            .join(", ");
+
+        sqlx::query_as::<_, Self>(
+            &format!(
+                "
+                update card set
+                    board_id = board.id,
+                    position = vals.position
+
+                from board
+                join (values {values}) vals (
+                    board_identifier,
+                    card_identifier,
+                    position
+                ) on vals.board_identifier::uuid = board.identifier
+
+                where vals.card_identifier::uuid = card.identifier
+
+                returning
+                    card.id,
+                    card.identifier,
+                    card.title,
+                    card.body,
+                    card.position,
+                    board.identifier as board_identifier
+                "),
+
+        )
+            .fetch_all(pool)
             .await
             .unwrap()
     }
@@ -279,7 +339,7 @@ impl NewCard {
                 (select id from board where identifier = $2),
                 $3
             )
-            returning id, identifier, title, body, $2 as "board_identifier!"
+            returning id, identifier, title, body, position, $2 as "board_identifier!"
             "#,
             &identifier,
             self.board_identifier,

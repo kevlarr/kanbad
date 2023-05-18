@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { GetServerSideProps } from 'next'
 
 import api from '@/lib/api'
@@ -7,8 +7,8 @@ import {
   BoardParams,
   CardModel,
   CardParams,
+  CardLocationParams,
   WorkspaceModel,
-  compareModelFn,
 } from '@/lib/models'
 import { Button, FlexContainer } from '@/components/base'
 import { Board, WorkspaceHeader } from '@/components'
@@ -45,22 +45,30 @@ export default function WorkspacePage({
   cards,
   workspace,
 }: WorkspacePageProps) {
-  // TODO:
-  //   - Is this a smell, creating state & hooks from props?
-  //   - Should they be loaded client-side within the component?
-  //   - Is this managing too much state, ie. a collection of boards and cards,
-  //     and should there be a different state management solution?
-  //
-  // The reason this is managing cards 'globally' instead of each board managing
-  // its own cards was partially about efficient data loading but also about
-  // implementing drag & drop of cards between boards.
-  //
-  // The joke is that this page is essentially the entire app in and of itself,
-  // storing the global state for the entire workspace and setting up all of the
-  // hooks, API calls, etc.
-  const [boardList, setBoards] = useState(boards.sort(compareModelFn))
-  const [cardList, setCards] = useState(cards.sort(compareModelFn))
+  /* TODO:
+   *   - Is this a smell, creating state & hooks from props?
+   *   - Should they be loaded client-side within the component?
+   *   - Is this managing too much state, ie. a collection of boards and cards,
+   *     and should there be a different state management solution?
+   *
+   * The joke is that this page is essentially an entire app in and of itself,
+   * storing the global state for the entire workspace and setting up all of the
+   * drag event hooks, API calls, etc.
+   */
+  const [boardList, setBoards] = useState(boards)
+  const [cardList, setCards] = useState(cards)
 
+  const cardsByBoard = useMemo(
+    () => cardList.reduce((map: BoardCardsMap, card: CardModel) => {
+      map[card.board] = map[card.board] || [];
+      map[card.board].push(card)
+      return map
+    }, {}),
+    [cardList],
+  )
+
+  /* Board CRUD handlers
+   */
   async function createBoard() {
     const data = {
       title: 'New Board',
@@ -73,7 +81,7 @@ export default function WorkspacePage({
   }
 
   async function updateBoard(board: BoardModel, params: BoardParams) {
-    return await api.put(`boards/${board.identifier}`, params)
+    return await api.patch(`boards/${board.identifier}`, params)
       .then((updatedBoard) => {
         setBoards(boardList.map((existingBoard) => (
           existingBoard.identifier === updatedBoard.identifier
@@ -92,6 +100,13 @@ export default function WorkspacePage({
       })
   }
 
+  /* Card CRUD handlers
+   *
+   * The reason this is managing cards 'globally' instead of each board managing
+   * its own cards was partially about efficient data loading but also about
+   * implementing drag & drop of cards between boards.
+   */
+
   async function createCard(board: BoardModel) {
     const data = {
       board: board.identifier,
@@ -103,16 +118,59 @@ export default function WorkspacePage({
     })
   }
 
-  // TODO: Abstract this away - this is duplicated from `updateBoard`,
-  // and same with `deleteCard`
   async function updateCard(card: CardModel, params: CardParams) {
-    return await api.put(`cards/${card.identifier}`, params)
+    // TODO: Abstract this away - this is duplicated from `updateBoard`,
+    // and same with `deleteCard`
+    return await api.patch(`cards/${card.identifier}`, params)
       .then((updatedCard) => {
         setCards(cardList.map((existingCard) => (
           existingCard.identifier === updatedCard.identifier
             ? updatedCard
             : existingCard
         )))
+      })
+  }
+
+  async function updateCardLocations(board: BoardModel, card: CardModel, position: number) {
+    // Regardless of whether or not the card is being moved to a different board
+    // or simply reordered in its current board, this builds an appropriate list
+    // of cards by position in the "destination" board...
+    const destinationBoardCards = (cardsByBoard[board.identifier] || [])
+      .filter((c) => c.identifier !== card.identifier)
+
+    let paramList = [
+      ...destinationBoardCards.slice(0, position),
+      card,
+      ...destinationBoardCards.slice(position),
+    ].map((c, i) => ({
+      board: board.identifier,
+      card: c.identifier,
+      position: i,
+     }))
+
+    // ... but if it IS being moved to a different board, the previous board's cards
+    // all need to have their positions updated, too.
+
+    if (card.board !== board.identifier) {
+      paramList = paramList.concat(
+        cardsByBoard[card.board]
+          .filter((c) => c.identifier !== card.identifier)
+          .map((c, i) => ({
+            board: card.board,
+            card: c.identifier,
+            position: i,
+          }))
+      )
+    }
+
+    return await api.patch(`cards`, paramList)
+      .then((updatedCards) => {
+        const updatedById = updatedCards.reduce((obj: any, c: CardModel) => ({
+          ...obj,
+          [c.identifier]: c,
+        }), {})
+
+        setCards(cardList.map((c) => updatedById[c.identifier] ?? c))
       })
   }
 
@@ -124,13 +182,6 @@ export default function WorkspacePage({
         )))
       })
   }
-
-  const cardsMap =
-    cardList.reduce((map: BoardCardsMap, card: CardModel) => {
-      map[card.board] = map[card.board] || [];
-      map[card.board].push(card)
-      return map
-    }, {})
 
   return (
     <FlexContainer className={css.workspace} direction='column' gap='lg' scroll='y'>
@@ -144,11 +195,12 @@ export default function WorkspacePage({
             <Board
               key={board.identifier}
               board={board}
-              cards={cardsMap[board.identifier]}
+              cards={cardsByBoard[board.identifier]}
               updateBoard={async (params: BoardParams) => updateBoard(board, params)}
               deleteBoard={async () => await deleteBoard(board)}
               createCard={async () => await createCard(board)}
               updateCard={updateCard}
+              updateCardLocations={updateCardLocations}
               deleteCard={deleteCard}
             />
           )}
