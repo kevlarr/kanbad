@@ -1,5 +1,6 @@
 .dropzone {
     height: 0;
+    transition: height 0.1s;
 }
 
 .active {
