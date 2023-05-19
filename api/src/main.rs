@@ -61,6 +61,7 @@ async fn main() -> io::Result<()> {
             .service(
                 scope("/api")
                     .service(get_boards)
+                    .service(update_boards)
                     .service(create_board)
                     .service(update_board)
                     .service(delete_board)
@@ -91,15 +92,23 @@ pub async fn get_boards(
     state: Data<State>,
     query: Query<ByWorkspace>,
 ) -> impl Responder {
-    Json(store::Board::find_all(&state.pool, &query.workspace).await)
+    Json(store::boards::find_all(&state.pool, &query.workspace).await)
+}
+
+#[patch("/boards")]
+pub async fn update_boards(
+    state: Data<State>,
+    params: Json<Vec<store::boards::BoardLocationUpdate>>,
+) -> impl Responder {
+    Json(store::boards::update_locations(&state.pool, &params).await)
 }
 
 #[post("/boards")]
 pub async fn create_board(
     state: Data<State>,
-    board: Json<store::NewBoard>,
+    board: Json<store::boards::NewBoard>,
 ) -> impl Responder {
-    Json(board.create(&state.pool).await)
+    Json(store::boards::create(&state.pool, &board).await)
 }
 
 #[derive(Deserialize)]
@@ -111,9 +120,9 @@ pub struct BoardPath {
 pub async fn update_board(
     state: Data<State>,
     path: Path<BoardPath>,
-    params: Json<store::BoardUpdate>,
+    params: Json<store::boards::BoardUpdate>,
 ) -> impl Responder {
-    Json(store::Board::update(&state.pool, &path.board_uuid, &params).await)
+    Json(store::boards::update(&state.pool, &path.board_uuid, &params).await)
 }
 
 #[delete("/boards/{board_uuid}")]
@@ -121,7 +130,7 @@ pub async fn delete_board(
     state: Data<State>,
     path: Path<BoardPath>,
 ) -> impl Responder {
-    if store::Board::delete(&state.pool, &path.board_uuid).await {
+    if store::boards::delete(&state.pool, &path.board_uuid).await {
         HttpResponse::NoContent()
     } else {
         HttpResponse::NotFound()
@@ -133,23 +142,23 @@ pub async fn get_cards(
     state: Data<State>,
     query: Query<ByWorkspace>,
 ) -> impl Responder {
-    Json(store::Card::find_all(&state.pool, &query.workspace).await)
+    Json(store::cards::find_all(&state.pool, &query.workspace).await)
 }
 
 #[post("/cards")]
 pub async fn create_card(
     state: Data<State>,
-    card: Json<store::NewCard>,
+    card: Json<store::cards::NewCard>,
 ) -> impl Responder {
-    Json(card.create(&state.pool).await)
+    Json(store::cards::create(&state.pool, &card).await)
 }
 
 #[patch("/cards")]
 pub async fn update_cards(
     state: Data<State>,
-    params: Json<Vec<store::CardLocationUpdate>>,
+    params: Json<Vec<store::cards::CardLocationUpdate>>,
 ) -> impl Responder {
-    Json(store::Card::update_locations(&state.pool, &params).await)
+    Json(store::cards::update_locations(&state.pool, &params).await)
 }
 
 #[derive(Deserialize)]
@@ -161,9 +170,9 @@ pub struct CardPath {
 pub async fn update_card(
     state: Data<State>,
     path: Path<CardPath>,
-    params: Json<store::CardUpdate>,
+    params: Json<store::cards::CardUpdate>,
 ) -> impl Responder {
-    Json(store::Card::update(&state.pool, &path.card_uuid, &params).await)
+    Json(store::cards::update(&state.pool, &path.card_uuid, &params).await)
 }
 
 #[delete("/cards/{card_uuid}")]
@@ -171,7 +180,7 @@ pub async fn delete_card(
     state: Data<State>,
     path: Path<CardPath>,
 ) -> impl Responder {
-    if store::Card::delete(&state.pool, &path.card_uuid).await {
+    if store::cards::delete(&state.pool, &path.card_uuid).await {
         HttpResponse::NoContent()
     } else {
         HttpResponse::NotFound()
@@ -182,7 +191,7 @@ pub async fn delete_card(
 pub async fn create_workspace(
     state: Data<State>,
 ) -> impl Responder {
-    Json(store::NewWorkspace.create(&state.pool).await)
+    Json(store::workspaces::create(&state.pool).await)
 }
 
 #[derive(Deserialize)]
@@ -195,5 +204,5 @@ pub async fn get_workspace(
     state: Data<State>,
     path: Path<WorkspacePath>,
 ) -> impl Responder {
-    Json(store::Workspace::find(&state.pool, &path.workspace_uuid).await)
+    Json(store::workspaces::find(&state.pool, &path.workspace_uuid).await)
 }

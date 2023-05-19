@@ -1,42 +1,45 @@
 /**
  * Models
+ *
+ * Params objects essentially represent valid 'changesets' for different operations,
+ * since some fields are logically updated together at the exclusion of other properties.
  */
 
-interface Model {
+export interface Model {
   identifier: string,
 }
 
-interface Positionable {
-  position: string | null,
-}
-
-// The user-updatable properties of a board
 export interface BoardParams {
   title: string,
+}
+
+export interface BoardLocationParams {
+  board: string,
+  position: number,
 }
 
 export interface BoardModel extends Model {
   workspace: string,
   title: string,
+  position: string | null,
 }
 
-// The user-updatable properties of a card
 export interface CardParams {
   body: string | null,
   title: string,
 }
 
-// Params for updating a card's board & position
 export interface CardLocationParams {
   board: string,
   card: string,
   position: number,
 }
 
-export interface CardModel extends Model, Positionable {
+export interface CardModel extends Model {
   board: string,
   body: string | null,
   title: string,
+  position: string | null,
 }
 
 export interface WorkspaceModel extends Model {}

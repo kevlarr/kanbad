@@ -1,6 +1,6 @@
 import { DragEvent } from 'react'
 
-import { CardModel } from '@/lib/models'
+import { BoardModel, CardModel } from '@/lib/models'
 
 /* Using custom data "types" in drag events is useful for a few reasons:
  *
@@ -16,12 +16,22 @@ import { CardModel } from '@/lib/models'
 export const CARD_DRAG_TYPE = 'kanbad/cardId'
 export const BOARD_DRAG_TYPE = 'kanbad/boardId'
 
-export function setEventDataCard(evt: DragEvent, card: CardModel) {
-  evt.dataTransfer.setData(CARD_DRAG_TYPE, JSON.stringify(card))
+export function getEventDataBoard(evt: DragEvent): BoardModel | null {
+  const boardJson = evt.dataTransfer.getData(BOARD_DRAG_TYPE)
+
+  return boardJson ? JSON.parse(boardJson) : null
+}
+
+export function setEventDataBoard(evt: DragEvent, board: BoardModel) {
+  evt.dataTransfer.setData(BOARD_DRAG_TYPE, JSON.stringify(board))
 }
 
 export function getEventDataCard(evt: DragEvent): CardModel | null {
   const cardJson = evt.dataTransfer.getData(CARD_DRAG_TYPE)
 
   return cardJson ? JSON.parse(cardJson) : null
+}
+
+export function setEventDataCard(evt: DragEvent, card: CardModel) {
+  evt.dataTransfer.setData(CARD_DRAG_TYPE, JSON.stringify(card))
 }

@@ -21,9 +21,8 @@ export default function Card({
 }: CardProps) {
   const [isEditing, setEditing] = useState(false)
 
-  // While there are several ways to make child elements selectable within
-  // a draggable parent, they typically don't work in Firefox, but simply
-  // setting the draggable attribute to false while inside the content does.
+  // Same with `Board` - control whether or not its draggable so that its
+  // children can be selected
   const [isDraggable, setDraggable] = useState(true)
 
   async function submitForm(params: CardParams) {
@@ -87,11 +86,9 @@ export default function Card({
       direction='column'
       pad='sm'
       draggable={isDraggable}
-      {...(isDraggable && {
-        onDragStart: onDragStart,
-        onDrag: onDrag,
-        onDragEnd: onDragEnd,
-      })}
+      onDragStart={onDragStart}
+      onDrag={onDrag}
+      onDragEnd={onDragEnd}
     >
       <FlexContainer
         className={css.content}

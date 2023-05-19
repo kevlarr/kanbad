@@ -2,16 +2,18 @@ import { useMemo, useState } from 'react'
 import { GetServerSideProps } from 'next'
 
 import api from '@/lib/api'
+import { getEventDataBoard } from '@/lib/dnd'
 import {
   BoardModel,
   BoardParams,
+  BoardLocationParams,
   CardModel,
   CardParams,
   CardLocationParams,
   WorkspaceModel,
 } from '@/lib/models'
 import { Button, FlexContainer } from '@/components/base'
-import { Board, WorkspaceHeader } from '@/components'
+import { Board, SortableList, WorkspaceHeader } from '@/components'
 import css from './uuid.module.css'
 
 type BoardCardsMap = { [index: string] : Array<CardModel> }
@@ -58,6 +60,22 @@ export default function WorkspacePage({
   const [boardList, setBoards] = useState(boards)
   const [cardList, setCards] = useState(cards)
 
+  const sortedBoards = useMemo(
+    // TODO: This is copy/pasted from `Board`
+    () => {
+      const position = (board: BoardModel) => board.position ?? Infinity
+
+      function byPosition(a: BoardModel, b: BoardModel) {
+        if (position(a) < position(b)) { return -1 }
+        if (position(a) > position(b)) { return 1 }
+        return 0
+      }
+
+      return boardList?.sort(byPosition)
+    },
+    [boardList],
+  )
+
   const cardsByBoard = useMemo(
     () => cardList.reduce((map: BoardCardsMap, card: CardModel) => {
       map[card.board] = map[card.board] || [];
@@ -88,6 +106,29 @@ export default function WorkspacePage({
             ? updatedBoard
             : existingBoard
         )))
+      })
+  }
+
+  async function updateBoardLocations(board: BoardModel, position: number) {
+    const workspaceBoards = boardList.filter((b) => b.identifier !== board.identifier)
+
+    let paramList: Array<BoardLocationParams> = [
+      ...workspaceBoards.slice(0, position),
+      board,
+      ...workspaceBoards.slice(position),
+    ].map((b, i) => ({
+      board: b.identifier,
+      position: i,
+     }))
+
+    return await api.patch('boards', paramList)
+      .then((updatedBoards) => {
+        const updatedById = updatedBoards.reduce((obj: any, b: BoardModel) => ({
+          ...obj,
+          [b.identifier]: b,
+        }), {})
+
+        setBoards(boardList.map((b) => updatedById[b.identifier] ?? b))
       })
   }
 
@@ -138,7 +179,7 @@ export default function WorkspacePage({
     const destinationBoardCards = (cardsByBoard[board.identifier] || [])
       .filter((c) => c.identifier !== card.identifier)
 
-    let paramList = [
+    let paramList: Array<CardLocationParams> = [
       ...destinationBoardCards.slice(0, position),
       card,
       ...destinationBoardCards.slice(position),
@@ -150,7 +191,6 @@ export default function WorkspacePage({
 
     // ... but if it IS being moved to a different board, the previous board's cards
     // all need to have their positions updated, too.
-
     if (card.board !== board.identifier) {
       paramList = paramList.concat(
         cardsByBoard[card.board]
@@ -163,7 +203,7 @@ export default function WorkspacePage({
       )
     }
 
-    return await api.patch(`cards`, paramList)
+    return await api.patch('cards', paramList)
       .then((updatedCards) => {
         const updatedById = updatedCards.reduce((obj: any, c: CardModel) => ({
           ...obj,
@@ -183,6 +223,20 @@ export default function WorkspacePage({
       })
   }
 
+  const boardElements = sortedBoards?.map((board) => (
+    <Board
+      key={board.identifier}
+      board={board}
+      cards={cardsByBoard[board.identifier]}
+      updateBoard={async (params: BoardParams) => updateBoard(board, params)}
+      deleteBoard={async () => await deleteBoard(board)}
+      createCard={async () => await createCard(board)}
+      updateCard={updateCard}
+      updateCardLocations={updateCardLocations}
+      deleteCard={deleteCard}
+    />
+  ))
+
   return (
     <FlexContainer className={css.workspace} direction='column' gap='lg' scroll='y'>
       <WorkspaceHeader
@@ -190,21 +244,13 @@ export default function WorkspacePage({
         createBoard={createBoard}
       />
       {boardList &&
-        <FlexContainer direction='column' gap='xl'>
-          {boardList.map((board) =>
-            <Board
-              key={board.identifier}
-              board={board}
-              cards={cardsByBoard[board.identifier]}
-              updateBoard={async (params: BoardParams) => updateBoard(board, params)}
-              deleteBoard={async () => await deleteBoard(board)}
-              createCard={async () => await createCard(board)}
-              updateCard={updateCard}
-              updateCardLocations={updateCardLocations}
-              deleteCard={deleteCard}
-            />
-          )}
-        </FlexContainer>
+        <SortableList<BoardModel>
+          draggables={boardElements}
+          getEventItem={getEventDataBoard}
+          onDropPosition={updateBoardLocations}
+          gap='md'
+        />
+
       }
       {/* Wrap in a container so the button doesn't stretch full width */}
       <FlexContainer>

@@ -1,8 +1,13 @@
 .dropzone {
     height: 0;
+    transition: height 0.05s;
 }
 
 .active {
     border: 1px dashed var(--frost3);
+    height: 2.5rem;
+}
+
+.expanded {
     height: 2.5rem;
 }
