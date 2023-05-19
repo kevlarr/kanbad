@@ -30,6 +30,11 @@ export default function Board({
   const [activeDropzone, setActiveDropzone] = useState(-1)
   const [isEditing, setEditing] = useState(false)
 
+  // While there are several ways to make child elements selectable within
+  // a draggable parent, they typically don't work in Firefox, but simply
+  // setting the draggable attribute to false while inside the content does.
+  const [isDraggable, setDraggable] = useState(true)
+
   const sortedCards = useMemo(
     () => {
       // The moment any list gets reordered, all existing cards get positions.
@@ -176,45 +181,52 @@ export default function Board({
     <FlexContainer
       className={css.board}
       direction='column'
-      gap='sm'
+      draggable={isDraggable}
       onDragEnter={onDragEnter}
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
       onDrop={onDrop}
     >
-      {boardHeader}
-      <FlexContainer direction='column' gap='sm'>
-        {dropzone(0)}
-        {sortedCards?.map((card, i) =>
-          <Fragment key={card.identifier}>
-            <Card
-              key={card.identifier}
-              card={card}
-              updateCard={async (params: CardParams) => await updateCard(card, params)}
-              deleteCard={async () => await deleteCard(card)}
-            />
-            {dropzone(i + 1, true)}
-          </Fragment>
-        )}
-      </FlexContainer>
-      <FlexContainer gap='sm'>
-        <Button
-          compact
-          size='sm'
-          variant='subtle'
-          onClick={createCard
-        }>
-          Add Card
-        </Button>
-        <Button
-          compact
-          warn
-          size='sm'
-          variant='subtle'
-          onClick={deleteBoard}
-        >
-          Remove Board
-        </Button>
+      <FlexContainer
+        direction='column'
+        gap='sm'
+        onMouseEnter={() => setDraggable(false)}
+        onMouseLeave={() => setDraggable(true)}
+      >
+        {boardHeader}
+        <FlexContainer direction='column' gap='sm'>
+          {dropzone(0)}
+          {sortedCards?.map((card, i) =>
+            <Fragment key={card.identifier}>
+              <Card
+                key={card.identifier}
+                card={card}
+                updateCard={async (params: CardParams) => await updateCard(card, params)}
+                deleteCard={async () => await deleteCard(card)}
+              />
+              {dropzone(i + 1, true)}
+            </Fragment>
+          )}
+        </FlexContainer>
+        <FlexContainer gap='sm'>
+          <Button
+            compact
+            size='sm'
+            variant='subtle'
+            onClick={createCard
+          }>
+            Add Card
+          </Button>
+          <Button
+            compact
+            warn
+            size='sm'
+            variant='subtle'
+            onClick={deleteBoard}
+          >
+            Remove Board
+          </Button>
+        </FlexContainer>
       </FlexContainer>
     </FlexContainer>
   )
