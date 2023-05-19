@@ -21,7 +21,7 @@ export interface BoardLocationParams {
 export interface BoardModel extends Model {
   workspace: string,
   title: string,
-  position: string | null,
+  position: number | null,
 }
 
 export interface CardParams {
@@ -39,7 +39,7 @@ export interface CardModel extends Model {
   board: string,
   body: string | null,
   title: string,
-  position: string | null,
+  position: number | null,
 }
 
 export interface WorkspaceModel extends Model {}
