@@ -36,4 +36,4 @@ https://github.com/kevlarr/kanbad/assets/6306496/390c8f6f-cbde-45d7-b6a8-1f076d0
 
 https://github.com/kevlarr/kanbad/assets/6306496/3fbced17-3175-43fa-b932-fba4033213a8
 
-
+https://github.com/kevlarr/kanbad/assets/6306496/022d7ce9-d432-4976-abd4-930762fd7786
