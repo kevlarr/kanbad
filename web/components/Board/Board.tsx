@@ -1,9 +1,9 @@
-import { DragEvent, FocusEvent, Fragment, RefObject, createRef, useMemo, useState } from 'react'
+import { FocusEvent, useMemo, useState } from 'react'
 
 import { getEventDataCard } from '@/lib/dnd'
-import { BoardModel, BoardParams, CardModel, CardLocationParams, CardParams } from '@/lib/models'
+import { BoardModel, BoardParams, CardModel, CardParams } from '@/lib/models'
 import { Button, FlexContainer, Heading, TextInput } from '@/components/base'
-import { Card, Dropzone } from '@/components'
+import { Card, SortableList } from '@/components'
 import css from './Board.module.css'
 
 interface BoardProps {
@@ -27,7 +27,6 @@ export default function Board({
   updateCardLocations,
   deleteCard,
 }: BoardProps) {
-  const [activeDropzone, setActiveDropzone] = useState(-1)
   const [isEditing, setEditing] = useState(false)
 
   // While there are several ways to make child elements selectable within
@@ -55,11 +54,6 @@ export default function Board({
     [cards],
   )
 
-  const dropzoneRefs: Array<RefObject<HTMLDivElement>> = [
-    createRef(),
-    ...((cards?.map(() => createRef()) || []) as Array<RefObject<HTMLDivElement>>)
-  ]
-
   async function updateTitle(evt: FocusEvent) {
     const title = (evt.target as HTMLInputElement).value
 
@@ -70,92 +64,6 @@ export default function Board({
 
     updateBoard({ title })
       .then(() => setEditing(false))
-  }
-
-  function onDragEnter(evt: DragEvent) {
-    console.debug(`DRAG-ENTER: board<${board.identifier}>`)
-    evt.stopPropagation()
-  }
-
-  function onDragLeave(evt: DragEvent) {
-    console.debug(`DRAG-LEAVE: board<${board.identifier}>`)
-    evt.stopPropagation()
-    setActiveDropzone(-1)
-  }
-
-  function onDragOver(evt: DragEvent) {
-    console.debug(`DRAG-OVER: board<${board.identifier}>`)
-    evt.stopPropagation()
-
-    const card = getEventDataCard(evt)
-
-    if (!card) {
-      return
-    }
-
-    // Cancel the event to tell the browser this IS a valid drop zone
-    // for the type being dragged
-    evt.preventDefault()
-
-    const { clientY: evtY } = evt
-    let closest = -1
-    let closestDist: number
-
-    dropzoneRefs.forEach((ref, i) => {
-      const { y: refY } = ref.current!.getBoundingClientRect()
-      const dist = Math.abs(refY - evtY)
-
-      if (closestDist === undefined || dist < closestDist) {
-        closestDist = dist
-        closest = i
-      }
-    })
-
-    // The dropzone immediately before or after the card should never
-    // activate, since it doesn't make sense to position a card before
-    // or after itself.
-    //
-    // Given:
-    //   Dropzone i=0
-    //   Card     j=0
-    //   Dropzone i=1 <Never activate>
-    //   Card     j=1 <If dragging>
-    //   Dropzone i=2 <Never activate>
-    //
-    // If the second card (j=1) is being dragged, then dropzones at
-    // 1 & 2
-    //
-    // Note: This only applies if the card being dragged is currently
-    // on the board already
-    if (
-      card &&
-      card.board === board.identifier &&
-      (
-        card.identifier === (cards && cards[closest]?.identifier) ||
-        card.identifier === (cards && cards[closest - 1]?.identifier)
-      )
-    ) {
-      setActiveDropzone(-1)
-    } else {
-      setActiveDropzone(closest!)
-    }
-  }
-
-  function onDrop(evt: DragEvent) {
-    console.debug(`DROP: board<${board.identifier}>`)
-    evt.stopPropagation()
-
-    const card = getEventDataCard(evt)
-
-    if (!card) {
-      return
-    }
-
-    // Cancel the event to tell the browser this IS a valid drop zone
-    // for the type being dragged
-    evt.preventDefault()
-    setActiveDropzone(-1)
-    updateCardLocations(board, card, activeDropzone)
   }
 
   const boardHeader = isEditing
@@ -171,22 +79,22 @@ export default function Board({
         {board.title}
       </Heading>
 
-  const dropzone = (i: number, key: boolean = false) => <Dropzone
-    ref={dropzoneRefs[i]}
-    active={i === activeDropzone}
-    {...(key && { key: `drop${i}` })}
-  />
+  const cardNodes = sortedCards?.map((card) => (
+      <Card
+        key={card.identifier}
+        card={card}
+        updateCard={async (params: CardParams) => await updateCard(card, params)}
+        deleteCard={async () => await deleteCard(card)}
+      />
+    ))
 
   return (
     <FlexContainer
       className={css.board}
       direction='column'
       draggable={isDraggable}
-      onDragEnter={onDragEnter}
-      onDragOver={onDragOver}
-      onDragLeave={onDragLeave}
-      onDrop={onDrop}
     >
+      {/* Wrap all children in another container in order to disable draggability for now */}
       <FlexContainer
         direction='column'
         gap='sm'
@@ -194,20 +102,11 @@ export default function Board({
         onMouseLeave={() => setDraggable(true)}
       >
         {boardHeader}
-        <FlexContainer direction='column' gap='sm'>
-          {dropzone(0)}
-          {sortedCards?.map((card, i) =>
-            <Fragment key={card.identifier}>
-              <Card
-                key={card.identifier}
-                card={card}
-                updateCard={async (params: CardParams) => await updateCard(card, params)}
-                deleteCard={async () => await deleteCard(card)}
-              />
-              {dropzone(i + 1, true)}
-            </Fragment>
-          )}
-        </FlexContainer>
+        <SortableList<CardModel>
+          draggables={cardNodes ?? []}
+          getEventItem={getEventDataCard}
+          onDropPosition={(card, position) => updateCardLocations(board, card, position)}
+        />
         <FlexContainer gap='sm'>
           <Button
             compact

@@ -5,12 +5,15 @@
  * since some fields are logically updated together at the exclusion of other properties.
  */
 
+export interface Model {
+  identifier: string,
+}
+
 export interface BoardParams {
   title: string,
 }
 
-export interface BoardModel {
-  identifier: string,
+export interface BoardModel extends Model {
   workspace: string,
   title: string,
   position: string | null,
@@ -27,14 +30,11 @@ export interface CardLocationParams {
   position: number,
 }
 
-export interface CardModel {
-  identifier: string,
+export interface CardModel extends Model {
   board: string,
   body: string | null,
   title: string,
   position: string | null,
 }
 
-export interface WorkspaceModel {
-  identifier: string,
-}
+export interface WorkspaceModel extends Model {}
