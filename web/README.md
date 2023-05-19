@@ -5,13 +5,13 @@ React, Next.js, and TypeScript front-end that includes:
 - Creating new workspaces
 - Creating & removing boards
 - Creating, editing, and removing cards
-- Reordering cards or moving between boards via HTML5 drag and drop
+- Reordering boards in a workspace
+- Reordering cards or moving between boards
 
-Drag and drop is implemented using the base HTML5 drag events API,
-rather than any React-specific d&d library, primarily because
-implementing from scratch (1) is a better learning opportunity,
-and (2) offers more opportunity for customizing events and the
-types of draggable elements.
+Board and card Drag & Drop is implemented using the base HTML5 drag events API,
+rather than any React-specific d&d library, primarily because implementing from scratch
+(1) is a better learning opportunity, and (2) offers more opportunity for customizing
+events and the types of draggable elements & behavior on drop.
 
 ## Getting Started
 
