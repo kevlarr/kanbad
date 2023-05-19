@@ -61,6 +61,7 @@ async fn main() -> io::Result<()> {
             .service(
                 scope("/api")
                     .service(get_boards)
+                    .service(update_boards)
                     .service(create_board)
                     .service(update_board)
                     .service(delete_board)
@@ -92,6 +93,14 @@ pub async fn get_boards(
     query: Query<ByWorkspace>,
 ) -> impl Responder {
     Json(store::boards::find_all(&state.pool, &query.workspace).await)
+}
+
+#[patch("/boards")]
+pub async fn update_boards(
+    state: Data<State>,
+    params: Json<Vec<store::boards::BoardLocationUpdate>>,
+) -> impl Responder {
+    Json(store::boards::update_locations(&state.pool, &params).await)
 }
 
 #[post("/boards")]

@@ -1,12 +1,11 @@
-import { ComponentProps, DragEvent, Fragment, ReactElement, RefObject, createRef, useState } from 'react'
+import { DragEvent, Fragment, ReactElement, RefObject, createRef, useState } from 'react'
 
 import { Model } from '@/lib/models'
 import { FlexContainer } from '@/components/base'
+import { FlexContainerProps } from '@/components/base/FlexContainer/FlexContainer'
 import { Dropzone } from '@/components'
 
-type BaseProps = ComponentProps<'div'>
-
-interface SortableListProps<T extends Model> extends BaseProps {
+interface SortableListProps<T extends Model> extends FlexContainerProps {
   draggables?: Array<ReactElement>,
   getEventItem(evt: DragEvent): T | null,
   onDropPosition(model: T, position: number): any,

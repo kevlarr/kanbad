@@ -1,10 +1,20 @@
 use serde::{Deserialize, Serialize};
+use sqlx::FromRow;
 use sqlx::postgres::PgPool;
 use uuid::Uuid;
 
 #[derive(Deserialize)]
 pub struct BoardUpdate {
     pub title: String,
+}
+
+// This currently does not allow updating a board's WORKSPACE the same way
+// that cards can have their board updated by 'location'
+#[derive(Deserialize)]
+pub struct BoardLocationUpdate {
+    #[serde(rename = "board")]
+    pub board_identifier: String,
+    pub position: i32,
 }
 
 #[derive(Debug, Deserialize)]
@@ -14,7 +24,7 @@ pub struct NewBoard {
     pub title: String,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, FromRow, Serialize)]
 pub struct Board {
     #[serde(skip_serializing)]
     pub id: i32,
@@ -22,6 +32,7 @@ pub struct Board {
     #[serde(rename = "workspace")]
     pub workspace_identifier: Uuid,
     pub title: String,
+    pub position: Option<i32>,
 }
 
 pub async fn find_all(pool: &PgPool, workspace_identifier: &Uuid) -> Vec<Board> {
@@ -32,15 +43,13 @@ pub async fn find_all(pool: &PgPool, workspace_identifier: &Uuid) -> Vec<Board> 
             b.id,
             b.identifier,
             b.title,
+            b.position,
             w.identifier as workspace_identifier
 
         from board b
         join workspace w on w.id = b.workspace_id
 
         where w.identifier = $1
-
-        order by
-            b.id asc
         ",
         &workspace_identifier
     )
@@ -65,7 +74,12 @@ pub async fn create(pool: &PgPool, params: &NewBoard) -> Board {
             (select id from workspace where identifier = $2),
             $3
         )
-        returning id, identifier, title, $2 as "workspace_identifier!"
+        returning
+            id,
+            identifier,
+            title,
+            position,
+            $2 as "workspace_identifier!"
         "#,
         &identifier,
         params.workspace_identifier,
@@ -91,12 +105,53 @@ pub async fn update(pool: &PgPool, board_identifier: &Uuid, params: &BoardUpdate
             board.id,
             board.identifier,
             board.title,
+            board.position,
             w.identifier as workspace_identifier
         ",
         &board_identifier,
         &params.title,
     )
         .fetch_one(pool)
+        .await
+        .unwrap()
+}
+
+#[deprecated(note = "FIXME: sql injection")]
+pub async fn update_locations(pool: &PgPool, param_list: &[BoardLocationUpdate]) -> Vec<Board> {
+    let values = param_list.iter()
+        .map(|p| format!(
+            "('{}', {})",
+            &p.board_identifier,
+            p.position,
+        ))
+        .collect::<Vec<_>>()
+        .join(", ");
+
+    sqlx::query_as::<_, Board>(
+        &format!(
+            "
+            update board set
+                position = vals.position
+
+            from workspace
+            join (values {values}) vals (
+                board_identifier,
+                position
+            ) on true
+
+            where vals.board_identifier::uuid = board.identifier
+              and workspace.id = board.workspace_id
+
+            returning
+                board.id,
+                board.identifier,
+                board.title,
+                board.position,
+                workspace.identifier as workspace_identifier
+            "),
+
+    )
+        .fetch_all(pool)
         .await
         .unwrap()
 }

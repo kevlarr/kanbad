@@ -1,6 +1,6 @@
-import { FocusEvent, useMemo, useState } from 'react'
+import { DragEvent, FocusEvent, useMemo, useState } from 'react'
 
-import { getEventDataCard } from '@/lib/dnd'
+import { getEventDataCard, setEventDataBoard } from '@/lib/dnd'
 import { BoardModel, BoardParams, CardModel, CardParams } from '@/lib/models'
 import { Button, FlexContainer, Heading, TextInput } from '@/components/base'
 import { Card, SortableList } from '@/components'
@@ -66,6 +66,22 @@ export default function Board({
       .then(() => setEditing(false))
   }
 
+  function onDragStart(evt: DragEvent) {
+    console.debug(`DRAG-START: board<${board.identifier}>`)
+    evt.stopPropagation()
+    setEventDataBoard(evt, board)
+  }
+
+  function onDrag(evt: DragEvent) {
+    console.debug(`DRAG: board<${board.identifier}>`)
+    evt.stopPropagation()
+  }
+
+  function onDragEnd(evt: DragEvent) {
+    console.debug(`DRAG-END: board<${board.identifier}>`)
+    evt.stopPropagation()
+  }
+
   const boardHeader = isEditing
     ? <TextInput
         autoFocus={true}
@@ -79,7 +95,7 @@ export default function Board({
         {board.title}
       </Heading>
 
-  const cardNodes = sortedCards?.map((card) => (
+  const cardElements = sortedCards?.map((card) => (
       <Card
         key={card.identifier}
         card={card}
@@ -93,6 +109,9 @@ export default function Board({
       className={css.board}
       direction='column'
       draggable={isDraggable}
+      onDragStart={onDragStart}
+      onDrag={onDrag}
+      onDragEnd={onDragEnd}
     >
       {/* Wrap all children in another container in order to disable draggability for now */}
       <FlexContainer
@@ -103,7 +122,7 @@ export default function Board({
       >
         {boardHeader}
         <SortableList<CardModel>
-          draggables={cardNodes ?? []}
+          draggables={cardElements ?? []}
           getEventItem={getEventDataCard}
           onDropPosition={(card, position) => updateCardLocations(board, card, position)}
         />

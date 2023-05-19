@@ -13,6 +13,11 @@ export interface BoardParams {
   title: string,
 }
 
+export interface BoardLocationParams {
+  board: string,
+  position: number,
+}
+
 export interface BoardModel extends Model {
   workspace: string,
   title: string,
