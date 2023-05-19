@@ -9,9 +9,11 @@ React, Next.js, and TypeScript front-end that includes:
 - Reordering cards or moving between boards
 
 Board and card Drag & Drop is implemented using the base HTML5 drag events API,
-rather than any React-specific d&d library, primarily because implementing from scratch
-(1) is a better learning opportunity, and (2) offers more opportunity for customizing
-events and the types of draggable elements & behavior on drop.
+rather than any React-specific d&d library, primarily because implementing from scratch...
+
+1. ... is a better learning opportunity
+2. ... offers more opportunity for customizing draggable elements and drop types
+3. ... makes it easier to allow child elements (eg. text in a card) to be selectable without dragging the card (how is this NOT common behavior?)
 
 ## Getting Started
 
