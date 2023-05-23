@@ -3,13 +3,20 @@ import { useRouter } from 'next/router'
 import { Button, FlexContainer, Heading, Text } from '@/components/base'
 import api from '@/lib/api'
 
-export default function Index() {
+interface IndexProps {
+  addWorkspace(identifier: string): any,
+}
+
+export default function Index({ addWorkspace }: IndexProps) {
   const router = useRouter()
 
   function createWorkspace() {
     api
       .post('workspaces')
-      .then(({ identifier}) => router.push(`workspaces/${identifier}`))
+      .then(({ identifier}) => {
+        addWorkspace(identifier)
+        router.push(`workspaces/${identifier}`)
+    })
   }
 
   return (
