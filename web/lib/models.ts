@@ -42,4 +42,16 @@ export interface CardModel extends Model {
   position: number | null,
 }
 
-export interface WorkspaceModel extends Model {}
+export interface WorkspaceModel extends Model {
+  title: string,
+  position: number | null,
+}
+
+export interface WorkspaceParams {
+  title: string,
+}
+
+export interface WorkspaceLocationParams {
+  workspace: string,
+  position: number,
+}

@@ -2,7 +2,7 @@
 
 React, Next.js, and TypeScript front-end that includes:
 
-- Creating new workspaces
+- Creating new workspaces and storing their UUIDs in local storage
 - Creating & removing boards
 - Creating, editing, and removing cards
 - Reordering boards in a workspace

@@ -1,25 +1,18 @@
-import { useRouter } from 'next/router'
-
 import { Button, FlexContainer, Heading, Text } from '@/components/base'
-import api from '@/lib/api'
 
-export default function Index() {
-  const router = useRouter()
+interface IndexProps {
+  createWorkspace(title: string): any,
+}
 
-  function createWorkspace() {
-    api
-      .post('workspaces')
-      .then(({ identifier}) => router.push(`workspaces/${identifier}`))
-  }
-
+export default function Index({ createWorkspace }: IndexProps) {
   return (
     <FlexContainer direction='column' gap='xl' pad='xl'>
       <Heading level={1}>Hello, from Kanbad!</Heading>
       <Text>Workspaces give you places to make things like boards and cards... and magic!</Text>
       <Text>Create a new one or, if you're really lucky, get a friend to share a workspace with you.</Text>
       <div>
-        <Button onClick={createWorkspace}>
-          Create workspace
+        <Button onClick={() => createWorkspace('New Workspace')}>
+          Create a workspace!
         </Button>
       </div>
     </FlexContainer>

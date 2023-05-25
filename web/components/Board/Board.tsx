@@ -88,12 +88,7 @@ export default function Board({
         defaultValue={board.title}
         onBlur={updateTitle}
       />
-    : <Heading
-        level={3}
-        onClick={() => setEditing(true)}
-      >
-        {board.title}
-      </Heading>
+    : <Heading level={3} onClick={() => setEditing(true)}>{board.title}</Heading>
 
   const cardElements = sortedCards?.map((card) => (
       <Card

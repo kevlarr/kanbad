@@ -46,22 +46,22 @@
 /*
  * Styling for active OUTLINED buttons
  */
-.button.outlined {
+.outlined {
     background-color: transparent;
     border-color: var(--polar3);
     color: var(--polar3);
 }
 
-.button.outlined:active,
-.button.outlined:focus,
-.button.outlined:hover {
+.outlined:active,
+.outlined:focus,
+.outlined:hover {
     border-color: var(--frost2);
     color: var(--frost3);
 }
 
-.button.outlined.warn:active,
-.button.outlined.warn:focus,
-.button.outlined.warn:hover {
+.outlined.warn:active,
+.outlined.warn:focus,
+.outlined.warn:hover {
     border-color: var(--aurora-red);
     color: var(--aurora-red);
 }

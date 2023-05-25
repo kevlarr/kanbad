@@ -1,0 +1,54 @@
+.sidebar {
+    background-color: var(--polar0);
+    box-shadow: 0 0 15px 0px var(--polar3);
+    max-width: 500px;
+    min-width: 175px;
+    width: 25vw;
+}
+
+.logotype {
+    background-color: var(--polar1);
+    color: var(--snow0);
+    display: inline-block;
+    padding: var(--padding-md);
+}
+
+.logotype:active,
+.logotype:focus,
+.logotype:hover {
+    background-color: var(--polar3);
+    color: var(--white);
+}
+
+.content {
+    flex: 1;
+}
+
+.workspacesHeading {
+    color: var(--polar3);
+    padding: var(--padding-md);
+}
+
+.workspaceLink {
+    color: var(--snow0);
+    font-size: larger;
+    overflow-x: hidden;
+    text-decoration: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.workspaceLink:hover {
+    color: var(--white);
+}
+
+.activeWorkspace::before {
+    content: "◼";
+    font-size: 0.75rem;
+    margin-right: 0.5rem;
+}
+
+.newWorkspace {
+    border-color: var(--snow0);
+    color: var(--snow0);
+}

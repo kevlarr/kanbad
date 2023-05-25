@@ -4,8 +4,9 @@
     --border-radius: 2px;
     --border-width: 1px;
 
-    --box-shadow-lt: 0 0 10px 5px var(--snow1);
-    --box-shadow-md: 0 0 10px 5px var(--snow0);
+    --box-shadow-base: 0 0 10px 5px;
+    --box-shadow-lt: var(--box-shadow-base) var(--snow1);
+    --box-shadow-md: var(--box-shadow-base) var(--snow0);
 
     --font-size-sm: 0.85rem;
     --font-weight-semibold: 600;

@@ -3,6 +3,17 @@ use sqlx::FromRow;
 use sqlx::postgres::PgPool;
 use uuid::Uuid;
 
+#[derive(Debug, FromRow, Serialize)]
+pub struct Board {
+    #[serde(skip_serializing)]
+    pub id: i32,
+    pub identifier: Uuid,
+    #[serde(rename = "workspace")]
+    pub workspace_identifier: Uuid,
+    pub title: String,
+    pub position: Option<i32>,
+}
+
 #[derive(Deserialize)]
 pub struct BoardUpdate {
     pub title: String,
@@ -13,7 +24,7 @@ pub struct BoardUpdate {
 #[derive(Deserialize)]
 pub struct BoardLocationUpdate {
     #[serde(rename = "board")]
-    pub board_identifier: String,
+    pub board_identifier: Uuid,
     pub position: i32,
 }
 
@@ -22,17 +33,6 @@ pub struct NewBoard {
     #[serde(rename = "workspace")]
     pub workspace_identifier: Uuid,
     pub title: String,
-}
-
-#[derive(Debug, FromRow, Serialize)]
-pub struct Board {
-    #[serde(skip_serializing)]
-    pub id: i32,
-    pub identifier: Uuid,
-    #[serde(rename = "workspace")]
-    pub workspace_identifier: Uuid,
-    pub title: String,
-    pub position: Option<i32>,
 }
 
 pub async fn find_all(pool: &PgPool, workspace_identifier: &Uuid) -> Vec<Board> {
@@ -94,10 +94,9 @@ pub async fn update(pool: &PgPool, board_identifier: &Uuid, params: &BoardUpdate
     sqlx::query_as!(
         Board,
         "
-        update board
-        set title = $2
-        from workspace w
+        update board set title = $2
 
+        from workspace w
         where w.id = board.workspace_id
             and board.identifier = $1
 
@@ -138,7 +137,6 @@ pub async fn update_locations(pool: &PgPool, param_list: &[BoardLocationUpdate])
                 board_identifier,
                 position
             ) on true
-
             where vals.board_identifier::uuid = board.identifier
               and workspace.id = board.workspace_id
 
@@ -158,10 +156,7 @@ pub async fn update_locations(pool: &PgPool, param_list: &[BoardLocationUpdate])
 
 pub async fn delete(pool: &PgPool, board_identifier: &Uuid) -> bool {
     let rows_affected = sqlx::query!(
-        "
-        delete from board
-        where identifier = $1
-        ",
+        "delete from board where identifier = $1",
         &board_identifier
     )
         .execute(pool)
