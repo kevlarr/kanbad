@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { FocusEvent, useMemo, useState } from 'react'
 import { GetServerSideProps } from 'next'
 
 import api from '@/lib/api'
@@ -11,9 +11,10 @@ import {
   CardParams,
   CardLocationParams,
   WorkspaceModel,
+  WorkspaceParams,
 } from '@/lib/models'
-import { Button, FlexContainer } from '@/components/base'
-import { Board, SortableList, WorkspaceHeader } from '@/components'
+import { Button, FlexContainer, Heading, Text, TextInput } from '@/components/base'
+import { Board, SortableList } from '@/components'
 import css from './uuid.module.css'
 
 type BoardCardsMap = { [index: string] : Array<CardModel> }
@@ -22,6 +23,7 @@ interface WorkspacePageProps {
   initialBoards: Array<BoardModel>,
   initialCards: Array<CardModel>,
   workspace: WorkspaceModel,
+  updateWorkspace(m: WorkspaceModel, p: WorkspaceParams): Promise<any>,
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -46,7 +48,9 @@ export default function WorkspacePage({
   initialBoards,
   initialCards,
   workspace,
+  updateWorkspace,
 }: WorkspacePageProps) {
+  const [isEditing, setEditing] = useState(false)
   const [boards, setBoards] = useState(initialBoards)
   const [cards, setCards] = useState(initialCards)
 
@@ -74,6 +78,17 @@ export default function WorkspacePage({
     }, {}),
     [cards],
   )
+
+  async function updateWorkspaceTitle(evt: FocusEvent) {
+    const title = (evt.target as HTMLInputElement).value
+
+    if (title === workspace.title) {
+      setEditing(false)
+      return
+    }
+
+    updateWorkspace(workspace, { title }).then(() => setEditing(false))
+  }
 
   /* Board CRUD handlers
    */
@@ -227,21 +242,27 @@ export default function WorkspacePage({
     />
   ))
 
+  const header = isEditing
+    ? <TextInput
+        autoFocus={true}
+        defaultValue={workspace.title}
+        onBlur={updateWorkspaceTitle}
+      />
+    : <Heading level={2} onClick={() => setEditing(true)}>{workspace.title}</Heading>
+
+  const content = boards.length > 0
+    ? <SortableList<BoardModel>
+        draggables={boardElements}
+        getEventItem={getEventDataBoard}
+        onDropPosition={updateBoardLocations}
+        gap='md'
+      />
+    : <Text>No boards to display</Text>
+
   return (
     <FlexContainer className={css.workspace} direction='column' gap='lg' scroll='y'>
-      <WorkspaceHeader
-        identifier={workspace.identifier}
-        createBoard={createBoard}
-      />
-      {boards &&
-        <SortableList<BoardModel>
-          draggables={boardElements}
-          getEventItem={getEventDataBoard}
-          onDropPosition={updateBoardLocations}
-          gap='md'
-        />
-
-      }
+      {header}
+      {content}
       {/* Wrap in a container so the button doesn't stretch full width */}
       <FlexContainer>
         <Button variant='outlined' onClick={createBoard}>

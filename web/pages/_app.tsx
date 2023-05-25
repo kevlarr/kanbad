@@ -3,7 +3,7 @@ import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 
-import { WorkspaceModel } from '@/lib/models'
+import { WorkspaceModel, WorkspaceParams } from '@/lib/models'
 import * as storage from '@/lib/storage'
 import { PageHeader } from '@/components'
 import '@/styles/globals.css'
@@ -34,6 +34,17 @@ export default function App({ Component, pageProps }: AppProps) {
     })
   }
 
+  async function updateWorkspace(ws: WorkspaceModel, params: WorkspaceParams) {
+    return await api.patch(`workspaces/${ws.identifier}`, params)
+      .then((updatedWorkspace) => {
+        setWorkspaces(workspaces.map((existingWorkspace) => (
+          existingWorkspace.identifier === updatedWorkspace.identifier
+            ? updatedWorkspace
+            : existingWorkspace
+        )))
+      })
+  }
+
   /* Need to assign a key to the component based on route in order for navigating
    * between dynamic routes (eg. different workspaces) to work properly and fetch
    * initial props on page change.
@@ -49,7 +60,18 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta name='viewport' content='width=device-width, initial-scale=1' />
       </Head>
       <PageHeader workspaces={workspaces} />
-      <Component key={key} createWorkspace={createWorkspace} {...pageProps} />
+      {/* TODO
+        * How bad IS IT that this is passing `createWorkspace` and `updateWorkspace`
+        * to all pages, even though each is only used on a single page?
+        *
+        * This also doesn't pick up typing issues...
+        */}
+      <Component
+        key={key}
+        createWorkspace={createWorkspace}
+        updateWorkspace={updateWorkspace}
+        {...pageProps}
+      />
     </>
   )
 }

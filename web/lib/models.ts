@@ -46,3 +46,7 @@ export interface WorkspaceModel extends Model {
   title: string,
   position: number | null,
 }
+
+export interface WorkspaceParams {
+  title: string,
+}
