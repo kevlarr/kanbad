@@ -5,7 +5,7 @@ import { useRouter } from 'next/router'
 
 import { WorkspaceModel, WorkspaceParams, WorkspaceLocationParams } from '@/lib/models'
 import * as storage from '@/lib/storage'
-import { PageHeader } from '@/components'
+import { Sidebar } from '@/components'
 import '@/styles/globals.css'
 import api from '@/lib/api'
 
@@ -82,7 +82,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <title>Kanbad</title>
         <meta name='viewport' content='width=device-width, initial-scale=1' />
       </Head>
-      <PageHeader
+      <Sidebar
         workspaces={workspaces}
         createWorkspace={createWorkspace}
         updateWorkspaceLocations={updateWorkspaceLocations}

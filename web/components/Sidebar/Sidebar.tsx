@@ -6,7 +6,7 @@ import { getEventDataWorkspace, setEventDataWorkspace } from '@/lib/dnd'
 import { WorkspaceModel } from '@/lib/models'
 import { Button, FlexContainer, Heading } from '@/components/base'
 import { SortableList } from '@/components'
-import css from './PageHeader.module.css'
+import css from './Sidebar.module.css'
 
 interface PageHeaderProps {
   workspaces: Array<WorkspaceModel>,
@@ -93,10 +93,7 @@ export default function PageHeader({
     : null
 
   return (
-    <FlexContainer
-      className={css.pageHeader}
-      direction='column'
-    >
+    <FlexContainer className={css.sidebar} direction='column'>
       <Link className={css.logotype} href='/'>
         <Heading inline level={1}>kanbad</Heading>
       </Link>
