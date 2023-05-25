@@ -84,6 +84,7 @@ export default function App({ Component, pageProps }: AppProps) {
       </Head>
       <PageHeader
         workspaces={workspaces}
+        createWorkspace={createWorkspace}
         updateWorkspaceLocations={updateWorkspaceLocations}
       />
       {/* TODO

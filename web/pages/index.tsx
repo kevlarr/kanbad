@@ -12,7 +12,7 @@ export default function Index({ createWorkspace }: IndexProps) {
       <Text>Create a new one or, if you're really lucky, get a friend to share a workspace with you.</Text>
       <div>
         <Button onClick={() => createWorkspace('New Workspace')}>
-          Create workspace
+          Create a workspace!
         </Button>
       </div>
     </FlexContainer>

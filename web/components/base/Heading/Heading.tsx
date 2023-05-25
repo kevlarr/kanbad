@@ -29,6 +29,7 @@ interface Props extends BaseProps {
 }
 
 export default function Text({
+  className,
   children,
   level,
   inline = false,
@@ -37,6 +38,7 @@ export default function Text({
 } : Props) {
   const Tag = headingTag(level)
   const classes = [
+    className,
     css.heading,
     inline ? css.inline : null,
     underline ? css.underline : null,

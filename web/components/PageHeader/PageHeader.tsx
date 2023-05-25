@@ -1,21 +1,26 @@
 import { DragEvent, useMemo } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 
 import { getEventDataWorkspace, setEventDataWorkspace } from '@/lib/dnd'
 import { WorkspaceModel } from '@/lib/models'
-import { FlexContainer, Heading } from '@/components/base'
+import { Button, FlexContainer, Heading } from '@/components/base'
 import { SortableList } from '@/components'
 import css from './PageHeader.module.css'
 
 interface PageHeaderProps {
   workspaces: Array<WorkspaceModel>,
+  createWorkspace(title: string): any,
   updateWorkspaceLocations(workspace: WorkspaceModel, position: number): any,
 }
 
 export default function PageHeader({
   workspaces,
+  createWorkspace,
   updateWorkspaceLocations,
 }: PageHeaderProps) {
+  const { asPath: path } = useRouter()
+
   // TODO: This is copied & pasted from `Board`
   const sortedWorkspaces = useMemo(
     () => {
@@ -45,36 +50,64 @@ export default function PageHeader({
     evt.stopPropagation()
   }
 
-  const workspaceElements = sortedWorkspaces.map((workspace) => (
-    <Link
-      key={workspace.identifier}
-      className={css.workspaceLink}
-      href={`/workspaces/${workspace.identifier}`}
-      draggable={true}
-      onDragStart={(e) => onDragStart(e, workspace)}
-      onDrag={onDrag}
-      onDragEnd={onDragEnd}
-    >
-      {workspace.title}
-    </Link>
-  ))
+  const isActive = (workspace: WorkspaceModel) => path === `/workspaces/${workspace.identifier}`
+
+  const workspaceElements = sortedWorkspaces.map((workspace) => {
+    const classes = [
+      css.workspaceLink,
+      isActive(workspace) ? css.activeWorkspace : null,
+    ]
+
+    return (
+      <Link
+        key={workspace.identifier}
+        className={classes.join(' ')}
+        href={`/workspaces/${workspace.identifier}`}
+        draggable={true}
+        onDragStart={(e) => onDragStart(e, workspace)}
+        onDrag={onDrag}
+        onDragEnd={onDragEnd}
+      >
+        {workspace.title}
+      </Link>
+    )
+  })
+
+  const content = workspaces.length > 0
+    ? <>
+        <Heading
+          className={css.workspacesHeading}
+          level={2}
+          underline
+        >
+          Workspaces
+        </Heading>
+        <SortableList<WorkspaceModel>
+          gap='sm'
+          pad='sm'
+          draggables={workspaceElements}
+          getEventItem={getEventDataWorkspace}
+          onDropPosition={updateWorkspaceLocations}
+        />
+      </>
+    : null
 
   return (
     <FlexContainer
       className={css.pageHeader}
       direction='column'
-      pad='sm'
-      gap='md'
     >
       <Link className={css.logotype} href='/'>
         <Heading inline level={1}>kanbad</Heading>
       </Link>
-      <SortableList<WorkspaceModel>
-        gap='xs'
-        draggables={workspaceElements}
-        getEventItem={getEventDataWorkspace}
-        onDropPosition={updateWorkspaceLocations}
-      />
+      <FlexContainer className={css.content} direction='column'>
+        {content}
+      </FlexContainer>
+      <FlexContainer direction='column' pad='md'>
+        <Button className={css.newWorkspace} variant='outlined' onClick={() => createWorkspace('New Workspace')}>
+          New Workspace
+        </Button>
+      </FlexContainer>
     </FlexContainer>
   )
 }

@@ -13,6 +13,7 @@ interface ButtonProps extends BaseProps {
 }
 
 export default function Button({
+  className,
   children,
   compact = false,
   size = 'md',
@@ -22,6 +23,7 @@ export default function Button({
   ...rest
 }: ButtonProps) {
   const classes = [
+    className,
     css.button,
     css[variant],
     css[size],
