@@ -52,10 +52,6 @@ export default function WorkspacePage({
    *   - Should they be loaded client-side within the component?
    *   - Is this managing too much state, ie. a collection of boards and cards,
    *     and should there be a different state management solution?
-   *
-   * The joke is that this page is essentially an entire app in and of itself,
-   * storing the global state for the entire workspace and setting up all of the
-   * drag event hooks, API calls, etc.
    */
   const [boardList, setBoards] = useState(boards)
   const [cardList, setCards] = useState(cards)
