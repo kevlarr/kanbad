@@ -70,8 +70,11 @@ async fn main() -> io::Result<()> {
                     .service(create_card)
                     .service(update_card)
                     .service(delete_card)
+                    .service(get_workspaces)
+                    .service(update_workspaces)
                     .service(create_workspace)
                     .service(get_workspace)
+                    .service(update_workspace)
             )
     })
         .bind(("127.0.0.1", 3001))?
@@ -81,12 +84,32 @@ async fn main() -> io::Result<()> {
     Ok(())
 }
 
-// TODO: Error responses and no `unwrap` in store methods
+#[derive(Deserialize)]
+pub struct BoardPath {
+    board_uuid: Uuid,
+}
+
+#[derive(Deserialize)]
+pub struct CardPath {
+    card_uuid: Uuid,
+}
+
+#[derive(Deserialize)]
+pub struct WorkspacePath {
+    workspace_uuid: Uuid,
+}
+
+#[derive(Deserialize)]
+pub struct ByCreator {
+    creator: Uuid,
+}
+
 #[derive(Deserialize)]
 pub struct ByWorkspace {
     workspace: Uuid,
 }
 
+// TODO: Error responses and no `unwrap` in store methods
 #[get("/boards")]
 pub async fn get_boards(
     state: Data<State>,
@@ -109,11 +132,6 @@ pub async fn create_board(
     board: Json<store::boards::NewBoard>,
 ) -> impl Responder {
     Json(store::boards::create(&state.pool, &board).await)
-}
-
-#[derive(Deserialize)]
-pub struct BoardPath {
-    board_uuid: Uuid,
 }
 
 #[patch("/boards/{board_uuid}")]
@@ -161,11 +179,6 @@ pub async fn update_cards(
     Json(store::cards::update_locations(&state.pool, &params).await)
 }
 
-#[derive(Deserialize)]
-pub struct CardPath {
-    card_uuid: Uuid,
-}
-
 #[patch("/cards/{card_uuid}")]
 pub async fn update_card(
     state: Data<State>,
@@ -187,16 +200,28 @@ pub async fn delete_card(
     }
 }
 
+#[get("/workspaces")]
+pub async fn get_workspaces(
+    state: Data<State>,
+    query: Query<ByCreator>,
+) -> impl Responder {
+    Json(store::workspaces::find_all(&state.pool, &query.creator).await)
+}
+
 #[post("/workspaces")]
 pub async fn create_workspace(
     state: Data<State>,
+    workspace: Json<store::workspaces::NewWorkspace>,
 ) -> impl Responder {
-    Json(store::workspaces::create(&state.pool).await)
+    Json(store::workspaces::create(&state.pool, &workspace).await)
 }
 
-#[derive(Deserialize)]
-pub struct WorkspacePath {
-    workspace_uuid: Uuid,
+#[patch("/workspaces")]
+pub async fn update_workspaces(
+    state: Data<State>,
+    params: Json<Vec<store::workspaces::WorkspaceLocationUpdate>>,
+) -> impl Responder {
+    Json(store::workspaces::update_locations(&state.pool, &params).await)
 }
 
 #[get("/workspaces/{workspace_uuid}")]
@@ -205,4 +230,13 @@ pub async fn get_workspace(
     path: Path<WorkspacePath>,
 ) -> impl Responder {
     Json(store::workspaces::find(&state.pool, &path.workspace_uuid).await)
+}
+
+#[patch("/workspaces/{workspace_uuid}")]
+pub async fn update_workspace(
+    state: Data<State>,
+    path: Path<WorkspacePath>,
+    params: Json<store::workspaces::WorkspaceUpdate>,
+) -> impl Responder {
+    Json(store::workspaces::update(&state.pool, &path.workspace_uuid, &params).await)
 }

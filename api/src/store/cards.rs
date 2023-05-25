@@ -3,28 +3,6 @@ use sqlx::FromRow;
 use sqlx::postgres::PgPool;
 use uuid::Uuid;
 
-#[derive(Deserialize)]
-pub struct CardUpdate {
-    pub title: String,
-    pub body: Option<String>,
-}
-
-#[derive(Deserialize)]
-pub struct CardLocationUpdate {
-    #[serde(rename = "board")]
-    pub board_identifier: String,
-    #[serde(rename = "card")]
-    pub card_identifier: String,
-    pub position: i32,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct NewCard {
-    #[serde(rename = "board")]
-    pub board_identifier: Uuid,
-    pub title: String,
-}
-
 #[derive(Debug, FromRow, Serialize)]
 pub struct Card {
     #[serde(skip_serializing)]
@@ -35,6 +13,28 @@ pub struct Card {
     pub title: String,
     pub body: Option<String>,
     pub position: Option<i32>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct NewCard {
+    #[serde(rename = "board")]
+    pub board_identifier: Uuid,
+    pub title: String,
+}
+
+#[derive(Deserialize)]
+pub struct CardUpdate {
+    pub title: String,
+    pub body: Option<String>,
+}
+
+#[derive(Deserialize)]
+pub struct CardLocationUpdate {
+    #[serde(rename = "board")]
+    pub board_identifier: Uuid,
+    #[serde(rename = "card")]
+    pub card_identifier: Uuid,
+    pub position: i32,
 }
 
 pub async fn find_all(pool: &PgPool, workspace_identifier: &Uuid) -> Vec<Card> {
@@ -93,13 +93,10 @@ pub async fn update(pool: &PgPool, card_identifier: &Uuid, params: &CardUpdate) 
     sqlx::query_as!(
         Card,
         "
-        update card set
-            title = $2, body = $3
+        update card set title = $2, body = $3
 
         from board b
-
-        where b.id = card.board_id
-            and card.identifier = $1
+        where b.id = card.board_id and card.identifier = $1
 
         returning
             card.id,
@@ -143,7 +140,6 @@ pub async fn update_locations(pool: &PgPool, param_list: &[CardLocationUpdate]) 
                 card_identifier,
                 position
             ) on vals.board_identifier::uuid = board.identifier
-
             where vals.card_identifier::uuid = card.identifier
 
             returning
@@ -163,10 +159,7 @@ pub async fn update_locations(pool: &PgPool, param_list: &[CardLocationUpdate]) 
 
 pub async fn delete(pool: &PgPool, card_identifier: &Uuid) -> bool {
     let rows_affected = sqlx::query!(
-        "
-        delete from card
-        where identifier = $1
-        ",
+        "delete from card where identifier = $1",
         &card_identifier
     )
         .execute(pool)

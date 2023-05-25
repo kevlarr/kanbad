@@ -19,15 +19,15 @@ import css from './uuid.module.css'
 type BoardCardsMap = { [index: string] : Array<CardModel> }
 
 interface WorkspacePageProps {
-  boards: Array<BoardModel>,
-  cards: Array<CardModel>,
+  initialBoards: Array<BoardModel>,
+  initialCards: Array<CardModel>,
   workspace: WorkspaceModel,
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   // TODO: Proper way to `type` context & uuid, etc?
   const { uuid } = context.query
-  const [boards, cards, workspace] = await Promise.all([
+  const [initialBoards, initialCards, workspace] = await Promise.all([
     api.get(`boards?workspace=${uuid}`),
     api.get(`cards?workspace=${uuid}`),
     api.get(`workspaces/${uuid}`),
@@ -35,26 +35,20 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   return {
     props: {
-      boards,
-      cards,
+      initialBoards,
+      initialCards,
       workspace,
     }
   }
 }
 
 export default function WorkspacePage({
-  boards,
-  cards,
+  initialBoards,
+  initialCards,
   workspace,
 }: WorkspacePageProps) {
-  /* TODO:
-   *   - Is this a smell, creating state & hooks from props?
-   *   - Should they be loaded client-side within the component?
-   *   - Is this managing too much state, ie. a collection of boards and cards,
-   *     and should there be a different state management solution?
-   */
-  const [boardList, setBoards] = useState(boards)
-  const [cardList, setCards] = useState(cards)
+  const [boards, setBoards] = useState(initialBoards)
+  const [cards, setCards] = useState(initialCards)
 
   const sortedBoards = useMemo(
     // TODO: This is copy/pasted from `Board`
@@ -67,18 +61,18 @@ export default function WorkspacePage({
         return 0
       }
 
-      return boardList?.sort(byPosition)
+      return boards?.sort(byPosition)
     },
-    [boardList],
+    [boards],
   )
 
   const cardsByBoard = useMemo(
-    () => cardList.reduce((map: BoardCardsMap, card: CardModel) => {
+    () => cards.reduce((map: BoardCardsMap, card: CardModel) => {
       map[card.board] = map[card.board] || [];
       map[card.board].push(card)
       return map
     }, {}),
-    [cardList],
+    [cards],
   )
 
   /* Board CRUD handlers
@@ -90,14 +84,14 @@ export default function WorkspacePage({
     }
 
     return await api.post('boards', data).then((newBoard) => {
-      setBoards([...boardList, newBoard])
+      setBoards([...boards, newBoard])
     })
   }
 
   async function updateBoard(board: BoardModel, params: BoardParams) {
     return await api.patch(`boards/${board.identifier}`, params)
       .then((updatedBoard) => {
-        setBoards(boardList.map((existingBoard) => (
+        setBoards(boards.map((existingBoard) => (
           existingBoard.identifier === updatedBoard.identifier
             ? updatedBoard
             : existingBoard
@@ -106,7 +100,7 @@ export default function WorkspacePage({
   }
 
   async function updateBoardLocations(board: BoardModel, position: number) {
-    const workspaceBoards = boardList.filter((b) => b.identifier !== board.identifier)
+    const workspaceBoards = boards.filter((b) => b.identifier !== board.identifier)
 
     let paramList: Array<BoardLocationParams> = [
       ...workspaceBoards.slice(0, position),
@@ -124,14 +118,14 @@ export default function WorkspacePage({
           [b.identifier]: b,
         }), {})
 
-        setBoards(boardList.map((b) => updatedById[b.identifier] ?? b))
+        setBoards(boards.map((b) => updatedById[b.identifier] ?? b))
       })
   }
 
   async function deleteBoard(board: BoardModel) {
     return await api.delete(`boards/${board.identifier}`)
       .then(() => {
-        setBoards(boardList.filter((b) => (
+        setBoards(boards.filter((b) => (
           b.identifier !== board.identifier
         )))
       })
@@ -151,7 +145,7 @@ export default function WorkspacePage({
     }
 
     return await api.post('cards', data).then((newCard) => {
-      setCards([...cardList, newCard])
+      setCards([...cards, newCard])
     })
   }
 
@@ -160,7 +154,7 @@ export default function WorkspacePage({
     // and same with `deleteCard`
     return await api.patch(`cards/${card.identifier}`, params)
       .then((updatedCard) => {
-        setCards(cardList.map((existingCard) => (
+        setCards(cards.map((existingCard) => (
           existingCard.identifier === updatedCard.identifier
             ? updatedCard
             : existingCard
@@ -206,14 +200,14 @@ export default function WorkspacePage({
           [c.identifier]: c,
         }), {})
 
-        setCards(cardList.map((c) => updatedById[c.identifier] ?? c))
+        setCards(cards.map((c) => updatedById[c.identifier] ?? c))
       })
   }
 
   async function deleteCard(card: CardModel) {
     return await api.delete(`cards/${card.identifier}`)
       .then(() => {
-        setCards(cardList.filter((b) => (
+        setCards(cards.filter((b) => (
           b.identifier !== card.identifier
         )))
       })
@@ -239,7 +233,7 @@ export default function WorkspacePage({
         identifier={workspace.identifier}
         createBoard={createBoard}
       />
-      {boardList &&
+      {boards &&
         <SortableList<BoardModel>
           draggables={boardElements}
           getEventItem={getEventDataBoard}

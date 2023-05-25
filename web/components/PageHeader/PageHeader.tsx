@@ -1,10 +1,11 @@
 import Link from 'next/link'
 
+import { WorkspaceModel } from '@/lib/models'
 import { Heading } from '@/components/base'
 import css from './PageHeader.module.css'
 
 interface PageHeaderProps {
-  workspaces: Array<string>,
+  workspaces: Array<WorkspaceModel>,
 }
 
 export default function PageHeader({ workspaces }: PageHeaderProps) {
@@ -14,9 +15,9 @@ export default function PageHeader({ workspaces }: PageHeaderProps) {
         <Heading inline level={1}>kanbad</Heading>
       </Link>
       <ul>
-        {workspaces.map((uuid) =>
-          <li key={uuid}>
-            <Link href={`/workspaces/${uuid}`}>{uuid}</Link>
+        {workspaces.map(({ identifier, title }) =>
+          <li key={identifier}>
+            <Link href={`/workspaces/${identifier}`}>{title}</Link>
           </li>
         )}
       </ul>

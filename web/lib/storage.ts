@@ -1,15 +1,12 @@
-const WORKSPACES_KEY = 'kanbad/workspaces'
+const USER_KEY = 'kanbad/user'
 
-export function getWorkspaces(): Array<string> {
-  const uuids = localStorage.getItem(WORKSPACES_KEY)
+export function getUser(): string {
+  let uuid = localStorage.getItem(USER_KEY)
 
-  return typeof uuids === 'string'
-    ? Array.from(JSON.parse(uuids))
-    : []
-}
+  if (!uuid) {
+    uuid = crypto.randomUUID()
+    localStorage.setItem(USER_KEY, uuid)
+  }
 
-export function addWorkspace(identifier: string) {
-  let uuids = getWorkspaces()
-  uuids.push(identifier)
-  localStorage.setItem(WORKSPACES_KEY, JSON.stringify(uuids))
+  return uuid
 }
