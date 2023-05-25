@@ -140,18 +140,18 @@ pub async fn update_locations(pool: &PgPool, param_list: &[WorkspaceLocationUpda
             update workspace set position = vals.position
 
             from (values {values}) vals (
-                workspace_identifier,
+                identifier,
                 position
             )
 
-            where vals.workspace_identifier::uuid = workspace.identifier
+            where vals.identifier::uuid = workspace.identifier
 
             returning
                 id,
-                identifier,
+                workspace.identifier,
                 creator,
                 title,
-                position,
+                workspace.position
             "),
 
     )

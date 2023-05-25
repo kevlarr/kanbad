@@ -1,6 +1,6 @@
 import { DragEvent } from 'react'
 
-import { BoardModel, CardModel } from '@/lib/models'
+import { BoardModel, CardModel, WorkspaceModel } from '@/lib/models'
 
 /* Using custom data "types" in drag events is useful for a few reasons:
  *
@@ -13,8 +13,9 @@ import { BoardModel, CardModel } from '@/lib/models'
  *
  * See: https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/Recommended_drag_types#dragging_custom_data
  */
-export const CARD_DRAG_TYPE = 'kanbad/cardId'
-export const BOARD_DRAG_TYPE = 'kanbad/boardId'
+export const BOARD_DRAG_TYPE = 'kanbad/board'
+export const CARD_DRAG_TYPE = 'kanbad/card'
+export const WORKSPACE_DRAG_TYPE = 'kanbad/workspace'
 
 export function getEventDataBoard(evt: DragEvent): BoardModel | null {
   const boardJson = evt.dataTransfer.getData(BOARD_DRAG_TYPE)
@@ -34,4 +35,15 @@ export function getEventDataCard(evt: DragEvent): CardModel | null {
 
 export function setEventDataCard(evt: DragEvent, card: CardModel) {
   evt.dataTransfer.setData(CARD_DRAG_TYPE, JSON.stringify(card))
+}
+
+// TODO: Is this too much copy & paste..?
+export function getEventDataWorkspace(evt: DragEvent): WorkspaceModel | null {
+  const workspaceJson = evt.dataTransfer.getData(WORKSPACE_DRAG_TYPE)
+
+  return workspaceJson ? JSON.parse(workspaceJson) : null
+}
+
+export function setEventDataWorkspace(evt: DragEvent, workspace: WorkspaceModel) {
+  evt.dataTransfer.setData(WORKSPACE_DRAG_TYPE, JSON.stringify(workspace))
 }

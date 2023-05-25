@@ -1,6 +1,8 @@
 .pageHeader {
     background-color: var(--polar0);
-    padding: var(--padding-md);
+    max-width: 500px;
+    min-width: 175px;
+    width: 25vw;
 }
 
 .logotype {
@@ -17,5 +19,17 @@
 .logotype:focus,
 .logotype:hover {
     border-color: var(--white);
+    color: var(--white);
+}
+
+.workspaceLink {
+    color: var(--snow0);
+    overflow-x: hidden;
+    text-decoration: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.workspaceLink:hover {
     color: var(--white);
 }

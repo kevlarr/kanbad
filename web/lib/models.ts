@@ -50,3 +50,8 @@ export interface WorkspaceModel extends Model {
 export interface WorkspaceParams {
   title: string,
 }
+
+export interface WorkspaceLocationParams {
+  workspace: string,
+  position: number,
+}

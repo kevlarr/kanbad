@@ -3,7 +3,7 @@ import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 
-import { WorkspaceModel, WorkspaceParams } from '@/lib/models'
+import { WorkspaceModel, WorkspaceParams, WorkspaceLocationParams } from '@/lib/models'
 import * as storage from '@/lib/storage'
 import { PageHeader } from '@/components'
 import '@/styles/globals.css'
@@ -45,6 +45,29 @@ export default function App({ Component, pageProps }: AppProps) {
       })
   }
 
+  async function updateWorkspaceLocations(workspace: WorkspaceModel, position: number) {
+    const workspaceWorkspaces = workspaces.filter((w) => w.identifier !== workspace.identifier)
+
+    let paramList: Array<WorkspaceLocationParams> = [
+      ...workspaceWorkspaces.slice(0, position),
+      workspace,
+      ...workspaceWorkspaces.slice(position),
+    ].map((w, i) => ({
+      workspace: w.identifier,
+      position: i,
+     }))
+
+    return await api.patch('workspaces', paramList)
+      .then((updatedWorkspaces) => {
+        const updatedById = updatedWorkspaces.reduce((obj: any, w: WorkspaceModel) => ({
+          ...obj,
+          [w.identifier]: w,
+        }), {})
+
+        setWorkspaces(workspaces.map((w) => updatedById[w.identifier] ?? w))
+      })
+  }
+
   /* Need to assign a key to the component based on route in order for navigating
    * between dynamic routes (eg. different workspaces) to work properly and fetch
    * initial props on page change.
@@ -59,7 +82,10 @@ export default function App({ Component, pageProps }: AppProps) {
         <title>Kanbad</title>
         <meta name='viewport' content='width=device-width, initial-scale=1' />
       </Head>
-      <PageHeader workspaces={workspaces} />
+      <PageHeader
+        workspaces={workspaces}
+        updateWorkspaceLocations={updateWorkspaceLocations}
+      />
       {/* TODO
         * How bad IS IT that this is passing `createWorkspace` and `updateWorkspace`
         * to all pages, even though each is only used on a single page?
@@ -70,6 +96,7 @@ export default function App({ Component, pageProps }: AppProps) {
         key={key}
         createWorkspace={createWorkspace}
         updateWorkspace={updateWorkspace}
+        updateWorkspaceLocations={updateWorkspace}
         {...pageProps}
       />
     </>
